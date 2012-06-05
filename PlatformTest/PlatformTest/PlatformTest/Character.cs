@@ -9,13 +9,27 @@ using Microsoft.Xna.Framework;
 
 namespace PlatformTest
 {
+    public enum Direction
+    {
+        STANDING,
+        UP,
+        LEFT,
+        RIGHT
+    }
+
+    public enum Facing
+    {
+        LEFT,
+        RIGHT
+    }
+
     class Character
     {
         Rectangle bounds = new Rectangle(57, 337, 40, 48);
         Rectangle srcBounds = new Rectangle(0, 0, 40, 48); //Determines which frame is showing
 
-        string direction = "stand";
-        string facing = "right";
+        Direction direction = Direction.STANDING;
+        Facing facing = Facing.RIGHT;
 
         int frameCount = 0; //Counts which frame is currently in sourceBounds
         const int delay = 4;
@@ -30,31 +44,31 @@ namespace PlatformTest
         {
             KeyboardState keyState = Keyboard.GetState();
 
-            if (direction != "up")
+            if (direction != Direction.UP)
             {
                 if (keyState.IsKeyDown(Keys.D))
                 {
-                    direction = "right";
-                    facing = "right";
+                    direction = Direction.RIGHT;
+                    facing = Facing.RIGHT;
                 }
                 if (keyState.IsKeyDown(Keys.A))
                 {
-                    direction = "left";
-                    facing = "left";
+                    direction = Direction.LEFT;
+                    facing = Facing.LEFT;
                 }
                 if (keyState.IsKeyDown(Keys.W))
                 {
-                    direction = "up";
+                    direction = Direction.UP;
                 }
-                if (keyState.IsKeyUp(Keys.D) && direction == "right")
+                if (keyState.IsKeyUp(Keys.D) && direction == Direction.RIGHT)
                 {
-                    direction = "stand";
-                    facing = "right";
+                    direction = Direction.STANDING;
+                    facing = Facing.RIGHT;
                 }
-                if (keyState.IsKeyUp(Keys.A) && direction == "left")
+                if (keyState.IsKeyUp(Keys.A) && direction == Direction.LEFT)
                 {
-                    direction = "stand";
-                    facing = "left";
+                    direction = Direction.STANDING;
+                    facing = Facing.LEFT;
                 }
             }
             else
@@ -63,13 +77,13 @@ namespace PlatformTest
                 {
                     if (speed < maxspeed)
                         speed += .2f;
-                    facing = "right";
+                    facing = Facing.RIGHT;
                 }
                 if (keyState.IsKeyDown(Keys.A))
                 {
                     if (speed > -maxspeed)
                         speed -= .2f;
-                    facing = "left";
+                    facing = Facing.LEFT;
                 }
             }
         }
@@ -77,55 +91,73 @@ namespace PlatformTest
         bool debug = false;
         public void Move()
         {
-            if (direction != "up" && !CheckCollision(bounds) && debug)
+            if (direction != Direction.UP && !CheckCollision(bounds) && debug)
             {
                 //fall
                 startY = bounds.Y + 99;
-                direction = "up";
+                direction = Direction.UP;
                 jumpCount = 11;
             }
 
+            //Only change sprite frames every DELAY frames. Otherwise, it runs too quickly
             if (frameCount % delay == 0)
             {
                 switch (direction)
                 {
-                    case "stand":
-                        Equalize(2);
+                    case Direction.STANDING:
+                        SlowDown(2);
                         bounds.X += (int)speed;
+                        //There are only 4 frames in the idle animation, so reset after 4
                         if (frameCount / delay >= 4)
                             frameCount = 0;
+                        //Idle animation is at y=0
                         srcBounds = new Rectangle(frameCount / delay * 40, 0, 40, 48);
                         break;
-                    case "left":
+                    case Direction.LEFT:
                         if (speed > -maxspeed)
                             speed -= 1;
                         bounds.X += (int)speed;
+                        //8 frames in the running animation
                         if (frameCount / delay >= 8)
                             frameCount = 0;
+                        //Running animation is at y=48
                         srcBounds = new Rectangle(frameCount / delay * 40, 48, 40, 48);
                         break;
-                    case "right":
+                    case Direction.RIGHT:
                         if (speed < maxspeed)
                             speed += 1;
                         bounds.X += (int)speed;
+                        //8 frames in the running animation
                         if (frameCount / delay >= 8)
                             frameCount = 0;
+                        //Running animation is at y=48
                         srcBounds = new Rectangle(frameCount / delay * 40, 48, 40, 48);
                         break;
-                    case "up":
+                    case Direction.UP:
+                        //This might get a little confusing...
+                        //Currently uses the Y value of srcBounds to tell what state the animation is in
                         debug = true;
+
+                        //If the character is moving slow enough, switch to the standing-jump animation
+                        //Otherwise, just use the normal running animation
                         if (speed > -4 && speed < 4)
                             srcBounds.Y = 96;
                         else
                             srcBounds.Y = 48;
+
+                        //If we're currently in the idle animation or the standing-jump animation
                         if (srcBounds.Y == 0 || srcBounds.Y == 96)
                         {
-                            if (jumpCount < 2)
+                            /*
+                             *  Different parts of the jump use different animation frames, and
+                             *  repeat a different set of those frames.
+                             */ 
+                            if (jumpCount < 2) 
                             {
                                 if (frameCount / delay >= 9)
                                     frameCount = 0;
                             }
-                            else if (jumpCount > 2 && jumpCount <= 10)
+                            else if (jumpCount > 2 && jumpCount <= 10) 
                             {
                                 if (frameCount / delay > 3)
                                     frameCount = 2 * delay;
@@ -145,6 +177,7 @@ namespace PlatformTest
 
                             srcBounds = new Rectangle(frameCount / delay * 40, 96, 40, 48);
                         }
+                        //Otherwise, we're doing a running jump
                         else if (srcBounds.Y == 48)
                         {
                             if (frameCount / delay >= 8)
@@ -177,7 +210,7 @@ namespace PlatformTest
             if (jumpCount >= 10 && CheckCollision(bounds))
             {
                 //Stop
-                direction = "stand";
+                direction = Direction.STANDING;
                 jumpCount = 0;
             }
 
@@ -217,7 +250,7 @@ namespace PlatformTest
             }
         }
 
-        private void Equalize(int i)
+        private void SlowDown(int i)
         {
             for (int k = 0; k < i; k++)
             {
@@ -230,7 +263,7 @@ namespace PlatformTest
 
         public void Draw(SpriteBatch spriteBatch, Texture2D texture)
         {
-            if (facing == "right")
+            if (facing == Facing.RIGHT)
                 spriteBatch.Draw(texture, bounds, srcBounds, Color.White);
             else
                 spriteBatch.Draw(texture, bounds, srcBounds, Color.White,
