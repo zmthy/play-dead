@@ -25,25 +25,30 @@ namespace PlatformTest
 
     class Character
     {
-        Rectangle bounds = new Rectangle(57, 337, 40, 48);
+        Rectangle bounds = new Rectangle(57, 337, 40, 48); //Collision box (in starting position)
         Rectangle srcBounds = new Rectangle(0, 0, 40, 48); //Determines which frame is showing
 
-        Direction direction = Direction.STANDING;
-        Facing facing = Facing.RIGHT;
+        Direction direction = Direction.STANDING;   //Direction character is moving
+        Facing facing = Facing.RIGHT;               //Direction character is facing
 
-        int frameCount = 0; //Counts which frame is currently in sourceBounds
-        const int delay = 4;
+        int frameCount = 0;     //Used to determine when to move to the next frame
+        const int delay = 4;    //Delay between animation frames (less->faster animation speed)
 
-        float speed = 0f;
-        const float maxspeed = 12f;
+        float speed = 0f;               //Current velocity of character. Ranges from -maxSpeed (moving left) to +maxSpeed (moving right)
+        const float maxspeed = 12f;     //Max character speed
 
-        int startY = 0;
-        int jumpCount = 0;
+        int startY = 0;                 //Starting Y-value for jumps
+        int jumpCount = 0;              //Used to determine animation for jumps
 
+
+        /// <summary>
+        /// The KeyInput method handles all keyboard input for the character.
+        /// </summary>
         public void KeyInput()
         {
             KeyboardState keyState = Keyboard.GetState();
 
+            //If we're not jumping handle things normally
             if (direction != Direction.UP)
             {
                 if (keyState.IsKeyDown(Keys.D))
@@ -71,6 +76,7 @@ namespace PlatformTest
                     facing = Facing.LEFT;
                 }
             }
+            //Otherwise, speed is greatly reduced to allow *some* manouvering
             else
             {
                 if (keyState.IsKeyDown(Keys.D))
@@ -88,7 +94,11 @@ namespace PlatformTest
             }
         }
 
-        bool debug = false;
+        bool debug = false;  //I forgot why this is here...
+
+        /// <summary>
+        /// Handles the actual movement of the character, and animation thereof
+        /// </summary>
         public void Move()
         {
             if (direction != Direction.UP && !CheckCollision(bounds) && debug)
@@ -250,6 +260,10 @@ namespace PlatformTest
             }
         }
 
+        /// <summary>
+        /// Gradually slows the character down if the character stops running
+        /// </summary>
+        /// <param name="i">How much slowdown to apply. Larger numbers stop the character instantly.</param>
         private void SlowDown(int i)
         {
             for (int k = 0; k < i; k++)
@@ -261,8 +275,14 @@ namespace PlatformTest
             }
         }
 
+        /// <summary>
+        /// Draws the character onto the screen
+        /// </summary>
+        /// <param name="spriteBatch">The SpriteBatch to use to render this sprite</param>
+        /// <param name="texture">The character's texture sheet (this should really be local to the class...)</param>
         public void Draw(SpriteBatch spriteBatch, Texture2D texture)
         {
+            //If the character is facing left, we just flip the texture using SpriteEffects
             if (facing == Facing.RIGHT)
                 spriteBatch.Draw(texture, bounds, srcBounds, Color.White);
             else
