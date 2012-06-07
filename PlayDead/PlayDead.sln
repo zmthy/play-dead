@@ -1,0 +1,24 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlayDead", "PlayDead\PlayDead\PlayDead.csproj", "{4542453A-C0FA-41CD-83A2-FE48B796EB3C}"
+EndProject
+Project("{96E2B04D-8817-42C6-938A-82C39BA4D311}") = "PlayDeadContent", "PlayDead\PlayDeadContent\PlayDeadContent.contentproj", "{F91478B1-B238-485B-9225-10FF4627880C}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x86 = Debug|x86
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{4542453A-C0FA-41CD-83A2-FE48B796EB3C}.Debug|x86.ActiveCfg = Debug|x86
+		{4542453A-C0FA-41CD-83A2-FE48B796EB3C}.Debug|x86.Build.0 = Debug|x86
+		{4542453A-C0FA-41CD-83A2-FE48B796EB3C}.Release|x86.ActiveCfg = Release|x86
+		{4542453A-C0FA-41CD-83A2-FE48B796EB3C}.Release|x86.Build.0 = Release|x86
+		{F91478B1-B238-485B-9225-10FF4627880C}.Debug|x86.ActiveCfg = Debug|x86
+		{F91478B1-B238-485B-9225-10FF4627880C}.Release|x86.ActiveCfg = Release|x86
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
