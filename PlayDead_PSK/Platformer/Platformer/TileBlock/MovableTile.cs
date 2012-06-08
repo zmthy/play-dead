@@ -28,9 +28,8 @@ namespace Platformer.TileBlock
         }
         private Vector2 velocity;
 
-        public Vector2 Position { get; set; }
-
         private Level level;
+        private Vector2[] collidingCells = { };
 
         private float waitTimeS;
         private const float MAX_WAIT_TIME_S = 0.1f;
@@ -63,11 +62,17 @@ namespace Platformer.TileBlock
             else
             {
                 // Get colliding tiles
+                for (int i = 0; i < collidingCells.Length; i++)
+                    level.setTile((int)collidingCells[i].X, (int)collidingCells[i].Y, new Tile(null, TileCollision.Passable));
+
                 Vector2 topLeftTile = getGridPosition(Position.X, Position.Y);
                 Vector2 topRightTile = getGridPosition(Position.X + Tile.Width, Position.Y);
                 Vector2 bottomLeftTile = getGridPosition(Position.X, Position.Y + Tile.Height);
                 Vector2 bottomRightTile = getGridPosition(Position.X + Tile.Width, Position.Y + Tile.Height);
-                Vector2[] collidingCells = { topLeftTile, topRightTile, bottomLeftTile, bottomRightTile};
+                collidingCells = new Vector2[]{topLeftTile, topRightTile, bottomLeftTile, bottomRightTile};
+
+                for (int i = 0; i < collidingCells.Length; i++)
+                    level.setTile((int)collidingCells[i].X, (int)collidingCells[i].Y, this);
 
                 //If we're about to run into a wall that isn't a MovableTile move in other direction.
                 bool collided = false;

@@ -120,11 +120,12 @@ namespace Platformer
 
             // Set the camera
             camera.Position = player.Position;
-            PanningDirector panningDirector = new PanningDirector(camera, gems[0], 2);
+            cameraDirector = new TrackingDirector(camera, player);
+            /*PanningDirector panningDirector = new PanningDirector(camera, gems[0], 2);
             panningDirector.StartDelayS = 2;
             panningDirector.PauseDelayS = 2;
             panningDirector.ReturnTimeS = 1;
-            cameraDirector = panningDirector;
+            cameraDirector = panningDirector;*/
         }
 
         /// <summary>
@@ -163,7 +164,9 @@ namespace Platformer
                 {
                     // to load each tile.
                     char tileType = lines[y][x];
-                    tiles[x, y] = LoadTile(tileType, x, y);
+                    Tile newTile = LoadTile(tileType, x, y);
+                    newTile.Position = new Vector2(x, y) * Tile.Size;
+                    tiles[x, y] = newTile;
                 }
             }
 
@@ -352,6 +355,11 @@ namespace Platformer
                 return TileCollision.Passable;
 
             return tiles[x, y].Collision;
+        }
+
+        public void setTile(int x, int y, Tile tile)
+        {
+            tiles[x, y] = tile;
         }
 
         /// <summary>
@@ -560,12 +568,11 @@ namespace Platformer
                 for (int x = 0; x < Width; ++x)
                 {
                     // If there is a visible tile in that position
-                    Texture2D texture = tiles[x, y].Texture;
-                    if (texture != null)
+                    Tile tile = tiles[x, y];
+                    if (tile.Texture != null)
                     {
                         // Draw it in screen space.
-                        Vector2 position = new Vector2(x, y) * Tile.Size;
-                        spriteBatch.Draw(texture, position, Color.White);
+                        tile.draw(spriteBatch);
                     }
                 }
             }

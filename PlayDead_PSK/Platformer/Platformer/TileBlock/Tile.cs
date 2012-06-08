@@ -55,6 +55,8 @@ namespace Platformer.TileBlock
             get { return size; }
         }
 
+        public Vector2 Position { get; set; }
+
         /// <summary>
         /// Constructs a new tile.
         /// </summary>
@@ -62,6 +64,14 @@ namespace Platformer.TileBlock
         {
             Texture = texture;
             Collision = collision;
+            Position = Vector2.Zero;
+        }
+
+        public void update(GameTime gameTime) { }
+
+        public void draw(SpriteBatch spriteBatch)
+        {
+            spriteBatch.Draw(Texture, Position, Color.White);
         }
     }
 }
