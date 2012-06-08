@@ -8,10 +8,11 @@
 #endregion
 
 using System;
+
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
-namespace Platformer
+namespace Platformer.TileBlock
 {
     /// <summary>
     /// Controls the collision detection and response behavior of a tile.
@@ -40,15 +41,19 @@ namespace Platformer
     /// <summary>
     /// Stores the appearance and collision behavior of a tile.
     /// </summary>
-    struct Tile
+    class Tile
     {
-        public Texture2D Texture;
-        public TileCollision Collision;
+        public Texture2D Texture { get; protected set; }
+        public TileCollision Collision { get; protected set; }
 
         public const int Width = 40;
         public const int Height = 32;
 
-        public static readonly Vector2 Size = new Vector2(Width, Height);
+        private static readonly Vector2 size = new Vector2(Width, Height);
+        public static Vector2 Size
+        {
+            get { return size; }
+        }
 
         /// <summary>
         /// Constructs a new tile.

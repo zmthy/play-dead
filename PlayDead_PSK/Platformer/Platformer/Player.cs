@@ -16,6 +16,7 @@ using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Input.Touch;
 
 using Platformer.Camera;
+using Platformer.TileBlock;
 
 namespace Platformer
 {
