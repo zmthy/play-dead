@@ -101,6 +101,12 @@ namespace Platformer
             }
         }
 
+        public Vector2 Position
+        {
+            get { return position; }
+            set { position = value; }
+        }
+
         // TODO Other nice methods as necessary
         #endregion
 

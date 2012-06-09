@@ -15,7 +15,7 @@ namespace Platformer.TileBlock
     /// Code inspired from:
     /// http://robotfootgames.com/2011/05/movable-platforms/
     /// </summary>
-    class MovableTile :  Tile
+    class MoveableTile :  Tile
     {
         /// <summary>
         /// The movement velocity of the tile.
@@ -28,12 +28,14 @@ namespace Platformer.TileBlock
         }
         private Vector2 velocity;
 
+        public Vector2 FrameVelocity { get; set; }
+
         private Level level;
 
         private float waitTimeS;
-        private const float MAX_WAIT_TIME_S = 0.1f;
+        private const float MAX_WAIT_TIME_S = 0.2f;
 
-        public MovableTile(Sprite sprite, TileCollision collision, Vector2 velocity,
+        public MoveableTile(Sprite sprite, TileCollision collision, Vector2 velocity,
                            Level level)
             : base(sprite, collision)
         {
@@ -61,7 +63,7 @@ namespace Platformer.TileBlock
                 //If we're about to run into a wall that isn't a MovableTile move in other direction.
 
                 // Get adjacent tiles infront
-                Vector2 currentCell = getGridPosition(Sprite.X, Sprite.Y);
+                Vector2 currentCell = getGridPosition(Sprite.Center.X, Sprite.Center.Y);
                 Vector2 nextLeft = getAdjacentCellAtAngle(currentCell, velocity.X - (float)(Math.PI / 4));
                 Vector2 nextMiddle = getAdjacentCellAtAngle(currentCell, velocity.X);
                 Vector2 nextRight = getAdjacentCellAtAngle(currentCell, velocity.X + (float)(Math.PI / 4));
@@ -72,32 +74,42 @@ namespace Platformer.TileBlock
                 for (int i = 0; i < collidingCells.Length; i++)
                 {
                     Vector2 tileGridPos = collidingCells[i];
+                    Tile otherTile = level.getTile((int)tileGridPos.X, (int)tileGridPos.Y);
                     TileCollision collision = level.GetCollision((int)tileGridPos.X, (int)tileGridPos.Y);
 
                     if (collision == TileCollision.Impassable || collision == TileCollision.Platform)
                     {
-                        collided = true;
-                        waitTimeS = MAX_WAIT_TIME_S;
-                        break;
+                        // We do a bounds check because tiles can move in *any* direction.
+                        if (otherTile == null || Sprite.intersects(otherTile.Sprite))
+                        {
+                            collided = true;
+                            waitTimeS = MAX_WAIT_TIME_S;
+                            FrameVelocity = Vector2.Zero;
+                            break;
+                        }
                     }
                 }
 
                 if (!collided)
                 {
                     // Move in the current direction.
-                    Sprite.X += (float)(Math.Cos(velocity.X) * (velocity.Y * elapsedS));
-                    Sprite.Y += (float)(Math.Sin(velocity.X) * (velocity.Y * elapsedS));
+                    FrameVelocity = new Vector2((float)(Math.Cos(velocity.X) * velocity.Y * elapsedS),
+                                                (float)(Math.Sin(velocity.X) * velocity.Y * elapsedS));
+                    Sprite.Position = Sprite.Position + FrameVelocity;
                 }
             }
 
             //If we're about to run into a MovableTile move in other direction.
-            List<Tile> nonAtomicTiles = level.getNonAtomicTiles();
-            foreach (Tile tile in nonAtomicTiles)
+            List<MoveableTile> moveableTiles = level.getMoveableTiles();
+            foreach (MoveableTile tile in moveableTiles)
             {
                 if (tile != this && Sprite.intersects(tile.Sprite))
                 {
                     reverseMovement();
+                    FrameVelocity = new Vector2((float)(Math.Cos(velocity.X) * velocity.Y * elapsedS),
+                                                (float)(Math.Sin(velocity.X) * velocity.Y * elapsedS));
                 }
+               
             }
         }
 

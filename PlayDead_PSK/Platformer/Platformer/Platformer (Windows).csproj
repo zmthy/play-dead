@@ -87,7 +87,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RectangleExtensions.cs" />
     <Compile Include="Sprite.cs" />
-    <Compile Include="TileBlock\MovableTile.cs" />
+    <Compile Include="TileBlock\MoveableTile.cs" />
     <Compile Include="TileBlock\Tile.cs" />
     <Compile Include="TouchCollectionExtensions.cs" />
   </ItemGroup>

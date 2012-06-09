@@ -32,7 +32,7 @@ namespace Platformer
     {
         // Physical structure of the level.
         private Tile[,] tiles;
-        private List<Tile> nonAtomicTiles; // Tiles that span multiple cells
+        private List<MoveableTile> moveableTiles; // Tiles that span multiple cells
         private Texture2D[] layers;
         // The layer which entities are drawn on top of.
         private const int EntityLayer = 2;
@@ -157,7 +157,7 @@ namespace Platformer
 
             // Allocate the tile grid.
             tiles = new Tile[width, lines.Count];
-            nonAtomicTiles = new List<Tile>();
+            moveableTiles = new List<MoveableTile>();
 
             // Loop over every tile position,
             for (int y = 0; y < Height; ++y)
@@ -171,9 +171,9 @@ namespace Platformer
                     newTile.Sprite.X = x * Tile.Width;
                     newTile.Sprite.Y = y * Tile.Height;
 
-                    if (newTile is MovableTile)
+                    if (newTile is MoveableTile)
                     {
-                        nonAtomicTiles.Add(newTile);
+                        moveableTiles.Add((MoveableTile)newTile);
 
                         Tile backTile = new Tile(null, TileCollision.Passable);
                         backTile.Sprite.X = x * Tile.Width;
@@ -287,8 +287,9 @@ namespace Platformer
         {
             Sprite sprite = new Sprite(Content.Load<Texture2D>("Tiles/" + name),
                                        Tile.Width, Tile.Height);
-            return new MovableTile(sprite, collision,
-                new Vector2((float)(random.NextDouble() * Math.PI * 2), 100), this);
+            return new MoveableTile(sprite, collision,
+                new Vector2(0, 200), this);
+                //new Vector2((float)(random.NextDouble() * Math.PI * 2), 100), this);
         }
 
 
@@ -388,9 +389,9 @@ namespace Platformer
             return tiles[x, y].Collision;
         }
 
-        public List<Tile> getNonAtomicTiles()
+        public List<MoveableTile> getMoveableTiles()
         {
-            return nonAtomicTiles;
+            return moveableTiles;
         }
 
         /*public void setTile(int x, int y, Tile tile)
@@ -402,7 +403,7 @@ namespace Platformer
                     tiles[x, y] = tile;
                 }
             }
-        }
+        }*/
 
         public Tile getTile(int x, int y)
         {
@@ -416,7 +417,7 @@ namespace Platformer
             }
 
             return tile;
-        }*/
+        }
 
         /// <summary>
         /// Gets the bounding rectangle of a tile in world space.
@@ -560,7 +561,7 @@ namespace Platformer
             }
 
             // Update non-atomic tiles
-            foreach(Tile tile in nonAtomicTiles)
+            foreach(Tile tile in moveableTiles)
                 tile.update(gameTime);
         }
 
@@ -647,8 +648,11 @@ namespace Platformer
             }
 
             // Draw non-atomic tiles
-            foreach (Tile tile in nonAtomicTiles)
+            foreach (MoveableTile tile in moveableTiles)
+            {
                 tile.draw(spriteBatch);
+            }
+
         }
 
         #endregion
