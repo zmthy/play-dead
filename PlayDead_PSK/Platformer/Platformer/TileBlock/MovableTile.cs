@@ -33,7 +33,7 @@ namespace Platformer.TileBlock
 
         private float waitTimeS;
         private const float MAX_WAIT_TIME_S = 0.1f;
-        private const float MOVE_SPEED_S = 120.0f;
+        //private const float MOVE_SPEED = 120.0f;
 
         public MovableTile(Texture2D texture, TileCollision collision, Vector2 velocity,
                            Level level)
@@ -41,10 +41,9 @@ namespace Platformer.TileBlock
         {
             this.velocity = velocity;
             this.level = level;
-            Position = Vector2.Zero;
         }
 
-        public void update(GameTime gameTime)
+        public override void update(GameTime gameTime)
         {
             // Get the elapse time since the last frame
             float elapsedS = (float)gameTime.ElapsedGameTime.TotalSeconds;
@@ -70,9 +69,7 @@ namespace Platformer.TileBlock
                 Vector2 bottomLeftTile = getGridPosition(Position.X, Position.Y + Tile.Height);
                 Vector2 bottomRightTile = getGridPosition(Position.X + Tile.Width, Position.Y + Tile.Height);
                 collidingCells = new Vector2[]{topLeftTile, topRightTile, bottomLeftTile, bottomRightTile};
-
-                for (int i = 0; i < collidingCells.Length; i++)
-                    level.setTile((int)collidingCells[i].X, (int)collidingCells[i].Y, this);
+                
 
                 //If we're about to run into a wall that isn't a MovableTile move in other direction.
                 bool collided = false;
@@ -90,7 +87,15 @@ namespace Platformer.TileBlock
                 }
 
                 if (!collided)
-                    Position += velocity;
+                {
+                    Vector2 newPosition = Position;
+                    newPosition.X += (float)(Math.Cos(velocity.X) * (velocity.Y * elapsedS));
+                    newPosition.Y += (float)(Math.Sin(velocity.X) * (velocity.Y * elapsedS));
+                    Position = newPosition;
+                }
+
+                for (int i = 0; i < collidingCells.Length; i++)
+                    level.setTile((int)collidingCells[i].X, (int)collidingCells[i].Y, this);
             }
         }
 
@@ -103,13 +108,8 @@ namespace Platformer.TileBlock
 
         private void reverseMovement()
         {
-            Console.WriteLine("Reversing direction from " + velocity.X + " to " + (velocity.X - (float)Math.PI) + '.');
+            //Console.WriteLine("Reversing direction from " + velocity.X + " to " + (velocity.X - (float)Math.PI) + '.');
             velocity.X -= (float)Math.PI;
-        }
-
-        public void draw(SpriteBatch spriteBatch)
-        {
-            spriteBatch.Draw(Texture, Position, Color.White);
         }
     }
 }

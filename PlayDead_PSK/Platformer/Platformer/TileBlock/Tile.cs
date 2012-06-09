@@ -67,7 +67,7 @@ namespace Platformer.TileBlock
             Position = Vector2.Zero;
         }
 
-        public void update(GameTime gameTime) { }
+        public virtual void update(GameTime gameTime) { }
 
         public void draw(SpriteBatch spriteBatch)
         {

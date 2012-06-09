@@ -238,6 +238,10 @@ namespace Platformer
                 case '#':
                     return LoadVarietyTile("BlockA", 7, TileCollision.Impassable);
 
+                // Moveable block
+                case 'M':
+                    return LoadMoveableTile("BlockA1", TileCollision.Platform);
+
                 // Unknown tile type character
                 default:
                     throw new NotSupportedException(String.Format("Unsupported tile type character '{0}' at position {1}, {2}.", tileType, x, y));
@@ -258,6 +262,12 @@ namespace Platformer
         private Tile LoadTile(string name, TileCollision collision)
         {
             return new Tile(Content.Load<Texture2D>("Tiles/" + name), collision);
+        }
+
+        private Tile LoadMoveableTile(string name, TileCollision collision)
+        {
+            return new MovableTile(Content.Load<Texture2D>("Tiles/" + name), collision,
+                new Vector2((float)(random.NextDouble() * Math.PI * 2), 30), this);
         }
 
 
@@ -359,7 +369,13 @@ namespace Platformer
 
         public void setTile(int x, int y, Tile tile)
         {
-            tiles[x, y] = tile;
+            if (x >= 0 && x < Width)
+            {
+                if (y >= 0 && y < Height)
+                {
+                    tiles[x, y] = tile;
+                }
+            }
         }
 
         /// <summary>
@@ -419,6 +435,8 @@ namespace Platformer
             else
             {
                 timeRemaining -= gameTime.ElapsedGameTime;
+
+                updateTiles(gameTime); 
                 Player.Update(gameTime, keyboardState, gamePadState, touchState, accelState, orientation);
                 UpdateGems(gameTime);
 
@@ -485,6 +503,24 @@ namespace Platformer
                 if (enemy.BoundingRectangle.Intersects(Player.BoundingRectangle))
                 {
                     OnPlayerKilled(enemy);
+                }
+            }
+        }
+
+        private void updateTiles(GameTime gameTime)
+        {
+            // For each tile position
+            for (int y = 0; y < Height; ++y)
+            {
+                for (int x = 0; x < Width; ++x)
+                {
+                    // If there is a visible tile in that position
+                    Tile tile = tiles[x, y];
+                    if (tile.Texture != null)
+                    {
+                        // Update the tile
+                        tile.update(gameTime);
+                    }
                 }
             }
         }
