@@ -17,11 +17,22 @@ namespace Platformer
 
         public Texture2D Texture { get; set; }
 
+        public Sprite() { }
+
         public Sprite(Texture2D texture, Rectangle destBounds)
         {
             Texture = texture;
             position = new Vector2(destBounds.X, destBounds.Y);
             size = new Vector2(destBounds.Width, destBounds.Height);
+        }
+
+        public Sprite(Texture2D texture, float width, float height)
+        {
+            Texture = texture;
+            size.X = width;
+            size.Y = height;
+
+            position = Vector2.Zero;
         }
 
         public Sprite(Texture2D texture, Rectangle destBounds, Rectangle? sourceBounds)
@@ -32,11 +43,18 @@ namespace Platformer
 
         public void draw(SpriteBatch spriteBatch, int layerDepth)
         {
-            Rectangle drawBounds = new Rectangle((int)position.X, (int)position.Y, (int)size.X, (int)size.Y);
-            spriteBatch.Draw(Texture, drawBounds, sourceBounds, Color.White, 0, Vector2.Zero, SpriteEffects.None, layerDepth);
+            if(Texture != null)
+                spriteBatch.Draw(Texture, Bounds, sourceBounds, Color.White, 0, Vector2.Zero, SpriteEffects.None, layerDepth);
+        }
+
+        public void draw(SpriteBatch spriteBatch)
+        {
+            if (Texture != null)
+                spriteBatch.Draw(Texture, Bounds, sourceBounds, Color.White);
         }
 
         #region Bounds manipulation
+
         public float X
         {
             get { return position.X; }
@@ -69,6 +87,33 @@ namespace Platformer
                 position.X = value.X - (size.X / 2);
                 position.Y = value.Y - (size.Y / 2);
             }
+        }
+
+        public Rectangle Bounds
+        {
+            get { return new Rectangle((int)position.X, (int)position.Y, (int)size.X, (int)size.Y); }
+            set
+            {
+                position.X = value.X;
+                position.Y = value.Y;
+                size.X = value.Width;
+                size.Y = value.Height;
+            }
+        }
+
+        // TODO Other nice methods as necessary
+        #endregion
+
+        #region Common Sprite operations
+
+        public bool intersects(Sprite other)
+        {
+            bool doesIntersect = false;
+
+            if (other != null)
+                doesIntersect = this.Bounds.Intersects(other.Bounds);
+
+            return doesIntersect;
         }
 
         // TODO Other nice methods as necessary

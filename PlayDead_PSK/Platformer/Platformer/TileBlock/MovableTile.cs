@@ -29,15 +29,13 @@ namespace Platformer.TileBlock
         private Vector2 velocity;
 
         private Level level;
-        private Vector2[] collidingCells = { };
 
         private float waitTimeS;
         private const float MAX_WAIT_TIME_S = 0.1f;
-        //private const float MOVE_SPEED = 120.0f;
 
-        public MovableTile(Texture2D texture, TileCollision collision, Vector2 velocity,
+        public MovableTile(Sprite sprite, TileCollision collision, Vector2 velocity,
                            Level level)
-            : base(texture, collision)
+            : base(sprite, collision)
         {
             this.velocity = velocity;
             this.level = level;
@@ -60,16 +58,14 @@ namespace Platformer.TileBlock
             }
             else
             {
-                // Get colliding tiles
-                for (int i = 0; i < collidingCells.Length; i++)
-                    level.setTile((int)collidingCells[i].X, (int)collidingCells[i].Y, new Tile(null, TileCollision.Passable));
+                //If we're about to run into a wall that isn't a MovableTile move in other direction.
 
-                Vector2 topLeftTile = getGridPosition(Position.X, Position.Y);
-                Vector2 topRightTile = getGridPosition(Position.X + Tile.Width, Position.Y);
-                Vector2 bottomLeftTile = getGridPosition(Position.X, Position.Y + Tile.Height);
-                Vector2 bottomRightTile = getGridPosition(Position.X + Tile.Width, Position.Y + Tile.Height);
-                collidingCells = new Vector2[]{topLeftTile, topRightTile, bottomLeftTile, bottomRightTile};
-                
+                // Get adjacent tiles infront
+                Vector2 currentCell = getGridPosition(Sprite.X, Sprite.Y);
+                Vector2 nextLeft = getAdjacentCellAtAngle(currentCell, velocity.X - (float)(Math.PI / 4));
+                Vector2 nextMiddle = getAdjacentCellAtAngle(currentCell, velocity.X);
+                Vector2 nextRight = getAdjacentCellAtAngle(currentCell, velocity.X + (float)(Math.PI / 4));
+                Vector2[] collidingCells = { nextLeft, nextMiddle, nextRight };
 
                 //If we're about to run into a wall that isn't a MovableTile move in other direction.
                 bool collided = false;
@@ -80,22 +76,28 @@ namespace Platformer.TileBlock
 
                     if (collision == TileCollision.Impassable || collision == TileCollision.Platform)
                     {
-                        waitTimeS = MAX_WAIT_TIME_S;
                         collided = true;
+                        waitTimeS = MAX_WAIT_TIME_S;
                         break;
                     }
                 }
 
                 if (!collided)
                 {
-                    Vector2 newPosition = Position;
-                    newPosition.X += (float)(Math.Cos(velocity.X) * (velocity.Y * elapsedS));
-                    newPosition.Y += (float)(Math.Sin(velocity.X) * (velocity.Y * elapsedS));
-                    Position = newPosition;
+                    // Move in the current direction.
+                    Sprite.X += (float)(Math.Cos(velocity.X) * (velocity.Y * elapsedS));
+                    Sprite.Y += (float)(Math.Sin(velocity.X) * (velocity.Y * elapsedS));
                 }
+            }
 
-                for (int i = 0; i < collidingCells.Length; i++)
-                    level.setTile((int)collidingCells[i].X, (int)collidingCells[i].Y, this);
+            //If we're about to run into a MovableTile move in other direction.
+            List<Tile> nonAtomicTiles = level.getNonAtomicTiles();
+            foreach (Tile tile in nonAtomicTiles)
+            {
+                if (tile != this && Sprite.intersects(tile.Sprite))
+                {
+                    reverseMovement();
+                }
             }
         }
 
@@ -106,9 +108,15 @@ namespace Platformer.TileBlock
             return gridPos;
         }
 
+        private Vector2 getAdjacentCellAtAngle(Vector2 currentCell, float angleRadians)
+        {
+            int newCellX = (int)currentCell.X + (int)Math.Round(Math.Cos(angleRadians));
+            int newCellY = (int)currentCell.Y + (int)Math.Round(Math.Sin(angleRadians));
+            return new Vector2(newCellX, newCellY);
+        }
+
         private void reverseMovement()
         {
-            //Console.WriteLine("Reversing direction from " + velocity.X + " to " + (velocity.X - (float)Math.PI) + '.');
             velocity.X -= (float)Math.PI;
         }
     }

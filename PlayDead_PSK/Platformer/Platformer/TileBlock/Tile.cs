@@ -43,35 +43,30 @@ namespace Platformer.TileBlock
     /// </summary>
     class Tile
     {
-        public Texture2D Texture { get; protected set; }
+        public Sprite Sprite { get; protected set; }
         public TileCollision Collision { get; protected set; }
 
         public const int Width = 40;
         public const int Height = 32;
 
-        private static readonly Vector2 size = new Vector2(Width, Height);
-        public static Vector2 Size
-        {
-            get { return size; }
-        }
-
-        public Vector2 Position { get; set; }
-
         /// <summary>
         /// Constructs a new tile.
         /// </summary>
-        public Tile(Texture2D texture, TileCollision collision)
+        public Tile(Sprite sprite, TileCollision collision)
         {
-            Texture = texture;
+            if (sprite != null)
+                Sprite = sprite;
+            else
+                Sprite = new Sprite();
             Collision = collision;
-            Position = Vector2.Zero;
         }
 
         public virtual void update(GameTime gameTime) { }
 
         public void draw(SpriteBatch spriteBatch)
         {
-            spriteBatch.Draw(Texture, Position, Color.White);
+            if (Sprite != null)
+                Sprite.draw(spriteBatch);
         }
     }
 }
