@@ -257,7 +257,7 @@ namespace Platformer
 
                 // Moveable block
                 case 'M':
-                    return LoadMoveableTile("BlockA1", TileCollision.Platform);
+                    return LoadMoveableTile("BlockA1", TileCollision.Impassable);
 
                 // Unknown tile type character
                 default:
@@ -288,8 +288,8 @@ namespace Platformer
             Sprite sprite = new Sprite(Content.Load<Texture2D>("Tiles/" + name),
                                        Tile.Width, Tile.Height);
             return new MoveableTile(sprite, collision,
-                new Vector2(0, 200), this);
-                //new Vector2((float)(random.NextDouble() * Math.PI * 2), 100), this);
+                //new Vector2((float)(Math.PI/3), 100), this);
+                new Vector2((float)(random.NextDouble() * Math.PI * 2), 100), this);
         }
 
 
@@ -492,7 +492,7 @@ namespace Platformer
                 // exit when they have collected all of the gems.
                 if (Player.IsAlive &&
                     Player.IsOnGround &&
-                    Player.BoundingRectangle.Contains(exit))
+                    Player.BoundingRectangle.Contains(new Vector2(exit.X, exit.Y)))
                 {
                     OnExitReached();
                 }
@@ -523,7 +523,7 @@ namespace Platformer
 
                 gem.Update(gameTime);
 
-                if (gem.BoundingCircle.Intersects(Player.BoundingRectangle))
+                if (gem.BoundingCircle.Intersects(Player.CollideBounds))
                 {
                     gems.RemoveAt(i--);
                     OnGemCollected(gem, Player);
@@ -541,7 +541,7 @@ namespace Platformer
                 enemy.Update(gameTime);
 
                 // Touching an enemy instantly kills the player
-                if (enemy.BoundingRectangle.Intersects(Player.BoundingRectangle))
+                if (enemy.BoundingRectangle.Intersects(Player.CollideBounds))
                 {
                     OnPlayerKilled(enemy);
                 }

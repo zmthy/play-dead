@@ -43,14 +43,16 @@ namespace Platformer
 
         public void draw(SpriteBatch spriteBatch, int layerDepth)
         {
-            if(Texture != null)
-                spriteBatch.Draw(Texture, Bounds, sourceBounds, Color.White, 0, Vector2.Zero, SpriteEffects.None, layerDepth);
+            Rectangle bounds = new Rectangle((int)position.X, (int)position.Y, (int)size.X, (int)size.Y);
+            if (Texture != null)
+                spriteBatch.Draw(Texture, bounds, sourceBounds, Color.White, 0, Vector2.Zero, SpriteEffects.None, layerDepth);
         }
 
         public void draw(SpriteBatch spriteBatch)
         {
+            Rectangle bounds = new Rectangle((int)position.X, (int)position.Y, (int)size.X, (int)size.Y);
             if (Texture != null)
-                spriteBatch.Draw(Texture, Bounds, sourceBounds, Color.White);
+                spriteBatch.Draw(Texture, bounds, sourceBounds, Color.White);
         }
 
         #region Bounds manipulation
@@ -89,9 +91,9 @@ namespace Platformer
             }
         }
 
-        public Rectangle Bounds
+        public RectangleF Bounds
         {
-            get { return new Rectangle((int)position.X, (int)position.Y, (int)size.X, (int)size.Y); }
+            get { return new RectangleF((int)position.X, (int)position.Y, (int)size.X, (int)size.Y); }
             set
             {
                 position.X = value.X;

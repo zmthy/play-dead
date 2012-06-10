@@ -106,18 +106,33 @@ namespace Platformer
         private bool wasJumping;
         private float jumpTime;
 
-        private Rectangle localBounds;
+        private RectangleF localBounds;
         /// <summary>
         /// Gets a rectangle which bounds this player in world space.
         /// </summary>
-        public Rectangle BoundingRectangle
+        public RectangleF BoundingRectangle
         {
             get
             {
-                int left = (int)Math.Round(Position.X - sprite.Origin.X) + localBounds.X;
-                int top = (int)Math.Round(Position.Y - sprite.Origin.Y) + localBounds.Y;
+                float left = Position.X - sprite.Origin.X + localBounds.X;
+                float top = Position.Y - sprite.Origin.Y + localBounds.Y;
 
-                return new Rectangle(left, top, localBounds.Width, localBounds.Height);
+                return new RectangleF(left, top, localBounds.Width, localBounds.Height);
+            }
+        }
+
+        /// <summary>
+        /// The bounds for collision detection.
+        /// Exactly like BoundingRectangle, but returns an int-rectangle for compatibility.
+        /// </summary>
+        public Rectangle CollideBounds
+        {
+            get
+            {
+                int left = (int)Math.Round(Position.X - sprite.Origin.X + localBounds.X); 
+                int top = (int)Math.Round(Position.Y - sprite.Origin.Y + localBounds.Y); 
+
+                return new Rectangle(left, top, (int)localBounds.Width, (int)localBounds.Height);
             }
         }
 
@@ -146,11 +161,11 @@ namespace Platformer
             dieAnimation = new Animation(Level.Content.Load<Texture2D>("Sprites/Player/Die"), 0.1f, false);
 
             // Calculate bounds within texture size.            
-            int width = (int)(idleAnimation.FrameWidth * 0.4);
-            int left = (idleAnimation.FrameWidth - width) / 2;
-            int height = (int)(idleAnimation.FrameWidth * 0.8);
-            int top = idleAnimation.FrameHeight - height;
-            localBounds = new Rectangle(left, top, width, height);
+            float width = idleAnimation.FrameWidth * 0.4f;
+            float left = (idleAnimation.FrameWidth - width) / 2;
+            float height = idleAnimation.FrameWidth * 0.8f;
+            float top = idleAnimation.FrameHeight - height;
+            localBounds = new RectangleF(left, top, width, height);
 
             // Load sounds.            
             killedSound = Level.Content.Load<SoundEffect>("Sounds/PlayerKilled");
@@ -290,7 +305,7 @@ namespace Platformer
 
             // Apply velocity.
             Position += velocity * elapsed;
-            //Position = new Vector2((float)Math.Round(Position.X), (float)Math.Round(Position.Y));
+            //position = new Vector2((float)Math.Round(Position.X), (float)Math.Round(Position.Y)); // TODO: Precision loss
 
             // If the player is now colliding with the level, separate them.
             HandleCollisions();
@@ -366,7 +381,7 @@ namespace Platformer
         private void HandleCollisions()
         {
             // Get the player's bounding rectangle and find neighboring tiles.
-            Rectangle bounds = BoundingRectangle;
+            RectangleF bounds = BoundingRectangle;
             int leftTile = (int)Math.Floor((float)bounds.Left / Tile.Width);
             int rightTile = (int)Math.Ceiling(((float)bounds.Right / Tile.Width)) - 1;
             int topTile = (int)Math.Floor((float)bounds.Top / Tile.Height);
@@ -395,7 +410,7 @@ namespace Platformer
                 if (collision != TileCollision.Passable)
                 {
                     // Determine collision depth (with direction) and magnitude.
-                    Rectangle tileBounds = tile.Sprite.Bounds;
+                    RectangleF tileBounds = tile.Sprite.Bounds;
                     Vector2 depth = RectangleExtensions.GetIntersectionDepth(bounds, tileBounds);
                     if (depth != Vector2.Zero)
                     {
@@ -409,12 +424,6 @@ namespace Platformer
                             if (previousBottom <= tileBounds.Top)
                             {
                                 isOnGround = true;
-
-                                if (tile is MoveableTile)
-                                {
-                                    MoveableTile moveableTile = (MoveableTile)tile;
-                                    position += moveableTile.FrameVelocity;
-                                }
                             }
 
                             // Ignore platforms, unless we are on the ground.
@@ -425,6 +434,14 @@ namespace Platformer
 
                                 // Perform further collisions with the new bounds.
                                 bounds = BoundingRectangle;
+                            }
+
+                            // Perform moving tile collition
+                            if (tile is MoveableTile)
+                            {
+                                MoveableTile moveableTile = (MoveableTile)tile;
+                                position += moveableTile.FrameVelocity;
+                                isOnGround = true;
                             }
                         }
                         else if (collision == TileCollision.Impassable) // Ignore platforms.

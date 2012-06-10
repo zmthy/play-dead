@@ -27,7 +27,7 @@ namespace Platformer
         /// to push objects in order to resolve collisions.
         /// If the rectangles are not intersecting, Vector2.Zero is returned.
         /// </returns>
-        public static Vector2 GetIntersectionDepth(this Rectangle rectA, Rectangle rectB)
+        public static Vector2 GetIntersectionDepth(this RectangleF rectA, RectangleF rectB)
         {
             // Calculate half sizes.
             float halfWidthA = rectA.Width / 2.0f;
