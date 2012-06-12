@@ -162,6 +162,7 @@ namespace Platformer
             // Loop over every tile position,
             for (int y = 0; y < Height; ++y)
             {
+                MoveableTile adjacentMoveableTile = null;
                 for (int x = 0; x < Width; ++x)
                 {
                     // to load each tile.
@@ -173,8 +174,16 @@ namespace Platformer
 
                     if (newTile is MoveableTile)
                     {
-                        moveableTiles.Add((MoveableTile)newTile);
+                        // Add the moveable tile
+                        MoveableTile moveableTile = (MoveableTile)newTile;
+                        moveableTiles.Add(moveableTile);
 
+                        // Set the moveable tile's leader
+                        if (adjacentMoveableTile == null)
+                            adjacentMoveableTile = moveableTile;
+                        moveableTile.Leader = adjacentMoveableTile;
+
+                        // Add a background tile behind the moveable tile
                         Tile backTile = new Tile(null, TileCollision.Passable);
                         backTile.Sprite.X = x * Tile.Width;
                         backTile.Sprite.Y = y * Tile.Height;
@@ -183,6 +192,7 @@ namespace Platformer
                     else
                     {
                         tiles[x, y] = newTile;
+                        adjacentMoveableTile = null;
                     }
                 }
             }
