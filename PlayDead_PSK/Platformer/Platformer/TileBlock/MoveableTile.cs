@@ -99,7 +99,7 @@ namespace Platformer.TileBlock
                 }
             }
 
-            //If we're about to run into a MovableTile move in other direction.
+            // If we're about to run into a MovableTile move in other direction.
             List<MoveableTile> moveableTiles = level.getMoveableTiles();
             foreach (MoveableTile tile in moveableTiles)
             {
