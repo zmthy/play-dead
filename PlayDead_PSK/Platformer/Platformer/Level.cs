@@ -255,9 +255,13 @@ namespace Platformer
                 case '#':
                     return LoadVarietyTile("BlockA", 7, TileCollision.Impassable);
 
-                // Moveable block
-                case 'M':
-                    return LoadMoveableTile("BlockA1", TileCollision.Impassable);
+                // Moveable block, horizontal
+                case 'H':
+                    return LoadMoveableTile("BlockA1", true, TileCollision.Impassable);
+
+                // Moveable block, vertical
+                case 'V':
+                    return LoadMoveableTile("BlockA1", false, TileCollision.Impassable);
 
                 // Unknown tile type character
                 default:
@@ -283,13 +287,13 @@ namespace Platformer
             return new Tile(sprite, collision);
         }
 
-        private Tile LoadMoveableTile(string name, TileCollision collision)
+        private Tile LoadMoveableTile(string name, bool isHorizontal, TileCollision collision)
         {
             Sprite sprite = new Sprite(Content.Load<Texture2D>("Tiles/" + name),
                                        Tile.Width, Tile.Height);
-            return new MoveableTile(sprite, collision,
-                //new Vector2((float)(Math.PI/3), 100), this);
-                new Vector2((float)(random.NextDouble() * Math.PI * 2), 100), this);
+            float angle = (isHorizontal) ? 0.0f : (float)(Math.PI / 2.0);
+
+            return new MoveableTile(sprite, collision, new Vector2(angle, 100), this);
         }
 
 
