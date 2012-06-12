@@ -28,11 +28,17 @@ namespace Platformer.TileBlock
         }
         private Vector2 velocity;
 
-        public Vector2 FrameVelocity { get; set; }
+        public Vector2 FrameVelocity
+        {
+            get { return frameVelocity; }
+        }
+        private Vector2 frameVelocity;
+
+        public MoveableTile Leader { get; set; }
 
         private Level level;
 
-        private float waitTimeS;
+        protected float WaitTimeS { get; set; }
         private const float MAX_WAIT_TIME_S = 0.2f;
 
         public MoveableTile(Sprite sprite, TileCollision collision, Vector2 velocity,
@@ -41,6 +47,8 @@ namespace Platformer.TileBlock
         {
             this.velocity = velocity;
             this.level = level;
+
+            Leader = this; // By default, tiles lead themselves
         }
 
         public override void update(GameTime gameTime)
@@ -48,69 +56,107 @@ namespace Platformer.TileBlock
             // Get the elapse time since the last frame
             float elapsedS = (float)gameTime.ElapsedGameTime.TotalSeconds;
 
-            if (waitTimeS > 0)
+            if (Leader != this && Leader.WaitTimeS <= 0) // If we are folloing the leader
             {
-                // Wait for some amount of time.
-                waitTimeS = Math.Max(0.0f, waitTimeS - elapsedS);
-                if (waitTimeS <= 0.0f)
+                velocity = Leader.Velocity;
+                frameVelocity = Leader.FrameVelocity;
+                Sprite.Position = Sprite.Position + FrameVelocity;
+
+                Tile collidingTile = getCollidingTile();
+                if (collidingTile is MoveableTile)
                 {
-                    // Then turn around.
-                    reverseMovement();
+                    // We have collided, notify the leader
+                    Leader.reverseDirection();
+                }
+                else if (collidingTile is Tile)
+                {
+                    // We have collided, notify the leader
+                    Leader.reverseDirection(MAX_WAIT_TIME_S);
                 }
             }
-            else
+            else if(Leader == this) // If we are the leader
             {
-                //If we're about to run into a wall that isn't a MovableTile move in other direction.
-
-                // Get adjacent tiles infront
-                Vector2 currentCell = getGridPosition(Sprite.Center.X, Sprite.Center.Y);
-                Vector2 nextLeft = getAdjacentCellAtAngle(currentCell, velocity.X - (float)(Math.PI / 4));
-                Vector2 nextMiddle = getAdjacentCellAtAngle(currentCell, velocity.X);
-                Vector2 nextRight = getAdjacentCellAtAngle(currentCell, velocity.X + (float)(Math.PI / 4));
-                Vector2[] collidingCells = { nextLeft, nextMiddle, nextRight };
-
-                //If we're about to run into a wall that isn't a MovableTile move in other direction.
-                bool collided = false;
-                for (int i = 0; i < collidingCells.Length; i++)
+                if (WaitTimeS > 0)
                 {
-                    Vector2 tileGridPos = collidingCells[i];
-                    Tile otherTile = level.getTile((int)tileGridPos.X, (int)tileGridPos.Y);
-                    TileCollision collision = level.GetCollision((int)tileGridPos.X, (int)tileGridPos.Y);
+                    // Wait for some amount of time.
+                    WaitTimeS = Math.Max(0.0f, WaitTimeS - elapsedS);
+                }
 
-                    if (collision == TileCollision.Impassable || collision == TileCollision.Platform)
+                if (WaitTimeS <= 0)
+                {
+                    Tile collidingTile = getCollidingTile();
+
+                    if (collidingTile is MoveableTile)
                     {
-                        // We do a bounds check because tiles can move in *any* direction.
-                        if (otherTile == null || Sprite.intersects(otherTile.Sprite))
-                        {
-                            collided = true;
-                            waitTimeS = MAX_WAIT_TIME_S;
-                            FrameVelocity = Vector2.Zero;
-                            break;
-                        }
+                        // We have collided, notify the leader
+                        reverseDirection();
+                    }
+                    else if (collidingTile is Tile)
+                    {
+                        // We have collided, notify the leader
+                        reverseDirection(MAX_WAIT_TIME_S);
+                    }
+                    else
+                    {
+                        // Move in the current direction.
+                        frameVelocity = new Vector2((float)(Math.Cos(velocity.X) * velocity.Y * elapsedS),
+                                                    (float)(Math.Sin(velocity.X) * velocity.Y * elapsedS));
+                        Sprite.Position = Sprite.Position + frameVelocity;
                     }
                 }
-
-                if (!collided)
-                {
-                    // Move in the current direction.
-                    FrameVelocity = new Vector2((float)(Math.Cos(velocity.X) * velocity.Y * elapsedS),
-                                                (float)(Math.Sin(velocity.X) * velocity.Y * elapsedS));
-                    Sprite.Position = Sprite.Position + FrameVelocity;
-                }
             }
+        }
 
-            // If we're about to run into a MovableTile move in other direction.
-            List<MoveableTile> moveableTiles = level.getMoveableTiles();
-            foreach (MoveableTile tile in moveableTiles)
+        public void reverseDirection(float waitTimeS = 0)
+        {
+            WaitTimeS = waitTimeS;
+            velocity.X -= (float)Math.PI;
+        }
+
+        private Tile getCollidingTile()
+        {
+            Tile collidingTile = null;
+
+            // Get adjacent tiles infront
+            Vector2 currentCell = getGridPosition(Sprite.Center.X, Sprite.Center.Y);
+            Vector2 nextLeft = getAdjacentCellAtAngle(currentCell, velocity.X - (float)(Math.PI / 4));
+            Vector2 nextMiddle = getAdjacentCellAtAngle(currentCell, velocity.X);
+            Vector2 nextRight = getAdjacentCellAtAngle(currentCell, velocity.X + (float)(Math.PI / 4));
+            Vector2[] collidingCells = { nextLeft, nextMiddle, nextRight };
+
+            // Check if we are colliding with a non-moving tile
+            for (int i = 0; i < collidingCells.Length; i++)
             {
-                if (tile != this && Sprite.intersects(tile.Sprite))
+                Vector2 tileGridPos = collidingCells[i];
+                Tile otherTile = level.getTile((int)tileGridPos.X, (int)tileGridPos.Y);
+                TileCollision collision = level.GetCollision((int)tileGridPos.X, (int)tileGridPos.Y);
+
+                if (collision == TileCollision.Impassable || collision == TileCollision.Platform)
                 {
-                    reverseMovement();
-                    FrameVelocity = new Vector2((float)(Math.Cos(velocity.X) * velocity.Y * elapsedS),
-                                                (float)(Math.Sin(velocity.X) * velocity.Y * elapsedS));
+                    // We do a bounds check because tiles can move in *any* direction.
+                    if (otherTile == null || Sprite.intersects(otherTile.Sprite))
+                    {
+                        collidingTile = otherTile;
+                        break;
+                    }
                 }
-               
             }
+
+            // Check if we are colliding with a moving tile
+            if (collidingTile == null)
+            {
+                List<MoveableTile> moveableTiles = level.getMoveableTiles();
+                foreach (MoveableTile tile in moveableTiles)
+                {
+                    if (tile.Leader != this.Leader && Sprite.intersects(tile.Sprite))
+                    {
+                        collidingTile = tile;
+                        break;
+                    }
+                }
+            }
+
+            return collidingTile;
         }
 
         private Vector2 getGridPosition(float x, float y)
@@ -125,11 +171,6 @@ namespace Platformer.TileBlock
             int newCellX = (int)currentCell.X + (int)Math.Round(Math.Cos(angleRadians));
             int newCellY = (int)currentCell.Y + (int)Math.Round(Math.Sin(angleRadians));
             return new Vector2(newCellX, newCellY);
-        }
-
-        private void reverseMovement()
-        {
-            velocity.X -= (float)Math.PI;
         }
     }
 }

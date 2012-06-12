@@ -402,6 +402,8 @@ namespace Platformer
             // Reset flag to search for ground collision.
             isOnGround = false;
 
+            bool movedByTile = false; // Ensure only none tile can move the player at a time
+
             // For each potentially colliding tile,
             foreach(Tile tile in candidateTiles)
             {
@@ -437,11 +439,12 @@ namespace Platformer
                             }
 
                             // Perform moving tile collition
-                            if (tile is MoveableTile)
+                            if (tile is MoveableTile && !movedByTile)
                             {
                                 MoveableTile moveableTile = (MoveableTile)tile;
                                 position += moveableTile.FrameVelocity;
                                 isOnGround = true;
+                                movedByTile = true;
                             }
                         }
                         else if (collision == TileCollision.Impassable) // Ignore platforms.
