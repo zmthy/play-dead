@@ -436,12 +436,7 @@ namespace Platformer
                 velocity.Y = movement.Y * MoveAcceleration * elapsed;
             }
 
-
             velocity.X += movement.X * MoveAcceleration * elapsed;
-
-
-
-
             velocity.Y = DoJump(velocity.Y, gameTime);
 
             // Apply pseudo-drag horizontally.
@@ -455,7 +450,7 @@ namespace Platformer
 
             // Apply velocity.
             Position += velocity * elapsed;
-            //position = new Vector2((float)Math.Round(Position.X), (float)Math.Round(Position.Y)); // TODO: Precision loss
+            //position = new Vector2((float)Math.Round(Position.X), (float)Math.Round(Position.Y));
 
             // If the player is now colliding with the level, separate them.
             HandleCollisions();
@@ -604,8 +599,6 @@ namespace Platformer
                                 movedByTile = true;
                             }
 
-
-
                             // Ignore platforms, unless we are on the ground.
                             if (collision == TileCollision.Impassable || IsOnGround)
                             {
@@ -614,9 +607,7 @@ namespace Platformer
 
                                 // Perform further collisions with the new bounds.
                                 bounds = BoundingRectangle;
-                            }  
-
-
+                            }
                         }
                         else if (collision == TileCollision.Impassable) // Ignore platforms.
                         {
@@ -636,10 +627,7 @@ namespace Platformer
                                 
                             // Future collisions with the new bounds
                             bounds = BoundingRectangle;
-
                         }
-
-                        
                     }
                 }                
             }

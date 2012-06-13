@@ -437,12 +437,16 @@ namespace Platformer
         public Tile getTile(int x, int y)
         {
             Tile tile = null;
-            if (x >= 0 && x < Width)
+            if (x >= 0 && x < Width && y >= 0 && y < Height)
             {
-                if (y >= 0 && y < Height)
-                {
-                    tile = tiles[x, y];
-                }
+                tile = tiles[x, y];
+            }
+            else
+            {
+                // Return an impassable tile to mark level boundries.
+                Rectangle tilePos = new Rectangle(x * Tile.Width, y * Tile.Height,
+                                                  Tile.Width, Tile.Height);
+                tile = new Tile(new Sprite(null,tilePos), TileCollision.Impassable);
             }
 
             return tile;
