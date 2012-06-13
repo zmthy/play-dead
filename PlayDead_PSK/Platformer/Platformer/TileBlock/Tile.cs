@@ -36,6 +36,8 @@ namespace Platformer.TileBlock
         /// past it to the left and right, but can not fall down through the top of it.
         /// </summary>
         Platform = 2,
+
+        Ladder = 3,
     }
 
     /// <summary>
@@ -48,6 +50,7 @@ namespace Platformer.TileBlock
 
         public const int Width = 40;
         public const int Height = 32;
+        public const int Center = Width / 2;
 
         /// <summary>
         /// Constructs a new tile.

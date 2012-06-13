@@ -235,6 +235,10 @@ namespace Platformer
                 case 'G':
                     return LoadGemTile(x, y);
 
+                // Ladder
+                case 'L':
+                    return LoadTile("BlockB0", TileCollision.Ladder);
+
                 // Floating platform
                 case '-':
                     return LoadTile("Platform", TileCollision.Platform);
@@ -403,6 +407,32 @@ namespace Platformer
             return tiles[x, y].Collision;
         }
 
+        public TileCollision GetTileCollisionBehindPlayer(Vector2 playerPosition)
+        {
+            int x = (int)playerPosition.X / Tile.Width;
+            int y = (int)(playerPosition.Y - 1) / Tile.Height;
+            // Prevent escaping past the level ends.
+            if (x == Width)
+                return TileCollision.Impassable;
+            // Allow jumping past the level top and falling through the bottom.
+            if (y == Height)
+                return TileCollision.Passable;
+            return tiles[x, y].Collision;
+        }
+
+        public TileCollision GetTileCollisionBelowPlayer(Vector2 playerPosition)
+        {
+            int x = (int)playerPosition.X / Tile.Width;
+            int y = (int)(playerPosition.Y) / Tile.Height;
+            // Prevent escaping past the level ends.
+            if (x == Width)
+                return TileCollision.Impassable;
+            // Allow jumping past the level top and falling through the bottom.
+            if (y == Height)
+                return TileCollision.Passable;
+            return tiles[x, y].Collision;
+        }
+
         public List<MoveableTile> getMoveableTiles()
         {
             return moveableTiles;
@@ -432,6 +462,8 @@ namespace Platformer
 
             return tile;
         }
+
+
 
         /// <summary>
         /// Gets the bounding rectangle of a tile in world space.
