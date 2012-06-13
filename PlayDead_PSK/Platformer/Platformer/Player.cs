@@ -8,6 +8,7 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
 
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
@@ -16,6 +17,7 @@ using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Input.Touch;
 
 using Platformer.Camera;
+using Platformer.TileBlock;
 
 namespace Platformer
 {
@@ -30,6 +32,8 @@ namespace Platformer
         private Animation jumpAnimation;
         private Animation celebrateAnimation;
         private Animation dieAnimation;
+        private Animation ladderUpAnimation;
+        private Animation ladderDownAnimation;
         private SpriteEffects flip = SpriteEffects.None;
         private AnimationPlayer sprite;
 
@@ -37,6 +41,16 @@ namespace Platformer
         private SoundEffect killedSound;
         private SoundEffect jumpSound;
         private SoundEffect fallSound;
+
+        //Ladder
+        private bool isClimbing;
+        public bool IsClimbing
+        {
+            get { return isClimbing; }
+        }
+        private bool wasClimbing;
+        private const int LadderAlignment = 12;
+
 
         public Level Level
         {
@@ -96,26 +110,43 @@ namespace Platformer
 
         /// <summary>
         /// Current user movement input.
+        /// Changed to a vector2 for vertical movement (ladder movement)
         /// </summary>
-        private float movement;
+        //private float movement;
+        private Vector2 movement;
 
         // Jumping state
         private bool isJumping;
         private bool wasJumping;
         private float jumpTime;
 
-        private Rectangle localBounds;
+        private RectangleF localBounds;
         /// <summary>
         /// Gets a rectangle which bounds this player in world space.
         /// </summary>
-        public Rectangle BoundingRectangle
+        public RectangleF BoundingRectangle
         {
             get
             {
-                int left = (int)Math.Round(Position.X - sprite.Origin.X) + localBounds.X;
-                int top = (int)Math.Round(Position.Y - sprite.Origin.Y) + localBounds.Y;
+                float left = Position.X - sprite.Origin.X + localBounds.X;
+                float top = Position.Y - sprite.Origin.Y + localBounds.Y;
 
-                return new Rectangle(left, top, localBounds.Width, localBounds.Height);
+                return new RectangleF(left, top, localBounds.Width, localBounds.Height);
+            }
+        }
+
+        /// <summary>
+        /// The bounds for collision detection.
+        /// Exactly like BoundingRectangle, but returns an int-rectangle for compatibility.
+        /// </summary>
+        public Rectangle CollideBounds
+        {
+            get
+            {
+                int left = (int)Math.Round(Position.X - sprite.Origin.X + localBounds.X); 
+                int top = (int)Math.Round(Position.Y - sprite.Origin.Y + localBounds.Y); 
+
+                return new Rectangle(left, top, (int)localBounds.Width, (int)localBounds.Height);
             }
         }
 
@@ -143,12 +174,16 @@ namespace Platformer
             celebrateAnimation = new Animation(Level.Content.Load<Texture2D>("Sprites/Player/Celebrate"), 0.1f, false);
             dieAnimation = new Animation(Level.Content.Load<Texture2D>("Sprites/Player/Die"), 0.1f, false);
 
+            //TODO: actually create and link the real ladder animation
+            ladderUpAnimation = new Animation(Level.Content.Load<Texture2D>("Sprites/Player/Celebrate"), 0.1f, false);
+            ladderDownAnimation = new Animation(Level.Content.Load<Texture2D>("Sprites/Player/Die"), 0.1f, false);
+
             // Calculate bounds within texture size.            
-            int width = (int)(idleAnimation.FrameWidth * 0.4);
-            int left = (idleAnimation.FrameWidth - width) / 2;
-            int height = (int)(idleAnimation.FrameWidth * 0.8);
-            int top = idleAnimation.FrameHeight - height;
-            localBounds = new Rectangle(left, top, width, height);
+            float width = idleAnimation.FrameWidth * 0.4f;
+            float left = (idleAnimation.FrameWidth - width) / 2;
+            float height = idleAnimation.FrameWidth * 0.8f;
+            float top = idleAnimation.FrameHeight - height;
+            localBounds = new RectangleF(left, top, width, height);
 
             // Load sounds.            
             killedSound = Level.Content.Load<SoundEffect>("Sounds/PlayerKilled");
@@ -195,18 +230,45 @@ namespace Platformer
 
             if (IsAlive && IsOnGround)
             {
-                if (Math.Abs(Velocity.X) - 0.02f > 0)
+                if (isOnGround)
                 {
-                    sprite.PlayAnimation(runAnimation);
+                    if (Math.Abs(Velocity.X) - 0.02f > 0)
+                    {
+                        sprite.PlayAnimation(runAnimation);
+                    }
+                    else
+                    {
+                        sprite.PlayAnimation(idleAnimation);
+                    }
                 }
-                else
+                else if (isClimbing)
                 {
-                    sprite.PlayAnimation(idleAnimation);
+                    //If he's moving down play ladderDownAnimation 
+                    if (Velocity.Y - 0.02f > 0)
+                    {
+                        //need ladder animation
+                        //sprite.PlayAnimation(ladderDownAnimation);
+                        sprite.PlayAnimation(idleAnimation);
+                    }
+                    //If he's moving up play ladderUpAnimation 
+                    else if (Velocity.Y - 0.02f < 0)
+                    {
+                        //need ladder animation
+                        //sprite.PlayAnimation(ladderUpAnimation);
+                        sprite.PlayAnimation(idleAnimation);
+                    }
+                    //Otherwise, just stand on the ladder
+                    else
+                    {
+                        sprite.PlayAnimation(idleAnimation);
+                    }
                 }
             }
 
             // Clear input.
-            movement = 0.0f;
+            movement = Vector2.Zero;
+            wasClimbing = isClimbing;
+            isClimbing = false;
             isJumping = false;
         }
 
@@ -221,12 +283,21 @@ namespace Platformer
             DisplayOrientation orientation)
         {
             // Get analog horizontal movement.
-            movement = gamePadState.ThumbSticks.Left.X * MoveStickScale;
+            movement.X = gamePadState.ThumbSticks.Left.X * MoveStickScale;
+            // Get analog vertical movement.
+            movement.Y = gamePadState.ThumbSticks.Left.Y * MoveStickScale;
 
             // Ignore small movements to prevent running in place.
-            if (Math.Abs(movement) < 0.5f)
-                movement = 0.0f;
+            if (Math.Abs(movement.X) < 0.5f)
+            {
+                movement.X = 0.0f;
+            }
+            if (Math.Abs(movement.Y) < 0.5f)
+            {
+                movement.Y = 0.0f;
+            }
 
+            /*
             // Move the player with accelerometer
             if (Math.Abs(accelState.Acceleration.Y) > 0.10f)
             {
@@ -237,19 +308,64 @@ namespace Platformer
                 if (orientation == DisplayOrientation.LandscapeRight)
                     movement = -movement;
             }
+            */
 
             // If any digital horizontal movement input is found, override the analog movement.
             if (gamePadState.IsButtonDown(Buttons.DPadLeft) ||
                 keyboardState.IsKeyDown(Keys.Left) ||
                 keyboardState.IsKeyDown(Keys.A))
             {
-                movement = -1.0f;
+                movement.X = -1.0f;
             }
             else if (gamePadState.IsButtonDown(Buttons.DPadRight) ||
                      keyboardState.IsKeyDown(Keys.Right) ||
                      keyboardState.IsKeyDown(Keys.D))
             {
-                movement = 1.0f;
+                movement.X = 1.0f;
+            }
+
+
+            // Handle ladder up input
+            if (gamePadState.IsButtonDown(Buttons.DPadUp) ||                
+                keyboardState.IsKeyDown(Keys.Up) ||
+                keyboardState.IsKeyDown(Keys.W))
+            {                
+                isClimbing = false;
+                
+                //makes sure the players position is aligned to the center of the ladder
+                if (IsAlignedToLadder())
+                {
+                    //need to check the tile behind the player, not what he is standing on
+                    if (level.GetTileCollisionBehindPlayer(position) == TileCollision.Ladder)
+                    {
+                        isClimbing = true;
+                        isJumping = false;
+                        isOnGround = false;
+                        movement.Y = -1.0f;
+                    }
+                }
+
+            }
+            // Handle ladder down input
+            else if (gamePadState.IsButtonDown(Buttons.DPadDown) ||               
+                keyboardState.IsKeyDown(Keys.Down) ||
+                keyboardState.IsKeyDown(Keys.S))
+            {
+                isClimbing = false;
+
+                //makes sure the players position is aligned to the center of the ladder
+                if (IsAlignedToLadder())
+                {
+                    //need to check the tile that the player is standing on
+                    if (level.GetTileCollisionBelowPlayer(level.Player.Position) == TileCollision.Ladder)
+                    {
+                        isClimbing = true;
+                        isJumping = false;
+                        isOnGround = false;
+                        movement.Y = 2.0f;
+                    }
+                }
+
             }
 
             // Check if the player wants to jump.
@@ -260,6 +376,33 @@ namespace Platformer
                 keyboardState.IsKeyDown(Keys.W) ||
                 touchState.AnyTouch();
         }
+
+
+        /// <summary>
+        /// Makes sure that the player is aligned to the center of a ladder piece
+        /// We may not want this, allow for horizontal ladder movement?
+        /// </summary>
+        private bool IsAlignedToLadder()
+        {
+            int playerOffset = ((int)position.X % Tile.Width) - Tile.Center;
+            if (Math.Abs(playerOffset) <= LadderAlignment &&
+                level.GetTileCollisionBelowPlayer(new Vector2(
+                    level.Player.position.X,
+                    level.Player.position.Y + 1)) == TileCollision.Ladder ||
+                level.GetTileCollisionBelowPlayer(new Vector2(
+                    level.Player.position.X,
+                    level.Player.position.Y - 1)) == TileCollision.Ladder)
+            {
+                // Align the player with the middle of the tile 
+                position.X -= playerOffset;
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
 
         /// <summary>
         /// Updates the player's velocity and position based on input, gravity, etc.
@@ -272,8 +415,32 @@ namespace Platformer
 
             // Base velocity is a combination of horizontal movement control and
             // acceleration downward due to gravity.
-            velocity.X += movement * MoveAcceleration * elapsed;
-            velocity.Y = MathHelper.Clamp(velocity.Y + GravityAcceleration * elapsed, -MaxFallSpeed, MaxFallSpeed);
+            
+            //velocity.X += movement * MoveAcceleration * elapsed;
+            //velocity.Y = MathHelper.Clamp(velocity.Y + GravityAcceleration * elapsed, -MaxFallSpeed, MaxFallSpeed);
+
+            // If not climbing ladder, handle Y movement as before
+            if (!isClimbing)
+            {
+                if (wasClimbing)
+                {
+                    velocity.Y = 0;
+                }
+                else
+                {
+                    velocity.Y = MathHelper.Clamp(velocity.Y + GravityAcceleration * elapsed, -MaxFallSpeed, MaxFallSpeed);
+                }
+            }            
+            else
+            {
+                velocity.Y = movement.Y * MoveAcceleration * elapsed;
+            }
+
+
+            velocity.X += movement.X * MoveAcceleration * elapsed;
+
+
+
 
             velocity.Y = DoJump(velocity.Y, gameTime);
 
@@ -288,7 +455,7 @@ namespace Platformer
 
             // Apply velocity.
             Position += velocity * elapsed;
-            Position = new Vector2((float)Math.Round(Position.X), (float)Math.Round(Position.Y));
+            //position = new Vector2((float)Math.Round(Position.X), (float)Math.Round(Position.Y)); // TODO: Precision loss
 
             // If the player is now colliding with the level, separate them.
             HandleCollisions();
@@ -364,60 +531,117 @@ namespace Platformer
         private void HandleCollisions()
         {
             // Get the player's bounding rectangle and find neighboring tiles.
-            Rectangle bounds = BoundingRectangle;
+            RectangleF bounds = BoundingRectangle;
             int leftTile = (int)Math.Floor((float)bounds.Left / Tile.Width);
             int rightTile = (int)Math.Ceiling(((float)bounds.Right / Tile.Width)) - 1;
             int topTile = (int)Math.Floor((float)bounds.Top / Tile.Height);
             int bottomTile = (int)Math.Ceiling(((float)bounds.Bottom / Tile.Height)) - 1;
 
-            // Reset flag to search for ground collision.
-            isOnGround = false;
-
-            // For each potentially colliding tile,
+            List<Tile> candidateTiles = new List<Tile>();
             for (int y = topTile; y <= bottomTile; ++y)
             {
                 for (int x = leftTile; x <= rightTile; ++x)
                 {
-                    // If this tile is collidable,
-                    TileCollision collision = Level.GetCollision(x, y);
-                    if (collision != TileCollision.Passable)
+                    Tile tile = level.getTile(x, y);
+                    if(tile != null)
+                        candidateTiles.Add(tile);
+                }
+            }
+            candidateTiles.AddRange(level.getMoveableTiles());
+
+            // Reset flag to search for ground collision.
+            isOnGround = false;
+
+            bool movedByTile = false; // Ensure only none tile can move the player at a time
+
+            // For each potentially colliding tile,
+            foreach(Tile tile in candidateTiles)
+            {
+                // If this tile is collidable,
+                TileCollision collision = tile.Collision;
+                if (collision != TileCollision.Passable)
+                {
+                    // Determine collision depth (with direction) and magnitude.
+                    RectangleF tileBounds = tile.Sprite.Bounds;
+                    Vector2 depth = RectangleExtensions.GetIntersectionDepth(bounds, tileBounds);
+                    if (depth != Vector2.Zero)
                     {
-                        // Determine collision depth (with direction) and magnitude.
-                        Rectangle tileBounds = Level.GetBounds(x, y);
-                        Vector2 depth = RectangleExtensions.GetIntersectionDepth(bounds, tileBounds);
-                        if (depth != Vector2.Zero)
+                        float absDepthX = Math.Abs(depth.X);
+                        float absDepthY = Math.Abs(depth.Y);
+
+                        // Resolve the collision along the shallow axis.
+                        if (absDepthY < absDepthX || collision == TileCollision.Platform)
                         {
-                            float absDepthX = Math.Abs(depth.X);
-                            float absDepthY = Math.Abs(depth.Y);
-
-                            // Resolve the collision along the shallow axis.
-                            if (absDepthY < absDepthX || collision == TileCollision.Platform)
+                            // If we crossed the top of a tile, we are on the ground.
+                            // This needs to change for ladder mechanic
+                            if (previousBottom <= tileBounds.Top)
                             {
-                                // If we crossed the top of a tile, we are on the ground.
-                                if (previousBottom <= tileBounds.Top)
-                                    isOnGround = true;
-
-                                // Ignore platforms, unless we are on the ground.
-                                if (collision == TileCollision.Impassable || IsOnGround)
+                                // If the collision is with a ladder tile, we are not back on the ground
+                                if (collision == TileCollision.Ladder)
                                 {
-                                    // Resolve the collision along the Y axis.
-                                    Position = new Vector2(Position.X, Position.Y + depth.Y);
-
-                                    // Perform further collisions with the new bounds.
-                                    bounds = BoundingRectangle;
+                                    if (!isClimbing && !isJumping)
+                                    {
+                                        // This implies we are just walking past a ladder
+                                        isOnGround = true;
+                                    }
                                 }
+                                else
+                                {
+
+                                    isOnGround = true;
+                                    isClimbing = false;
+                                    isJumping = false;
+                                }                              
+
                             }
-                            else if (collision == TileCollision.Impassable) // Ignore platforms.
+
+                            // Perform moving tile collition
+                            if (tile is MoveableTile && !movedByTile)
                             {
-                                // Resolve the collision along the X axis.
-                                Position = new Vector2(Position.X + depth.X, Position.Y);
+                                MoveableTile moveableTile = (MoveableTile)tile;
+                                position += moveableTile.FrameVelocity;
+                                isOnGround = true;
+                                movedByTile = true;
+                            }
+
+
+
+                            // Ignore platforms, unless we are on the ground.
+                            if (collision == TileCollision.Impassable || IsOnGround)
+                            {
+                                // Resolve the collision along the Y axis.
+                                Position = new Vector2(Position.X, Position.Y + depth.Y);
 
                                 // Perform further collisions with the new bounds.
                                 bounds = BoundingRectangle;
-                            }
+                            }  
+
+
                         }
+                        else if (collision == TileCollision.Impassable) // Ignore platforms.
+                        {
+
+                            // Resolve the collision along the X axis.
+                            Position = new Vector2(Position.X + depth.X, Position.Y);
+
+                            // Perform further collisions with the new bounds.
+                            bounds = BoundingRectangle;
+                        }
+                        else if (collision == TileCollision.Ladder && !isClimbing)
+                        {
+                            //when we are walking in front of a ladder, or falling past a ladder
+                                
+                            // Resolve the collision along the Y axis
+                            Position = new Vector2(Position.X, Position.Y);
+                                
+                            // Future collisions with the new bounds
+                            bounds = BoundingRectangle;
+
+                        }
+
+                        
                     }
-                }
+                }                
             }
 
             // Save the new bounds bottom.

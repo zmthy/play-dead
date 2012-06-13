@@ -33,6 +33,7 @@ namespace Platformer
     {
         // Physical structure of the level.
         private Tile[,] tiles;
+        private List<MoveableTile> moveableTiles; // Tiles that span multiple cells
         private Texture2D[] layers;
         // The layer which entities are drawn on top of.
         private const int EntityLayer = 2;
@@ -125,6 +126,7 @@ namespace Platformer
             // Set the camera
             TrackingDirector trackingDirector = new TrackingDirector(camera, Player);
             cameraDirector = trackingDirector;
+            /*PanningDirector panningDirector = new PanningDirector(camera, gems[0], 2);
         }
 
         private void LoadTiles(Stream fileStream)
@@ -163,6 +165,7 @@ namespace Platformer
 
             // Allocate the tile grid.
             tiles = new Tile[width, lines.Count];
+            moveableTiles = new List<MoveableTile>();
 
             // Loop over every tile position,
             for (int y = 0; y < Height; ++y)
@@ -197,6 +200,10 @@ namespace Platformer
                 {
                     Console.WriteLine(linkGroup[i]);
                     sw.add(lights[linkGroup[i].Trim()]);
+                    {
+                        tiles[x, y] = newTile;
+                        adjacentMoveableTile = null;
+                    }
                 }
             }
 
@@ -234,6 +241,10 @@ namespace Platformer
                 case 'X':
                     return LoadExitTile(x, y);
 
+                // Ladder
+                case 'L':
+                    return LoadTile("BlockB0", TileCollision.Ladder);
+
                 // Floating platform
                 case '-':
                     return LoadTile("Platform", TileCollision.Platform);
@@ -260,6 +271,14 @@ namespace Platformer
                 case '#':
                     return LoadVarietyTile("BlockA", 7, TileCollision.Impassable);
 
+                // Moveable block, horizontal
+                case 'H':
+                    return LoadMoveableTile("BlockA1", true, TileCollision.Impassable);
+
+                // Moveable block, vertical
+                case 'V':
+                    return LoadMoveableTile("BlockA1", false, TileCollision.Impassable);
+
                 // Unknown tile type character
                 default:
                     return new Tile(null, TileCollision.Passable);
@@ -280,7 +299,18 @@ namespace Platformer
         /// <returns>The new tile.</returns>
         private Tile LoadTile(string name, TileCollision collision)
         {
-            return new Tile(Content.Load<Texture2D>("Tiles/" + name), collision);
+            Sprite sprite = new Sprite(Content.Load<Texture2D>("Tiles/" + name),
+                                       Tile.Width, Tile.Height);
+            return new Tile(sprite, collision);
+        }
+
+        private Tile LoadMoveableTile(string name, bool isHorizontal, TileCollision collision)
+        {
+            Sprite sprite = new Sprite(Content.Load<Texture2D>("Tiles/" + name),
+                                       Tile.Width, Tile.Height);
+            float angle = (isHorizontal) ? 0.0f : (float)(Math.PI / 2.0);
+
+            return new MoveableTile(sprite, collision, new Vector2(angle, 100), this);
         }
 
         /// <summary>
@@ -376,6 +406,64 @@ namespace Platformer
             return tiles[x, y].Collision;
         }
 
+        public TileCollision GetTileCollisionBehindPlayer(Vector2 playerPosition)
+        {
+            int x = (int)playerPosition.X / Tile.Width;
+            int y = (int)(playerPosition.Y - 1) / Tile.Height;
+            // Prevent escaping past the level ends.
+            if (x == Width)
+                return TileCollision.Impassable;
+            // Allow jumping past the level top and falling through the bottom.
+            if (y == Height)
+                return TileCollision.Passable;
+            return tiles[x, y].Collision;
+        }
+
+        public TileCollision GetTileCollisionBelowPlayer(Vector2 playerPosition)
+        {
+            int x = (int)playerPosition.X / Tile.Width;
+            int y = (int)(playerPosition.Y) / Tile.Height;
+            // Prevent escaping past the level ends.
+            if (x == Width)
+                return TileCollision.Impassable;
+            // Allow jumping past the level top and falling through the bottom.
+            if (y == Height)
+                return TileCollision.Passable;
+            return tiles[x, y].Collision;
+        }
+
+        public List<MoveableTile> getMoveableTiles()
+        {
+            return moveableTiles;
+        }
+
+        /*public void setTile(int x, int y, Tile tile)
+        {
+            if (x >= 0 && x < Width)
+            {
+                if (y >= 0 && y < Height)
+                {
+                    tiles[x, y] = tile;
+                }
+            }
+        }*/
+
+        public Tile getTile(int x, int y)
+        {
+            Tile tile = null;
+            if (x >= 0 && x < Width)
+            {
+                if (y >= 0 && y < Height)
+                {
+                    tile = tiles[x, y];
+                }
+            }
+
+            return tile;
+        }
+
+
+
         /// <summary>
         /// Gets the bounding rectangle of a tile in world space.
         /// </summary>        
@@ -459,6 +547,8 @@ namespace Platformer
             else
             {
                 //timeRemaining -= gameTime.ElapsedGameTime;
+
+                updateTiles(gameTime); 
                 Player.Update(gameTime, keyboardState, gamePadState, touchState, accelState, orientation);
                 UpdateGems(gameTime);
 
@@ -473,7 +563,7 @@ namespace Platformer
                 // exit when they have collected all of the gems.
                 if (Player.IsAlive &&
                     Player.IsOnGround &&
-                    Player.BoundingRectangle.Contains(exit))
+                    Player.BoundingRectangle.Contains(new Vector2(exit.X, exit.Y)))
                 {
                     //OnExitReached();
                 }
@@ -507,6 +597,23 @@ namespace Platformer
         private void UpdateEnemies(GameTime gameTime)
         {
             return;
+        }
+
+        private void updateTiles(GameTime gameTime)
+        {
+            // For each tile position
+            for (int y = 0; y < Height; ++y)
+            {
+                for (int x = 0; x < Width; ++x)
+                {
+                    // If there is a visible tile in that position
+                    tiles[x, y].update(gameTime);
+                }
+            }
+
+            // Update non-atomic tiles
+            foreach(Tile tile in moveableTiles)
+                tile.update(gameTime);
         }
 
         /// <summary>
@@ -587,16 +694,16 @@ namespace Platformer
             {
                 for (int x = 0; x < Width; ++x)
                 {
-                    // If there is a visible tile in that position
-                    Texture2D texture = tiles[x, y].Texture;
-                    if (texture != null)
-                    {
-                        // Draw it in screen space.
-                        Vector2 position = new Vector2(x, y) * Tile.Size;
-                        spriteBatch.Draw(texture, position, Color.White);
-                    }
+                    tiles[x, y].draw(spriteBatch);
                 }
             }
+
+            // Draw non-atomic tiles
+            foreach (MoveableTile tile in moveableTiles)
+            {
+                tile.draw(spriteBatch);
+            }
+
         }
 
         #endregion
