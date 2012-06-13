@@ -587,23 +587,25 @@ namespace Platformer
                                 }
                                 else
                                 {
-                                   
+
                                     isOnGround = true;
                                     isClimbing = false;
                                     isJumping = false;
-                                }
-                                
-                                // Perform moving tile collition
-                                if (tile is MoveableTile && !movedByTile)
-                                {
-                                    MoveableTile moveableTile = (MoveableTile)tile;
-                                    position += moveableTile.FrameVelocity;
-                                    isOnGround = true;
-                                    movedByTile = true;
-                                }
+                                }                              
+
                             }
 
-                            
+                            // Perform moving tile collition
+                            if (tile is MoveableTile && !movedByTile)
+                            {
+                                MoveableTile moveableTile = (MoveableTile)tile;
+                                position += moveableTile.FrameVelocity;
+                                isOnGround = true;
+                                movedByTile = true;
+                            }
+
+
+
                             // Ignore platforms, unless we are on the ground.
                             if (collision == TileCollision.Impassable || IsOnGround)
                             {
@@ -612,29 +614,34 @@ namespace Platformer
 
                                 // Perform further collisions with the new bounds.
                                 bounds = BoundingRectangle;
-                            }                            
-                            else if (collision == TileCollision.Impassable) // Ignore platforms.
-                            {
-                                // Resolve the collision along the X axis.
-                                Position = new Vector2(Position.X + depth.X, Position.Y);
+                            }  
 
-                                // Perform further collisions with the new bounds.
-                                bounds = BoundingRectangle;
-                            }
-                            else if (collision == TileCollision.Ladder && !isClimbing)
-                            {
-                                //when we are walking in front of a ladder, or falling past a ladder
-                                
-                                // Resolve the collision along the Y axis
-                                Position = new Vector2(Position.X, Position.Y);
-                                
-                                // Future collisions with the new bounds
-                                bounds = BoundingRectangle;
 
-                            }
                         }
+                        else if (collision == TileCollision.Impassable) // Ignore platforms.
+                        {
+
+                            // Resolve the collision along the X axis.
+                            Position = new Vector2(Position.X + depth.X, Position.Y);
+
+                            // Perform further collisions with the new bounds.
+                            bounds = BoundingRectangle;
+                        }
+                        else if (collision == TileCollision.Ladder && !isClimbing)
+                        {
+                            //when we are walking in front of a ladder, or falling past a ladder
+                                
+                            // Resolve the collision along the Y axis
+                            Position = new Vector2(Position.X, Position.Y);
+                                
+                            // Future collisions with the new bounds
+                            bounds = BoundingRectangle;
+
+                        }
+
+                        
                     }
-                }
+                }                
             }
 
             // Save the new bounds bottom.
