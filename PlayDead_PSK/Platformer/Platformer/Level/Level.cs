@@ -172,6 +172,8 @@ namespace Platformer
                 string line = lines[y];
                 string[] lineTiles = line.Split(',');
 
+                MoveableTile adjacentMoveableTile = null;
+
                 for (int x = 0; x < Width; ++x)
                 {
                     if (x < lineTiles.Length)
@@ -180,7 +182,29 @@ namespace Platformer
                         char tileType = tileID[0]; //The type is always the first part of the string
                         //int uid = int.Parse(Regex.Match(tile, @"\d+").Value, NumberFormatInfo.InvariantInfo); //Hope this works
 
-                        tiles[x, y] = LoadTile(tileType, tileID, x, y);
+                        Tile newTile = LoadTile(tileType, tileID, x, y);
+
+                        if (newTile is MoveableTile)
+                        {
+                            // Add the moveable tile
+                            MoveableTile moveableTile = (MoveableTile)newTile;
+                            moveableTile.Sprite.Position = new Vector2(x * Tile.Width, y * Tile.Height);
+                            moveableTiles.Add(moveableTile);
+
+                            // Set the moveable tile's leader
+                            if (adjacentMoveableTile == null)
+                                adjacentMoveableTile = moveableTile;
+                            moveableTile.Leader = adjacentMoveableTile;
+
+                            // Add a background tile behind the moveable tile
+                            Tile backTile = new Tile(null, TileCollision.Passable);
+                            tiles[x, y] = backTile;
+                        }
+                        else
+                        {
+                            tiles[x, y] = newTile;
+                            adjacentMoveableTile = null;
+                        }
                     }
                     else //Just add empty tiles to make up the length
                     {

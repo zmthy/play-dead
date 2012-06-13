@@ -538,8 +538,7 @@ namespace Platformer
                 for (int x = leftTile; x <= rightTile; ++x)
                 {
                     Tile tile = level.getTile(x, y);
-                    if(tile != null)
-                        candidateTiles.Add(tile);
+                    candidateTiles.Add(tile);
                 }
             }
             candidateTiles.AddRange(level.getMoveableTiles());

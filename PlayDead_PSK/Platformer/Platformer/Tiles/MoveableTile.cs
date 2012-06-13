@@ -111,6 +111,7 @@ namespace Platformer.Tiles
         {
             WaitTimeS = waitTimeS;
             velocity.X -= (float)Math.PI;
+            frameVelocity.X = 0;
         }
 
         private Tile getCollidingTile()
@@ -129,12 +130,12 @@ namespace Platformer.Tiles
             {
                 Vector2 tileGridPos = collidingCells[i];
                 Tile otherTile = level.getTile((int)tileGridPos.X, (int)tileGridPos.Y);
-                TileCollision collision = level.GetCollision((int)tileGridPos.X, (int)tileGridPos.Y);
+                TileCollision collision = otherTile.Collision;
 
                 if (collision == TileCollision.Impassable || collision == TileCollision.Platform)
                 {
                     // We do a bounds check because tiles can move in *any* direction.
-                    if (otherTile == null || Sprite.intersects(otherTile.Sprite))
+                    if (Sprite.intersects(otherTile.Sprite))
                     {
                         collidingTile = otherTile;
                         break;
