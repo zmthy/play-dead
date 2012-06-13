@@ -239,7 +239,7 @@ namespace Platformer
 
                 // Ladder
                 case 'L':
-                    return LoadTile("BlockB0", TileCollision.Ladder);
+                    return LoadTile("LadderBlock", TileCollision.Ladder);
 
                 // Floating platform
                 case '-':
