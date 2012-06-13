@@ -9,6 +9,7 @@
 
 using System;
 using System.IO;
+using System.Globalization;
 using System.Collections.Generic;
 
 using Microsoft.Xna.Framework;
@@ -19,6 +20,7 @@ using Microsoft.Xna.Framework.Input.Touch;
 using Microsoft.Xna.Framework.Input;
 
 using Platformer.Camera;
+using Platformer.Tiles;
 
 namespace Platformer
 {
@@ -42,11 +44,14 @@ namespace Platformer
         }
         Player player;
 
-        private List<Gem> gems = new List<Gem>();
-        private List<Enemy> enemies = new List<Enemy>();
+        private Dictionary<String,Switch> switches = new Dictionary<string,Switch>();
+        private Dictionary<String,Light> lights = new Dictionary<string,Light>();
+        private Dictionary<String,Vector2> spawns_ = new Dictionary<string,Vector2>();
+
+        private List<Vector2> spawns = new List<Vector2>();
 
         // Key locations in the level.        
-        private Vector2 start;
+        private Vector2 activeSpawn;
         private Point exit = InvalidPosition;
         private static readonly Point InvalidPosition = new Point(-1, -1);
 
@@ -118,36 +123,40 @@ namespace Platformer
             exitReachedSound = Content.Load<SoundEffect>("Sounds/ExitReached");
 
             // Set the camera
-            camera.Position = player.Position;
-            PanningDirector panningDirector = new PanningDirector(camera, gems[0], 2);
-            panningDirector.StartDelayS = 2;
-            panningDirector.PauseDelayS = 2;
-            panningDirector.ReturnTimeS = 1;
-            cameraDirector = panningDirector;
+            TrackingDirector trackingDirector = new TrackingDirector(camera, Player);
+            cameraDirector = trackingDirector;
         }
 
-        /// <summary>
-        /// Iterates over every tile in the structure file and loads its
-        /// appearance and behavior. This method also validates that the
-        /// file is well-formed with a player start point, exit, etc.
-        /// </summary>
-        /// <param name="fileStream">
-        /// A stream containing the tile data.
-        /// </param>
         private void LoadTiles(Stream fileStream)
         {
             // Load the level and ensure all of the lines are the same length.
-            int width;
+            int width = 0;
             List<string> lines = new List<string>();
+            List<string> links = new List<string>();
             using (StreamReader reader = new StreamReader(fileStream))
             {
+                //Phase 1 - Read the level rows and determine the size
                 string line = reader.ReadLine();
-                width = line.Length;
                 while (line != null)
                 {
+                    //Be ready to break to phase 2
+                    if (line == "END")
+                    {
+                        line = reader.ReadLine();
+                        break;
+                    }
+
+                    string[] lineTiles = line.Split(',');
+                    width = Math.Max(lineTiles.Length, width); 
                     lines.Add(line);
-                    if (line.Length != width)
-                        throw new Exception(String.Format("The length of line {0} is different from all preceeding lines.", lines.Count));
+            
+                    line = reader.ReadLine();
+                }
+
+                //Phase 2 - Read the level links
+                while (line != null)
+                {
+                    links.Add(line);
                     line = reader.ReadLine();
                 }
             }
@@ -158,11 +167,36 @@ namespace Platformer
             // Loop over every tile position,
             for (int y = 0; y < Height; ++y)
             {
+                string line = lines[y];
+                string[] lineTiles = line.Split(',');
+
                 for (int x = 0; x < Width; ++x)
                 {
-                    // to load each tile.
-                    char tileType = lines[y][x];
-                    tiles[x, y] = LoadTile(tileType, x, y);
+                    if (x < lineTiles.Length)
+                    {
+                        string tileID = lineTiles[x].Trim();
+                        char tileType = tileID[0]; //The type is always the first part of the string
+                        //int uid = int.Parse(Regex.Match(tile, @"\d+").Value, NumberFormatInfo.InvariantInfo); //Hope this works
+
+                        tiles[x, y] = LoadTile(tileType, tileID, x, y);
+                    }
+                    else //Just add empty tiles to make up the length
+                    {
+                        tiles[x, y] = LoadTile('.', ".", x, y);
+                    }
+                }
+            }
+
+            //Link up stuff
+            foreach (string link in links)
+            {
+                string[] linkGroup = link.Split(',');
+                Switch sw = switches[linkGroup[0]];
+
+                for(int i = 2; i < linkGroup.Length; i++)
+                {
+                    Console.WriteLine(linkGroup[i]);
+                    sw.add(lights[linkGroup[i].Trim()]);
                 }
             }
 
@@ -188,7 +222,7 @@ namespace Platformer
         /// The Y location of this tile in tile space.
         /// </param>
         /// <returns>The loaded tile.</returns>
-        private Tile LoadTile(char tileType, int x, int y)
+        private Tile LoadTile(char tileType, string tileID, int x, int y)
         {
             switch (tileType)
             {
@@ -200,23 +234,9 @@ namespace Platformer
                 case 'X':
                     return LoadExitTile(x, y);
 
-                // Gem
-                case 'G':
-                    return LoadGemTile(x, y);
-
                 // Floating platform
                 case '-':
                     return LoadTile("Platform", TileCollision.Platform);
-
-                // Various enemies
-                case 'A':
-                    return LoadEnemyTile(x, y, "MonsterA");
-                case 'B':
-                    return LoadEnemyTile(x, y, "MonsterB");
-                case 'C':
-                    return LoadEnemyTile(x, y, "MonsterC");
-                case 'D':
-                    return LoadEnemyTile(x, y, "MonsterD");
 
                 // Platform block
                 case '~':
@@ -226,9 +246,15 @@ namespace Platformer
                 case ':':
                     return LoadVarietyTile("BlockB", 2, TileCollision.Passable);
 
-                // Player 1 start point
-                case '1':
-                    return LoadStartTile(x, y);
+                // A spawn point
+                case 'P':
+                    return LoadSpawnTile(x, y);
+
+                case 'I':
+                    return LoadLight(x,y,tileID);
+
+                case 'S':
+                    return LoadSwitch(x,y,tileID);
 
                 // Impassable block
                 case '#':
@@ -236,7 +262,8 @@ namespace Platformer
 
                 // Unknown tile type character
                 default:
-                    throw new NotSupportedException(String.Format("Unsupported tile type character '{0}' at position {1}, {2}.", tileType, x, y));
+                    return new Tile(null, TileCollision.Passable);
+                    //throw new NotSupportedException(String.Format("Unsupported tile type character '{0}' at position {1}, {2}.", tileType, x, y));
             }
         }
 
@@ -255,7 +282,6 @@ namespace Platformer
         {
             return new Tile(Content.Load<Texture2D>("Tiles/" + name), collision);
         }
-
 
         /// <summary>
         /// Loads a tile with a random appearance.
@@ -277,15 +303,20 @@ namespace Platformer
         /// <summary>
         /// Instantiates a player, puts him in the level, and remembers where to put him when he is resurrected.
         /// </summary>
-        private Tile LoadStartTile(int x, int y)
+        private Tile LoadSpawnTile(int x, int y)
         {
-            if (Player != null)
-                throw new NotSupportedException("A level may only have one starting point.");
+            Vector2 spawnPos = RectangleExtensions.GetBottomCenter(GetBounds(x, y));
+            //Instatiate a player as needed, at the first discovered spawn point for now.
+            if (Player == null)
+            {
+                activeSpawn = spawnPos;
+                player = new Player(this, activeSpawn);
+            }
+            
+            //Add spawn to array
+            spawns.Add(spawnPos);
 
-            start = RectangleExtensions.GetBottomCenter(GetBounds(x, y));
-            player = new Player(this, start);
-
-            return new Tile(null, TileCollision.Passable);
+            return new Tile(Content.Load<Texture2D>("Tiles/Spawner"), TileCollision.Passable);
         }
 
         /// <summary>
@@ -300,26 +331,18 @@ namespace Platformer
 
             return LoadTile("Exit", TileCollision.Passable);
         }
-
-        /// <summary>
-        /// Instantiates an enemy and puts him in the level.
-        /// </summary>
-        private Tile LoadEnemyTile(int x, int y, string spriteSet)
+        private Tile LoadLight(int x, int y, string uid)
         {
-            Vector2 position = RectangleExtensions.GetBottomCenter(GetBounds(x, y));
-            enemies.Add(new Enemy(this, position, spriteSet));
+            Point Position = GetBounds(x, y).Center;
+            lights.Add(uid, new Light(new Vector2(Position.X, Position.Y), this));
 
             return new Tile(null, TileCollision.Passable);
         }
 
-        /// <summary>
-        /// Instantiates a gem and puts it in the level.
-        /// </summary>
-        private Tile LoadGemTile(int x, int y)
+        private Tile LoadSwitch(int x, int y, string uid)
         {
-            Point position = GetBounds(x, y).Center;
-            gems.Add(new Gem(this, new Vector2(position.X, position.Y)));
-
+            Point Position = GetBounds(x, y).Center;
+            switches.Add(uid, new Switch(new Vector2(Position.X, Position.Y), this));
             return new Tile(null, TileCollision.Passable);
         }
 
@@ -393,6 +416,32 @@ namespace Platformer
             AccelerometerState accelState,
             DisplayOrientation orientation)
         {
+            //Do a bunch of stuff with the keyboard
+            if (keyboardState.IsKeyDown(Keys.P))
+            {
+                OnPlayerKilled(null);
+            }else if(keyboardState.IsKeyDown(Keys.O))
+            {
+                StartNewLife();
+            }else if(keyboardState.IsKeyDown(Keys.Add))
+            {
+                int i = spawns.IndexOf(activeSpawn);
+                if (i < spawns.Count - 1)
+                {
+                    activeSpawn = spawns[i + 1];
+                }
+                else
+                {
+                    activeSpawn = spawns[0];
+                }
+            }
+
+            //Check activatables
+            foreach (Switch a in switches.Values)
+            {
+                a.ChangeState(player, keyboardState);
+            }
+
             // Pause while the player is dead or time is expired.
             if (!Player.IsAlive || TimeRemaining == TimeSpan.Zero)
             {
@@ -409,7 +458,7 @@ namespace Platformer
             }
             else
             {
-                timeRemaining -= gameTime.ElapsedGameTime;
+                //timeRemaining -= gameTime.ElapsedGameTime;
                 Player.Update(gameTime, keyboardState, gamePadState, touchState, accelState, orientation);
                 UpdateGems(gameTime);
 
@@ -426,7 +475,7 @@ namespace Platformer
                     Player.IsOnGround &&
                     Player.BoundingRectangle.Contains(exit))
                 {
-                    OnExitReached();
+                    //OnExitReached();
                 }
             }
 
@@ -449,18 +498,7 @@ namespace Platformer
         /// </summary>
         private void UpdateGems(GameTime gameTime)
         {
-            for (int i = 0; i < gems.Count; ++i)
-            {
-                Gem gem = gems[i];
-
-                gem.Update(gameTime);
-
-                if (gem.BoundingCircle.Intersects(Player.BoundingRectangle))
-                {
-                    gems.RemoveAt(i--);
-                    OnGemCollected(gem, Player);
-                }
-            }
+            return;
         }
 
         /// <summary>
@@ -468,16 +506,7 @@ namespace Platformer
         /// </summary>
         private void UpdateEnemies(GameTime gameTime)
         {
-            foreach (Enemy enemy in enemies)
-            {
-                enemy.Update(gameTime);
-
-                // Touching an enemy instantly kills the player
-                if (enemy.BoundingRectangle.Intersects(Player.BoundingRectangle))
-                {
-                    OnPlayerKilled(enemy);
-                }
-            }
+            return;
         }
 
         /// <summary>
@@ -519,7 +548,7 @@ namespace Platformer
         /// </summary>
         public void StartNewLife()
         {
-            Player.Reset(start);
+            Player.Reset(activeSpawn);
         }
 
         #endregion
@@ -536,13 +565,13 @@ namespace Platformer
 
             DrawTiles(spriteBatch);
 
-            foreach (Gem gem in gems)
-                gem.Draw(gameTime, spriteBatch);
+            foreach (Light light in lights.Values)
+                light.Draw(gameTime, spriteBatch);
+
+            foreach (Switch sw in switches.Values)
+                sw.Draw(gameTime, spriteBatch);
 
             Player.Draw(gameTime, spriteBatch);
-
-            foreach (Enemy enemy in enemies)
-                enemy.Draw(gameTime, spriteBatch);
 
             for (int i = EntityLayer + 1; i < layers.Length; ++i)
                 spriteBatch.Draw(layers[i], Vector2.Zero, Color.White);

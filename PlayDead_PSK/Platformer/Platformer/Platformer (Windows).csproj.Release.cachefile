@@ -35,11 +35,6 @@ Content\Overlays\you_died.xnb
 Content\Overlays\you_lose.xnb
 Content\Overlays\you_win.xnb
 Content\Tiles\Exit.xnb
-Content\Tiles\Spawner.xnb
-Content\Activatable\light_off.xnb
-Content\Activatable\light_on.xnb
-Content\Activator\switch_off.xnb
-Content\Activator\switch_on.xnb
 Content\Fonts\Hud.xnb
 Content\Sounds\ExitReached.xnb
 Content\Sounds\GemCollected.xnb
@@ -49,8 +44,8 @@ Content\Sounds\PlayerFall.xnb
 Content\Sounds\PlayerJump.xnb
 Content\Sounds\PlayerKilled.xnb
 Content\Sounds\Powerup.xnb
+Content\Tiles\Spawner.xnb
 Content\Sounds\Music.wma
 Content\Levels\0.txt
 Content\Levels\2.txt
 Content\Levels\1.txt
-Content\Levels\0.csv
