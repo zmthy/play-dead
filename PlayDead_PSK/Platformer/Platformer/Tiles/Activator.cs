@@ -22,14 +22,14 @@ namespace Platformer.Tiles
         protected Texture2D deactivated;
         protected Vector2 origin;
 
-        public Rectangle BoundingRectangle
+        public RectangleF BoundingRectangle
         {
             get
             {
                 int left = (int)Math.Round(position.X - origin.X);
                 int top = (int)Math.Round(position.Y - origin.Y);
 
-                return new Rectangle(left, top, 32, 32);
+                return new RectangleF(left, top, 32, 32);
             }
         }
 

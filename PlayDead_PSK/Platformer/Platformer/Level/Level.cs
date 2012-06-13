@@ -126,7 +126,6 @@ namespace Platformer
             // Set the camera
             TrackingDirector trackingDirector = new TrackingDirector(camera, Player);
             cameraDirector = trackingDirector;
-            /*PanningDirector panningDirector = new PanningDirector(camera, gems[0], 2);
         }
 
         private void LoadTiles(Stream fileStream)
@@ -187,6 +186,7 @@ namespace Platformer
                     {
                         tiles[x, y] = LoadTile('.', ".", x, y);
                     }
+                    tiles[x, y].Sprite.Position = new Vector2(x * Tile.Width, y * Tile.Height);
                 }
             }
 
@@ -200,10 +200,6 @@ namespace Platformer
                 {
                     Console.WriteLine(linkGroup[i]);
                     sw.add(lights[linkGroup[i].Trim()]);
-                    {
-                        tiles[x, y] = newTile;
-                        adjacentMoveableTile = null;
-                    }
                 }
             }
 
@@ -346,7 +342,7 @@ namespace Platformer
             //Add spawn to array
             spawns.Add(spawnPos);
 
-            return new Tile(Content.Load<Texture2D>("Tiles/Spawner"), TileCollision.Passable);
+            return new Tile(new Sprite(Content.Load<Texture2D>("Tiles/Spawner"),Tile.Width, Tile.Height), TileCollision.Passable);
         }
 
         /// <summary>
@@ -361,6 +357,7 @@ namespace Platformer
 
             return LoadTile("Exit", TileCollision.Passable);
         }
+
         private Tile LoadLight(int x, int y, string uid)
         {
             Point Position = GetBounds(x, y).Center;
@@ -436,17 +433,6 @@ namespace Platformer
         {
             return moveableTiles;
         }
-
-        /*public void setTile(int x, int y, Tile tile)
-        {
-            if (x >= 0 && x < Width)
-            {
-                if (y >= 0 && y < Height)
-                {
-                    tiles[x, y] = tile;
-                }
-            }
-        }*/
 
         public Tile getTile(int x, int y)
         {

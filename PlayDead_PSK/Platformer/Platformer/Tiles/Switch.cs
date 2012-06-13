@@ -46,7 +46,7 @@ namespace Platformer.Tiles
         override public void ChangeState(Player p, KeyboardState state)
         {
 
-            Rectangle other = p.BoundingRectangle;
+            RectangleF other = p.BoundingRectangle;
 
             Boolean touching = other.Intersects(this.BoundingRectangle);
 

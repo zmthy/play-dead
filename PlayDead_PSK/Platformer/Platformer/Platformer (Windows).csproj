@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <ProjectGuid>{932C3D56-99F8-4A20-AD55-D46BE7DA09C8}</ProjectGuid>
@@ -79,6 +79,10 @@
     <Compile Include="Camera\TrackingDirector.cs" />
     <Compile Include="Circle.cs" />
     <Compile Include="Enemy.cs" />
+    <Compile Include="Sprite.cs" />
+    <Compile Include="Tiles\MoveableTile.cs" />
+    <Compile Include="RectangleF.cs" />
+    <Compile Include="Tiles\Tile.cs" />
     <Compile Include="Tiles\Activatable.cs" />
     <Compile Include="Tiles\Activator.cs" />
     <Compile Include="Tiles\Gem.cs" />
@@ -90,7 +94,6 @@
     <Compile Include="RectangleExtensions.cs" />
     <Compile Include="Tiles\Light.cs" />
     <Compile Include="Tiles\Switch.cs" />
-    <Compile Include="Tiles\Tile.cs" />
     <Compile Include="TouchCollectionExtensions.cs" />
   </ItemGroup>
   <ItemGroup>

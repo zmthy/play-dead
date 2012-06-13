@@ -14,7 +14,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Audio;
 
 using Platformer.Camera;
-using Platformer.TileBlock;
+using Platformer.Tiles;
 
 namespace Platformer
 {

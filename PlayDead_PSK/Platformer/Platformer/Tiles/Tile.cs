@@ -8,10 +8,11 @@
 #endregion
 
 using System;
+
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
-namespace Platformer
+namespace Platformer.Tiles
 {
     /// <summary>
     /// Controls the collision detection and response behavior of a tile.
@@ -35,28 +36,40 @@ namespace Platformer
         /// past it to the left and right, but can not fall down through the top of it.
         /// </summary>
         Platform = 2,
+
+        Ladder = 3,
     }
 
     /// <summary>
     /// Stores the appearance and collision behavior of a tile.
     /// </summary>
-    struct Tile
+    class Tile
     {
-        public Texture2D Texture;
-        public TileCollision Collision;
+        public Sprite Sprite { get; protected set; }
+        public TileCollision Collision { get; protected set; }
 
         public const int Width = 40;
         public const int Height = 32;
-
-        public static readonly Vector2 Size = new Vector2(Width, Height);
+        public const int Center = Width / 2;
 
         /// <summary>
         /// Constructs a new tile.
         /// </summary>
-        public Tile(Texture2D texture, TileCollision collision)
+        public Tile(Sprite sprite, TileCollision collision)
         {
-            Texture = texture;
+            if (sprite != null)
+                Sprite = sprite;
+            else
+                Sprite = new Sprite();
             Collision = collision;
+        }
+
+        public virtual void update(GameTime gameTime) { }
+
+        public void draw(SpriteBatch spriteBatch)
+        {
+            if (Sprite != null)
+                Sprite.draw(spriteBatch);
         }
     }
 }
