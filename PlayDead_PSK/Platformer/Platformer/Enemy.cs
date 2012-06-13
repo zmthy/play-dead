@@ -11,7 +11,7 @@ using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
-using Platformer.TileBlock;
+using Platformer.Tiles;
 
 namespace Platformer
 {
