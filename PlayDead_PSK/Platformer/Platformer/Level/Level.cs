@@ -188,7 +188,6 @@ namespace Platformer
                         {
                             // Add the moveable tile
                             MoveableTile moveableTile = (MoveableTile)newTile;
-                            moveableTile.Sprite.Position = new Vector2(x * Tile.Width, y * Tile.Height);
                             moveableTiles.Add(moveableTile);
 
                             // Set the moveable tile's leader
@@ -197,8 +196,8 @@ namespace Platformer
                             moveableTile.Leader = adjacentMoveableTile;
 
                             // Add a background tile behind the moveable tile
-                            Tile backTile = new Tile(null, TileCollision.Passable);
-                            tiles[x, y] = backTile;
+                            Tile backgroundTile = LoadTile('.', ".", x, y);
+                            tiles[x, y] = backgroundTile;
                         }
                         else
                         {
@@ -210,7 +209,6 @@ namespace Platformer
                     {
                         tiles[x, y] = LoadTile('.', ".", x, y);
                     }
-                    tiles[x, y].Sprite.Position = new Vector2(x * Tile.Width, y * Tile.Height);
                 }
             }
 
@@ -251,57 +249,62 @@ namespace Platformer
         /// <returns>The loaded tile.</returns>
         private Tile LoadTile(char tileType, string tileID, int x, int y)
         {
+            Rectangle bounds = GetBounds(x, y);
             switch (tileType)
             {
                 // Blank space
                 case '.':
-                    return new Tile(null, TileCollision.Passable);
+                    return new Tile(new Sprite(null, bounds), TileCollision.Passable);
 
                 // Exit
                 case 'X':
-                    return LoadExitTile(x, y);
+                    return LoadExitTile(bounds);
 
                 // Ladder
                 case 'L':
-                    return LoadTile("LadderBlock", TileCollision.Ladder);
+                    return LoadTile("LadderBlock", TileCollision.Ladder, bounds);
 
                 // Floating platform
                 case '-':
-                    return LoadTile("Platform", TileCollision.Platform);
+                    return LoadTile("Platform", TileCollision.Platform, bounds);
 
                 // Platform block
                 case '~':
-                    return LoadVarietyTile("BlockB", 2, TileCollision.Platform);
+                    return LoadVarietyTile("BlockB", 2, TileCollision.Platform, bounds);
 
                 // Passable block
                 case ':':
-                    return LoadVarietyTile("BlockB", 2, TileCollision.Passable);
+                    return LoadVarietyTile("BlockB", 2, TileCollision.Passable, bounds);
 
                 // A spawn point
                 case 'P':
-                    return LoadSpawnTile(x, y);
+                    return LoadSpawnTile(bounds);
 
                 case 'I':
-                    return LoadLight(x,y,tileID);
+                    return LoadLight(bounds, tileID);
 
                 case 'S':
-                    return LoadSwitch(x,y,tileID);
+                    return LoadSwitch(bounds, tileID);
 
                 // Impassable block
                 case '#':
-                    return LoadVarietyTile("BlockA", 7, TileCollision.Impassable);
+                    return LoadVarietyTile("BlockA", 7, TileCollision.Impassable, bounds);
 
-                // Moveable block, horizontal
+                // Sliding block, horizontal
                 case 'H':
-                    return LoadSlidingTile("BlockA1", true, TileCollision.Impassable);
+                    return LoadSlidingTile("BlockA1", true, TileCollision.Impassable, bounds);
 
-                // Moveable block, vertical
+                // Sliding block, vertical
                 case 'V':
-                    return LoadSlidingTile("BlockA1", false, TileCollision.Impassable);
+                    return LoadSlidingTile("BlockA1", false, TileCollision.Impassable, bounds);
+
+                // Door block, horizontal
+                case 'D':
+                    return LoadDoorTile("Platform", true, TileCollision.Impassable, bounds);
 
                 // Unknown tile type character
                 default:
-                    return new Tile(null, TileCollision.Passable);
+                    return new Tile(new Sprite(null, bounds), TileCollision.Passable);
                     //throw new NotSupportedException(String.Format("Unsupported tile type character '{0}' at position {1}, {2}.", tileType, x, y));
             }
         }
@@ -316,21 +319,30 @@ namespace Platformer
         /// <param name="collision">
         /// The tile collision type for the new tile.
         /// </param>
+        /// <param name="bounds">
+        /// The position and size of the new tile.
+        /// </param>
         /// <returns>The new tile.</returns>
-        private Tile LoadTile(string name, TileCollision collision)
+        private Tile LoadTile(string name, TileCollision collision, Rectangle bounds)
         {
-            Sprite sprite = new Sprite(Content.Load<Texture2D>("Tiles/" + name),
-                                       Tile.Width, Tile.Height);
+            Sprite sprite = new Sprite(Content.Load<Texture2D>("Tiles/" + name), bounds);
             return new Tile(sprite, collision);
         }
 
-        private Tile LoadSlidingTile(string name, bool isHorizontal, TileCollision collision)
+        private Tile LoadSlidingTile(string name, bool isHorizontal, TileCollision collision,
+                                     Rectangle bounds)
         {
-            Sprite sprite = new Sprite(Content.Load<Texture2D>("Tiles/" + name),
-                                       Tile.Width, Tile.Height);
+            Sprite sprite = new Sprite(Content.Load<Texture2D>("Tiles/" + name), bounds);
             float angle = (isHorizontal) ? 0.0f : (float)(Math.PI / 2.0);
 
             return new SlidingTile(sprite, collision, new Vector2(angle, 100), this);
+        }
+
+        private Tile LoadDoorTile(string name, bool isHorizontal, TileCollision collision,
+                                  Rectangle bounds)
+        {
+            Sprite sprite = new Sprite(Content.Load<Texture2D>("Tiles/" + name), bounds);
+            return new DoorTile(sprite, collision, 100, this);
         }
 
         /// <summary>
@@ -343,19 +355,23 @@ namespace Platformer
         /// <param name="variationCount">
         /// The number of variations in this group.
         /// </param>
-        private Tile LoadVarietyTile(string baseName, int variationCount, TileCollision collision)
+        /// <param name="bounds">
+        /// The position and size of the new tile.
+        /// </param>
+        /// <returns>The new tile.</returns>
+        private Tile LoadVarietyTile(string baseName, int variationCount, TileCollision collision, Rectangle bounds)
         {
             int index = random.Next(variationCount);
-            return LoadTile(baseName + index, collision);
+            return LoadTile(baseName + index, collision, bounds);
         }
 
 
         /// <summary>
         /// Instantiates a player, puts him in the level, and remembers where to put him when he is resurrected.
         /// </summary>
-        private Tile LoadSpawnTile(int x, int y)
+        private Tile LoadSpawnTile(Rectangle bounds)
         {
-            Vector2 spawnPos = RectangleExtensions.GetBottomCenter(GetBounds(x, y));
+            Vector2 spawnPos = RectangleExtensions.GetBottomCenter(bounds);
             //Instatiate a player as needed, at the first discovered spawn point for now.
             if (Player == null)
             {
@@ -366,35 +382,35 @@ namespace Platformer
             //Add spawn to array
             spawns.Add(spawnPos);
 
-            return new Tile(new Sprite(Content.Load<Texture2D>("Tiles/Spawner"),Tile.Width, Tile.Height), TileCollision.Passable);
+            return new Tile(new Sprite(Content.Load<Texture2D>("Tiles/Spawner"), bounds), TileCollision.Passable);
         }
 
         /// <summary>
         /// Remembers the location of the level's exit.
         /// </summary>
-        private Tile LoadExitTile(int x, int y)
+        private Tile LoadExitTile(Rectangle bounds)
         {
             if (exit != InvalidPosition)
                 throw new NotSupportedException("A level may only have one exit.");
 
-            exit = GetBounds(x, y).Center;
+            exit = bounds.Center;
 
-            return LoadTile("Exit", TileCollision.Passable);
+            return LoadTile("Exit", TileCollision.Passable, bounds);
         }
 
-        private Tile LoadLight(int x, int y, string uid)
+        private Tile LoadLight(Rectangle bounds, string uid)
         {
-            Point Position = GetBounds(x, y).Center;
+            Point Position = bounds.Center;
             lights.Add(uid, new Light(new Vector2(Position.X, Position.Y), this));
 
-            return new Tile(null, TileCollision.Passable);
+            return new Tile(new Sprite(null, bounds), TileCollision.Passable);
         }
 
-        private Tile LoadSwitch(int x, int y, string uid)
+        private Tile LoadSwitch(Rectangle bounds, string uid)
         {
-            Point Position = GetBounds(x, y).Center;
+            Point Position = bounds.Center;
             switches.Add(uid, new Switch(new Vector2(Position.X, Position.Y), this));
-            return new Tile(null, TileCollision.Passable);
+            return new Tile(new Sprite(null, bounds), TileCollision.Passable);
         }
 
         /// <summary>

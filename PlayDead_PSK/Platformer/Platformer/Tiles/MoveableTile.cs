@@ -59,6 +59,8 @@ namespace Platformer.Tiles
         {
             this.velocity = velocity;
             this.level = level;
+
+            Leader = this; // By default, tiles lead themselves
         }
 
         protected Tile getCollidingTile()

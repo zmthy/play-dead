@@ -23,10 +23,7 @@ namespace Platformer.Tiles
 
         public SlidingTile(Sprite sprite, TileCollision collision, Vector2 velocity,
                             Level level)
-            : base(sprite, collision, velocity, level)
-        {
-            Leader = this; // By default, tiles lead themselves
-        }
+            : base(sprite, collision, velocity, level) { }
 
         public override void update(GameTime gameTime)
         {
