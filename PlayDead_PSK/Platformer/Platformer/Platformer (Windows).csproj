@@ -80,8 +80,10 @@
     <Compile Include="Circle.cs" />
     <Compile Include="Enemy.cs" />
     <Compile Include="Sprite.cs" />
+    <Compile Include="Tiles\DoorTile.cs" />
     <Compile Include="Tiles\MoveableTile.cs" />
     <Compile Include="RectangleF.cs" />
+    <Compile Include="Tiles\SlidingTile.cs" />
     <Compile Include="Tiles\Tile.cs" />
     <Compile Include="Tiles\Activatable.cs" />
     <Compile Include="Tiles\Activator.cs" />

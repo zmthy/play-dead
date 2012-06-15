@@ -15,7 +15,7 @@ namespace Platformer.Tiles
     /// Code inspired from:
     /// http://robotfootgames.com/2011/05/movable-platforms/
     /// </summary>
-    class MoveableTile :  Tile
+    abstract class MoveableTile :  Tile
     {
         /// <summary>
         /// The movement velocity of the tile.
@@ -25,96 +25,43 @@ namespace Platformer.Tiles
         public Vector2 Velocity
         {
             get { return velocity; }
+            protected set { velocity = value; }
         }
         private Vector2 velocity;
 
+        /// <summary>
+        /// The movement velocity of the tile for the current frame
+        /// The first component (.X) is the angle in radians.
+        /// The second component (.Y) is the speed in pixels for the current frame.
+        /// </summary>
         public Vector2 FrameVelocity
         {
             get { return frameVelocity; }
+            protected set { frameVelocity = value; }
         }
         private Vector2 frameVelocity;
 
+        /// <summary>
+        /// A leading tile is one which watching tiles follow.
+        /// If the current tile is the Leader, Leader should be this.
+        /// Leader should be same type as sub-class! TODO: How to enforce this?
+        /// </summary>
         public MoveableTile Leader { get; set; }
 
+        /// <summary>
+        /// The level the tile is on.
+        /// </summary>
         private Level level;
 
-        protected float WaitTimeS { get; set; }
-        private const float MAX_WAIT_TIME_S = 0.2f;
-
         public MoveableTile(Sprite sprite, TileCollision collision, Vector2 velocity,
-                           Level level)
+                            Level level)
             : base(sprite, collision)
         {
             this.velocity = velocity;
             this.level = level;
-
-            Leader = this; // By default, tiles lead themselves
         }
 
-        public override void update(GameTime gameTime)
-        {
-            // Get the elapse time since the last frame
-            float elapsedS = (float)gameTime.ElapsedGameTime.TotalSeconds;
-
-            if (Leader != this && Leader.WaitTimeS <= 0) // If we are folloing the leader
-            {
-                velocity = Leader.Velocity;
-                frameVelocity = Leader.FrameVelocity;
-                Sprite.Position = Sprite.Position + FrameVelocity;
-
-                Tile collidingTile = getCollidingTile();
-                if (collidingTile is MoveableTile)
-                {
-                    // We have collided, notify the leader
-                    Leader.reverseDirection();
-                }
-                else if (collidingTile is Tile)
-                {
-                    // We have collided, notify the leader
-                    Leader.reverseDirection(MAX_WAIT_TIME_S);
-                }
-            }
-            else if(Leader == this) // If we are the leader
-            {
-                if (WaitTimeS > 0)
-                {
-                    // Wait for some amount of time.
-                    WaitTimeS = Math.Max(0.0f, WaitTimeS - elapsedS);
-                }
-
-                if (WaitTimeS <= 0)
-                {
-                    Tile collidingTile = getCollidingTile();
-
-                    if (collidingTile is MoveableTile)
-                    {
-                        // We have collided, notify the leader
-                        reverseDirection();
-                    }
-                    else if (collidingTile is Tile)
-                    {
-                        // We have collided, notify the leader
-                        reverseDirection(MAX_WAIT_TIME_S);
-                    }
-                    else
-                    {
-                        // Move in the current direction.
-                        frameVelocity = new Vector2((float)(Math.Cos(velocity.X) * velocity.Y * elapsedS),
-                                                    (float)(Math.Sin(velocity.X) * velocity.Y * elapsedS));
-                        Sprite.Position = Sprite.Position + frameVelocity;
-                    }
-                }
-            }
-        }
-
-        public void reverseDirection(float waitTimeS = 0)
-        {
-            WaitTimeS = waitTimeS;
-            velocity.X -= (float)Math.PI;
-            frameVelocity.X = 0;
-        }
-
-        private Tile getCollidingTile()
+        protected Tile getCollidingTile()
         {
             Tile collidingTile = null;
 
