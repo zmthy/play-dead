@@ -474,25 +474,28 @@ namespace Platformer
             return moveableTiles;
         }
 
+        /// <summary>
+        /// Gets the tile at a particular location.
+        /// This method handles tiles outside of the levels boundries by making it
+        /// impossible to escape past the left or right edges, but allowing things
+        /// to jump beyond the top of the level and fall off the bottom.
+        /// </summary>
         public Tile getTile(int x, int y)
         {
             Tile tile = null;
-            if (x >= 0 && x < Width && y >= 0 && y < Height)
-            {
+
+            // Prevent escaping past the level ends.
+            if (x < 0 || x >= Width)
+                tile = new Tile(new Sprite(null, GetBounds(x, y)), TileCollision.Impassable);
+            // Allow jumping past the level top and falling through the bottom.
+            if (y < 0 || y >= Height)
+                tile = new Tile(new Sprite(null, GetBounds(x, y)), TileCollision.Passable);
+
+            if (tile == null)
                 tile = tiles[x, y];
-            }
-            else
-            {
-                // Return an impassable tile to mark level boundries.
-                Rectangle tilePos = new Rectangle(x * Tile.Width, y * Tile.Height,
-                                                  Tile.Width, Tile.Height);
-                tile = new Tile(new Sprite(null,tilePos), TileCollision.Impassable);
-            }
 
             return tile;
         }
-
-
 
         /// <summary>
         /// Gets the bounding rectangle of a tile in world space.

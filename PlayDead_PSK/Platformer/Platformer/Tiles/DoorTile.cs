@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Input;
 
 namespace Platformer.Tiles
 {
@@ -50,11 +51,17 @@ namespace Platformer.Tiles
             : base(sprite, collision, new Vector2(0, speed), level)
         {
             closedPosition = sprite.Position;
-            Open = true;
         }
 
         public override void update(GameTime gameTime)
         {
+            KeyboardState keyboard = Keyboard.GetState();
+
+            if (keyboard.IsKeyDown(Keys.E))
+                Open = true;
+            else if (keyboard.IsKeyDown(Keys.R))
+                Closed = true;
+
             // Get the elapse time since the last frame
             float elapsedS = (float)gameTime.ElapsedGameTime.TotalSeconds;
 
