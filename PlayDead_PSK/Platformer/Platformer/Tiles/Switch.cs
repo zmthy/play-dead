@@ -8,11 +8,11 @@ using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework;
 using Platformer;
 
+
 namespace Platformer.Tiles
 {
     class Switch : Activator
     {
-
         public Switch(ArrayList list, Vector2 location, ContentManager content)
             : base(location)
         {
@@ -43,34 +43,16 @@ namespace Platformer.Tiles
         }
 
         // Switch -  the player has to be near and respond to a key press
-        public override void ChangeState(Player p, KeyboardState state)
+        public override void ChangeState(Player p, KeyboardState keyState, InputManager inputManager)
         {
-
             RectangleF other = p.BoundingRectangle;
-
             Boolean touching = other.Intersects(this.BoundingRectangle);
-
-
-            if (!on) // check if it should be turned on
+            if (inputManager.IsNewPress(Keys.K) && touching)
             {
-                if (state.IsKeyDown(Keys.K) && touching)
+                on = !on;
+                foreach (Activatable responder in list)
                 {
-                    on = true;
-                    foreach (Activatable responder in list)
-                    {
-                        responder.changeState();
-                    }
-                }
-            }
-            else if (on) //check if it can be turned off
-            {
-                if (state.IsKeyDown(Keys.K) && touching)
-                {
-                    on = false;
-                    foreach (Activatable responder in list)
-                    {
-                        responder.changeState();
-                    }
+                    responder.changeState();
                 }
             }
         }

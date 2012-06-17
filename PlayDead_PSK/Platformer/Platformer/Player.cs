@@ -28,10 +28,6 @@ namespace Platformer
     /// </summary>
     class Player : ICameraTrackable
     {
-
-        // Input Manager to solve key stroke issues
-        private InputManager inputManager;
-
         // Animations
         private Animation idleAnimation;
         private Animation runAnimation;
@@ -164,8 +160,6 @@ namespace Platformer
             LoadContent(content);
 
             Reset(position);
-
-            inputManager = new InputManager();
         }
 
         public void EnterLevel(Level level)
@@ -235,13 +229,14 @@ namespace Platformer
             GamePadState gamePadState, 
             TouchCollection touchState, 
             AccelerometerState accelState,
-            DisplayOrientation orientation)
+            DisplayOrientation orientation,
+            InputManager inputManager)
         {
             
             // Hook for InputManager
-            inputManager.Update();           
-                       
-            GetInput(keyboardState, gamePadState, touchState, accelState, orientation);
+            inputManager.Update();
+
+            GetInput(keyboardState, gamePadState, touchState, accelState, orientation, inputManager);
 
 
             ApplyPhysics(gameTime);
@@ -297,8 +292,9 @@ namespace Platformer
             KeyboardState keyboardState, 
             GamePadState gamePadState, 
             TouchCollection touchState,
-            AccelerometerState accelState, 
-            DisplayOrientation orientation)
+            AccelerometerState accelState,
+            DisplayOrientation orientation,
+            InputManager inputManager)
         {
             // Get analog horizontal movement.
             movement.X = gamePadState.ThumbSticks.Left.X * MoveStickScale;
@@ -570,6 +566,9 @@ namespace Platformer
             // For each potentially colliding tile,
             foreach(Tile tile in candidateTiles)
             {
+                if (tile == null)
+                    continue;
+
                 // If this tile is collidable,
                 TileCollision collision = tile.Collision;
                 if (collision != TileCollision.Passable)

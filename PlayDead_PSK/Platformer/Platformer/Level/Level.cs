@@ -265,11 +265,11 @@ namespace Platformer.Levels
         /// Updates all objects in the world, performs collision between them,
         /// and handles the time limit with scoring.
         /// </summary>
-        public void Update(Player player, GameTime gameTime, KeyboardState keyboardState)
+        public void Update(Player player, GameTime gameTime, KeyboardState keyboardState, InputManager inputManager)
         {
             //Check activatables
             foreach (Platformer.Tiles.Activator a in activators.Values)
-                a.ChangeState(player, keyboardState);
+                a.ChangeState(player, keyboardState, inputManager);
 
             //Update each tile
             foreach (Tile tile in tiles)

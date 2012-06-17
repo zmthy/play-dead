@@ -46,6 +46,7 @@ namespace Platformer
 
         // We store our input states so that we only poll once per frame, 
         // then we use the same input state wherever needed
+        private InputManager inputManager;
         private GamePadState gamePadState;
         private KeyboardState keyboardState;
         private TouchCollection touchState;
@@ -64,6 +65,7 @@ namespace Platformer
         {
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
+            inputManager = new InputManager();
 
 #if WINDOWS_PHONE
             graphics.IsFullScreen = true;
@@ -121,7 +123,7 @@ namespace Platformer
             HandleInput();
 
             // update our map, passing down the GameTime along with all of our input states
-            map.Update(gameTime, keyboardState, gamePadState, touchState, accelerometerState, Window.CurrentOrientation);
+            map.Update(gameTime, keyboardState, gamePadState, touchState, accelerometerState, Window.CurrentOrientation, inputManager);
 
             base.Update(gameTime);
         }

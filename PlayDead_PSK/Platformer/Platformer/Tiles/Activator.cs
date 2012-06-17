@@ -65,7 +65,7 @@ namespace Platformer.Tiles
 
         #region abstract methods
         //change state sets the activator to on and off depending on players position and keystrokes
-        public abstract void ChangeState(Player c, KeyboardState keyState);
+        public abstract void ChangeState(Player c, KeyboardState keyState, InputManager inputManager);
         #endregion
     }
 }

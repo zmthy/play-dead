@@ -105,7 +105,8 @@ namespace Platformer.Levels
             GamePadState gamePadState,
             TouchCollection touchState,
             AccelerometerState accelState,
-            DisplayOrientation orientation)
+            DisplayOrientation orientation,
+            InputManager inputManager)
         {
 
             //Update the Player
@@ -119,7 +120,7 @@ namespace Platformer.Levels
             }
             else
             {
-                Player.Update(gameTime, keyboardState, gamePadState, touchState, accelState, orientation);
+                Player.Update(gameTime, keyboardState, gamePadState, touchState, accelState, orientation, inputManager);
             }
 
             // Update the camera
@@ -132,7 +133,7 @@ namespace Platformer.Levels
             camera.update(gameTime);
 
             //Update the current level
-            activeLevel.Update(Player, gameTime, keyboardState);
+            activeLevel.Update(Player, gameTime, keyboardState, inputManager);
         }
 
         /// <summary>
