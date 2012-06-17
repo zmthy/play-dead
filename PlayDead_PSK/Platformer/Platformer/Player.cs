@@ -28,6 +28,10 @@ namespace Platformer
     /// </summary>
     class Player : ICameraTrackable
     {
+
+        // Input Manager to solve key stroke issues
+        private InputManager inputManager;
+
         // Animations
         private Animation idleAnimation;
         private Animation runAnimation;
@@ -160,6 +164,8 @@ namespace Platformer
             LoadContent(content);
 
             Reset(position);
+
+            inputManager = new InputManager();
         }
 
         public void EnterLevel(Level level)
@@ -231,7 +237,12 @@ namespace Platformer
             AccelerometerState accelState,
             DisplayOrientation orientation)
         {
+            
+            // Hook for InputManager
+            inputManager.Update();           
+                       
             GetInput(keyboardState, gamePadState, touchState, accelState, orientation);
+
 
             ApplyPhysics(gameTime);
 
@@ -376,12 +387,13 @@ namespace Platformer
             }
 
             // Check if the player wants to jump.
-            isJumping =
-                gamePadState.IsButtonDown(JumpButton) ||
-                keyboardState.IsKeyDown(Keys.Space) ||
-                keyboardState.IsKeyDown(Keys.Up) ||
-                keyboardState.IsKeyDown(Keys.W) ||
-                touchState.AnyTouch();
+            // Change this so that we only want to jump if it is a new press - i.e. KeyPressDown()
+            //
+            //isJumping = gamePadState.IsButtonDown(JumpButton) || keyboardState.IsKeyDown(Keys.Space) || keyboardState.IsKeyDown(Keys.Up) || 
+            //    keyboardState.IsKeyDown(Keys.W) || touchState.AnyTouch();
+
+            isJumping = inputManager.IsNewPress(JumpButton) || inputManager.IsNewPress(Keys.Space) || inputManager.IsNewPress(Keys.Up) ||
+                inputManager.IsNewPress(Keys.W);
         }
 
 
@@ -443,12 +455,7 @@ namespace Platformer
                 velocity.Y = movement.Y * MoveAcceleration * elapsed;
             }
 
-
             velocity.X += movement.X * MoveAcceleration * elapsed;
-
-
-
-
             velocity.Y = DoJump(velocity.Y, gameTime);
 
             // Apply pseudo-drag horizontally.
@@ -462,7 +469,7 @@ namespace Platformer
 
             // Apply velocity.
             Position += velocity * elapsed;
-            //position = new Vector2((float)Math.Round(Position.X), (float)Math.Round(Position.Y)); // TODO: Precision loss
+            //position = new Vector2((float)Math.Round(Position.X), (float)Math.Round(Position.Y));
 
             // If the player is now colliding with the level, separate them.
             HandleCollisions();
@@ -550,8 +557,7 @@ namespace Platformer
                 for (int x = leftTile; x <= rightTile; ++x)
                 {
                     Tile tile = level.getTile(x, y);
-                    if(tile != null)
-                        candidateTiles.Add(tile);
+                    candidateTiles.Add(tile);
                 }
             }
             candidateTiles.AddRange(level.MoveableTiles);
@@ -611,8 +617,6 @@ namespace Platformer
                                 movedByTile = true;
                             }
 
-
-
                             // Ignore platforms, unless we are on the ground.
                             if (collision == TileCollision.Impassable || IsOnGround)
                             {
@@ -621,9 +625,7 @@ namespace Platformer
 
                                 // Perform further collisions with the new bounds.
                                 bounds = BoundingRectangle;
-                            }  
-
-
+                            }
                         }
                         else if (collision == TileCollision.Impassable) // Ignore platforms.
                         {
@@ -643,10 +645,7 @@ namespace Platformer
                                 
                             // Future collisions with the new bounds
                             bounds = BoundingRectangle;
-
                         }
-
-                        
                     }
                 }                
             }
