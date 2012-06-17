@@ -29,15 +29,17 @@ namespace Platformer.Tiles
         }
 
         //can be overridden to make more interesting things happen, for example a door should go from stopping a player to letting them through
-        public void SetState(Boolean on)
+        public virtual void SetState(Boolean on)
         {
             this.on = on;
         }
 
-        public void changeState()
+        public virtual void changeState()
         {
-            if (on) this.on = false;
-            else this.on = true;
+            if (on) 
+                SetState(false);
+            else
+                SetState(true);
         }
 
 

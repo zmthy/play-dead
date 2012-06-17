@@ -5,6 +5,7 @@ using System.Text;
 
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Platformer.Levels;
 
 namespace Platformer.Tiles
 {
@@ -41,14 +42,17 @@ namespace Platformer.Tiles
         protected float WaitTimeS { get; set; }
         private const float MAX_WAIT_TIME_S = 0.2f;
 
-        public MoveableTile(Sprite sprite, TileCollision collision, Vector2 velocity,
-                           Level level)
+        public MoveableTile(Sprite sprite, TileCollision collision, Vector2 velocity)
             : base(sprite, collision)
         {
             this.velocity = velocity;
-            this.level = level;
 
             Leader = this; // By default, tiles lead themselves
+        }
+
+        public void bindToLevel(Level level)
+        {
+            this.level = level;
         }
 
         public override void update(GameTime gameTime)
@@ -145,7 +149,7 @@ namespace Platformer.Tiles
             // Check if we are colliding with a moving tile
             if (collidingTile == null)
             {
-                List<MoveableTile> moveableTiles = level.getMoveableTiles();
+                List<MoveableTile> moveableTiles = level.MoveableTiles;
                 foreach (MoveableTile tile in moveableTiles)
                 {
                     if (tile.Leader != this.Leader && Sprite.intersects(tile.Sprite))

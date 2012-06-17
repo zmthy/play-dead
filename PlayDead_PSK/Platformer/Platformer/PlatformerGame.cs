@@ -16,6 +16,7 @@ using Microsoft.Xna.Framework.Media;
 using Microsoft.Xna.Framework.Input.Touch;
 
 using Platformer.Camera;
+using Platformer.Levels;
 
 namespace Platformer
 {
@@ -37,7 +38,7 @@ namespace Platformer
 
         // Meta-level game state.
         private int levelIndex = -1;
-        private Level level;
+        private DynamicMap map;
         private bool wasContinuePressed;
 
         // When the time remaining is less than the warning time, it blinks on the hud
@@ -87,6 +88,9 @@ namespace Platformer
             // Load the camera
             camera = new Camera2D();
 
+            //Load the level map
+            map = new DynamicMap(Services, camera);
+
             // Load overlay textures
             winOverlay = Content.Load<Texture2D>("Overlays/you_win");
             loseOverlay = Content.Load<Texture2D>("Overlays/you_lose");
@@ -103,7 +107,7 @@ namespace Platformer
             }
             catch { }
 
-            LoadNextLevel();
+            LoadStory();
         }
 
         /// <summary>
@@ -116,9 +120,8 @@ namespace Platformer
             // Handle polling for our input and handling high-level input
             HandleInput();
 
-            // update our level, passing down the GameTime along with all of our input states
-            level.Update(gameTime, keyboardState, gamePadState, touchState, 
-                         accelerometerState, Window.CurrentOrientation);
+            // update our map, passing down the GameTime along with all of our input states
+            map.Update(gameTime, keyboardState, gamePadState, touchState, accelerometerState, Window.CurrentOrientation);
 
             base.Update(gameTime);
         }
@@ -156,45 +159,20 @@ namespace Platformer
                 gamePadState.IsButtonDown(Buttons.A) ||
                 touchState.AnyTouch();
 
-            // Perform the appropriate action to advance the game and
-            // to get the player back to playing.
-            if (!wasContinuePressed && continuePressed)
-            {
-                if (!level.Player.IsAlive)
-                {
-                    level.StartNewLife();
-                }
-                else if (level.TimeRemaining == TimeSpan.Zero)
-                {
-                    if (level.ReachedExit)
-                        LoadNextLevel();
-                    else
-                        ReloadCurrentLevel();
-                }
-            }
-
             wasContinuePressed = continuePressed;
         }
 
-        private void LoadNextLevel()
+        /// <summary>
+        /// Loads a story file which lists all of the levels that should be preloaded.
+        /// </summary>
+        private void LoadStory()
         {
-            // move to the next level
-            levelIndex = (levelIndex + 1) % numberOfLevels;
-
             // Unloads the content for the current level before loading the next one.
-            if (level != null)
-                level.Dispose();
+            //map.Dispose();
 
             // Load the level.
-            string levelPath = string.Format("Content/Levels/{0}.csv", levelIndex);
-            using (Stream fileStream = TitleContainer.OpenStream(levelPath))
-                level = new Level(Services, fileStream, levelIndex, camera);
-        }
-
-        private void ReloadCurrentLevel()
-        {
-            --levelIndex;
-            LoadNextLevel();
+            string storyPath = "Content/Story/story.csv";
+            map.LoadStory(storyPath);
         }
 
         /// <summary>
@@ -208,7 +186,7 @@ namespace Platformer
             //spriteBatch.Begin();
             spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, null, null, null, null, camera.getTransform(GraphicsDevice));
 
-            level.Draw(gameTime, spriteBatch);
+            map.Draw(gameTime, spriteBatch);
 
             DrawHud();
 
@@ -226,6 +204,7 @@ namespace Platformer
 
             // Draw time remaining. Uses modulo division to cause blinking when the
             // player is running out of time.
+            /*
             string timeString = "TIME: " + level.TimeRemaining.Minutes.ToString("00") + ":" + level.TimeRemaining.Seconds.ToString("00");
             Color timeColor;
             if (level.TimeRemaining > WarningTime ||
@@ -238,14 +217,18 @@ namespace Platformer
             {
                 timeColor = Color.Red;
             }
-            DrawShadowedString(hudFont, timeString, hudLocation, timeColor);
+             */
+            DrawShadowedString(hudFont, map.Level.Name, hudLocation, Color.Yellow);
 
             // Draw score
+            /*
             float timeHeight = hudFont.MeasureString(timeString).Y;
             DrawShadowedString(hudFont, "SCORE: " + level.Score.ToString(), hudLocation + new Vector2(0.0f, timeHeight * 1.2f), Color.Yellow);
-           
+            */
+
             // Determine the status overlay message to show.
             Texture2D status = null;
+            /**
             if (level.TimeRemaining == TimeSpan.Zero)
             {
                 if (level.ReachedExit)
@@ -257,7 +240,8 @@ namespace Platformer
                     status = loseOverlay;
                 }
             }
-            else if (!level.Player.IsAlive)
+            else */
+            if (!map.Player.IsAlive)
             {
                 status = diedOverlay;
             }

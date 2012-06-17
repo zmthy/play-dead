@@ -78,14 +78,15 @@
     <Compile Include="Camera\PanningDirector.cs" />
     <Compile Include="Camera\TrackingDirector.cs" />
     <Compile Include="Circle.cs" />
-    <Compile Include="Enemy.cs" />
+    <Compile Include="Level\DynamicMap.cs" />
+    <Compile Include="Level\LevelFactory.cs" />
     <Compile Include="Sprite.cs" />
+    <Compile Include="Tiles\Spawner.cs" />
     <Compile Include="Tiles\MoveableTile.cs" />
     <Compile Include="RectangleF.cs" />
     <Compile Include="Tiles\Tile.cs" />
     <Compile Include="Tiles\Activatable.cs" />
     <Compile Include="Tiles\Activator.cs" />
-    <Compile Include="Tiles\Gem.cs" />
     <Compile Include="Level\Level.cs" />
     <Compile Include="PlatformerGame.cs" />
     <Compile Include="Player.cs" />

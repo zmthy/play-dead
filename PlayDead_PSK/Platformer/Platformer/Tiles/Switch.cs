@@ -13,37 +13,37 @@ namespace Platformer.Tiles
     class Switch : Activator
     {
 
-        public Switch(ArrayList list, Vector2 location, Level level)
+        public Switch(ArrayList list, Vector2 location, ContentManager content)
             : base(location)
         {
             this.list = list;
-            this.initialise(level);
+            this.initialise(content);
         }
 
-        public Switch(Vector2 location, Level level)
+        public Switch(Vector2 location, ContentManager content)
             : base(location)
         {
-            this.initialise(level);
+            this.initialise(content);
         }
 
-        public Switch(Activatable responder, Vector2 location, Level level)
+        public Switch(Activatable responder, Vector2 location, ContentManager content)
             : base(location)
         {
             this.add(responder);
-            this.initialise(level);
+            this.initialise(content);
         }
 
-        private void initialise(Level level)
+        private void initialise(ContentManager content)
         {
             //load textures
-            this.activated = level.Content.Load<Texture2D>("Activator/switch_on");
-            this.deactivated = level.Content.Load<Texture2D>("Activator/switch_off");
+            this.activated = content.Load<Texture2D>("Activator/switch_on");
+            this.deactivated = content.Load<Texture2D>("Activator/switch_off");
             //initialise origin
             origin = new Vector2(activated.Width / 2.0f, activated.Height / 2.0f);
         }
 
         // Switch -  the player has to be near and respond to a key press
-        override public void ChangeState(Player p, KeyboardState state)
+        public override void ChangeState(Player p, KeyboardState state)
         {
 
             RectangleF other = p.BoundingRectangle;

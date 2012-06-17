@@ -18,6 +18,8 @@ using Microsoft.Xna.Framework.Input.Touch;
 
 using Platformer.Camera;
 using Platformer.Tiles;
+using Platformer.Levels;
+using Microsoft.Xna.Framework.Content;
 
 namespace Platformer
 {
@@ -153,30 +155,35 @@ namespace Platformer
         /// <summary>
         /// Constructors a new player.
         /// </summary>
-        public Player(Level level, Vector2 position)
+        public Player(ContentManager content, Vector2 position)
         {
-            this.level = level;
-
-            LoadContent();
+            LoadContent(content);
 
             Reset(position);
         }
 
+        public void EnterLevel(Level level)
+        {
+            this.level = level;
+            Reset(level.ActiveSpawn.Position);
+        }
+
+
         /// <summary>
         /// Loads the player sprite sheet and sounds.
         /// </summary>
-        public void LoadContent()
+        public void LoadContent(ContentManager content)
         {
             // Load animated textures.
-            idleAnimation = new Animation(Level.Content.Load<Texture2D>("Sprites/Player/Idle"), 0.1f, true);
-            runAnimation = new Animation(Level.Content.Load<Texture2D>("Sprites/Player/Run"), 0.1f, true);
-            jumpAnimation = new Animation(Level.Content.Load<Texture2D>("Sprites/Player/Jump"), 0.1f, false);
-            celebrateAnimation = new Animation(Level.Content.Load<Texture2D>("Sprites/Player/Celebrate"), 0.1f, false);
-            dieAnimation = new Animation(Level.Content.Load<Texture2D>("Sprites/Player/Die"), 0.1f, false);
+            idleAnimation = new Animation(content.Load<Texture2D>("Sprites/Player/Idle"), 0.1f, true);
+            runAnimation = new Animation(content.Load<Texture2D>("Sprites/Player/Run"), 0.1f, true);
+            jumpAnimation = new Animation(content.Load<Texture2D>("Sprites/Player/Jump"), 0.1f, false);
+            celebrateAnimation = new Animation(content.Load<Texture2D>("Sprites/Player/Celebrate"), 0.1f, false);
+            dieAnimation = new Animation(content.Load<Texture2D>("Sprites/Player/Die"), 0.1f, false);
 
             //TODO: actually create and link the real ladder animation
-            ladderUpAnimation = new Animation(Level.Content.Load<Texture2D>("Sprites/Player/Celebrate"), 0.1f, false);
-            ladderDownAnimation = new Animation(Level.Content.Load<Texture2D>("Sprites/Player/Die"), 0.1f, false);
+            ladderUpAnimation = new Animation(content.Load<Texture2D>("Sprites/Player/Celebrate"), 0.1f, false);
+            ladderDownAnimation = new Animation(content.Load<Texture2D>("Sprites/Player/Die"), 0.1f, false);
 
             // Calculate bounds within texture size.            
             float width = idleAnimation.FrameWidth * 0.4f;
@@ -186,9 +193,9 @@ namespace Platformer
             localBounds = new RectangleF(left, top, width, height);
 
             // Load sounds.            
-            killedSound = Level.Content.Load<SoundEffect>("Sounds/PlayerKilled");
-            jumpSound = Level.Content.Load<SoundEffect>("Sounds/PlayerJump");
-            fallSound = Level.Content.Load<SoundEffect>("Sounds/PlayerFall");
+            killedSound = content.Load<SoundEffect>("Sounds/PlayerKilled");
+            jumpSound = content.Load<SoundEffect>("Sounds/PlayerJump");
+            fallSound = content.Load<SoundEffect>("Sounds/PlayerFall");
         }
 
         /// <summary>
@@ -357,7 +364,7 @@ namespace Platformer
                 if (IsAlignedToLadder())
                 {
                     //need to check the tile that the player is standing on
-                    if (level.GetTileCollisionBelowPlayer(level.Player.Position) == TileCollision.Ladder)
+                    if (level.GetTileCollisionBelowPlayer(this.Position) == TileCollision.Ladder)
                     {
                         isClimbing = true;
                         isJumping = false;
@@ -387,11 +394,11 @@ namespace Platformer
             int playerOffset = ((int)position.X % Tile.Width) - Tile.Center;
             if (Math.Abs(playerOffset) <= LadderAlignment &&
                 level.GetTileCollisionBelowPlayer(new Vector2(
-                    level.Player.position.X,
-                    level.Player.position.Y + 1)) == TileCollision.Ladder ||
+                    this.position.X,
+                    this.position.Y + 1)) == TileCollision.Ladder ||
                 level.GetTileCollisionBelowPlayer(new Vector2(
-                    level.Player.position.X,
-                    level.Player.position.Y - 1)) == TileCollision.Ladder)
+                    this.position.X,
+                    this.position.Y - 1)) == TileCollision.Ladder)
             {
                 // Align the player with the middle of the tile 
                 position.X -= playerOffset;
@@ -547,7 +554,7 @@ namespace Platformer
                         candidateTiles.Add(tile);
                 }
             }
-            candidateTiles.AddRange(level.getMoveableTiles());
+            candidateTiles.AddRange(level.MoveableTiles);
 
             // Reset flag to search for ground collision.
             isOnGround = false;
@@ -652,14 +659,14 @@ namespace Platformer
         /// Called when the player has been killed.
         /// </summary>
         /// <param name="killedBy">
-        /// The enemy who killed the player. This parameter is null if the player was
-        /// not killed by an enemy (fell into a hole).
+        /// The name of whatever killed the player.
         /// </param>
-        public void OnKilled(Enemy killedBy)
+        public void OnKilled() { OnKilled(""); }
+        public void OnKilled(String killedBy)
         {
             isAlive = false;
 
-            if (killedBy != null)
+            if (killedBy.Length != 0)
                 killedSound.Play();
             else
                 fallSound.Play();

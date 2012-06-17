@@ -16,18 +16,18 @@ namespace Platformer.Tiles
     class Light : Activatable
     {
 
-        public Light(Vector2 location, Level level)
+        public Light(Vector2 location, ContentManager content)
             : base(location)
         {
-            this.initialise(level);
+            this.initialise(content);
         }
 
-        
-        private void initialise(Level level)
+
+        private void initialise(ContentManager content)
         {
             //load textures
-            this.activated = level.Content.Load<Texture2D>("Activatable/light_on");
-            this.deactivated = level.Content.Load<Texture2D>("Activatable/light_off");
+            this.activated = content.Load<Texture2D>("Activatable/light_on");
+            this.deactivated = content.Load<Texture2D>("Activatable/light_off");
             //initialise origin
             origin = new Vector2(activated.Width / 2.0f, activated.Height / 2.0f);
         }

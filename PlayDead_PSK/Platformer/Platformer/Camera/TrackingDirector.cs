@@ -9,6 +9,11 @@ namespace Platformer.Camera
 {
     public class TrackingDirector : CameraDirector
     {
+        public ICameraTrackable Target
+        {
+            get { return target; }
+            set { target = value; }
+        }
         private ICameraTrackable target;
 
         public TrackingDirector(Camera2D camera, ICameraTrackable target)
