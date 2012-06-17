@@ -78,6 +78,7 @@
     <Compile Include="Camera\PanningDirector.cs" />
     <Compile Include="Camera\TrackingDirector.cs" />
     <Compile Include="Circle.cs" />
+    <Compile Include="InputManager.cs" />
     <Compile Include="Enemy.cs" />
     <Compile Include="Sprite.cs" />
     <Compile Include="Tiles\MoveableTile.cs" />

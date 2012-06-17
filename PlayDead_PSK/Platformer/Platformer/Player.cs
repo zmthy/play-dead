@@ -26,6 +26,10 @@ namespace Platformer
     /// </summary>
     class Player : ICameraTrackable
     {
+
+        // Input Manager to solve key stroke issues
+        private InputManager inputManager;
+
         // Animations
         private Animation idleAnimation;
         private Animation runAnimation;
@@ -160,6 +164,8 @@ namespace Platformer
             LoadContent();
 
             Reset(position);
+
+            inputManager = new InputManager();
         }
 
         /// <summary>
@@ -224,7 +230,12 @@ namespace Platformer
             AccelerometerState accelState,
             DisplayOrientation orientation)
         {
+            
+            // Hook for InputManager
+            inputManager.Update();           
+                       
             GetInput(keyboardState, gamePadState, touchState, accelState, orientation);
+
 
             ApplyPhysics(gameTime);
 
@@ -369,12 +380,13 @@ namespace Platformer
             }
 
             // Check if the player wants to jump.
-            isJumping =
-                gamePadState.IsButtonDown(JumpButton) ||
-                keyboardState.IsKeyDown(Keys.Space) ||
-                keyboardState.IsKeyDown(Keys.Up) ||
-                keyboardState.IsKeyDown(Keys.W) ||
-                touchState.AnyTouch();
+            // Change this so that we only want to jump if it is a new press - i.e. KeyPressDown()
+            //
+            //isJumping = gamePadState.IsButtonDown(JumpButton) || keyboardState.IsKeyDown(Keys.Space) || keyboardState.IsKeyDown(Keys.Up) || 
+            //    keyboardState.IsKeyDown(Keys.W) || touchState.AnyTouch();
+
+            isJumping = inputManager.IsNewPress(JumpButton) || inputManager.IsNewPress(Keys.Space) || inputManager.IsNewPress(Keys.Up) ||
+                inputManager.IsNewPress(Keys.W);
         }
 
 
