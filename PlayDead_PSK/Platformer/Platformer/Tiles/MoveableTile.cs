@@ -16,7 +16,7 @@ namespace Platformer.Tiles
     /// Code inspired from:
     /// http://robotfootgames.com/2011/05/movable-platforms/
     /// </summary>
-    class MoveableTile :  Tile
+    abstract class MoveableTile :  Tile
     {
         /// <summary>
         /// The movement velocity of the tile.
@@ -26,17 +26,32 @@ namespace Platformer.Tiles
         public Vector2 Velocity
         {
             get { return velocity; }
+            protected set { velocity = value; }
         }
         private Vector2 velocity;
 
+        /// <summary>
+        /// The movement velocity of the tile for the current frame
+        /// The first component (.X) is the angle in radians.
+        /// The second component (.Y) is the speed in pixels for the current frame.
+        /// </summary>
         public Vector2 FrameVelocity
         {
             get { return frameVelocity; }
+            protected set { frameVelocity = value; }
         }
         private Vector2 frameVelocity;
 
+        /// <summary>
+        /// A leading tile is one which watching tiles follow.
+        /// If the current tile is the Leader, Leader should be this.
+        /// Leader should be same type as sub-class! TODO: How to enforce this?
+        /// </summary>
         public MoveableTile Leader { get; set; }
 
+        /// <summary>
+        /// The level the tile is on.
+        /// </summary>
         private Level level;
 
         protected float WaitTimeS { get; set; }
@@ -118,7 +133,7 @@ namespace Platformer.Tiles
             frameVelocity.X = 0;
         }
 
-        private Tile getCollidingTile()
+        protected Tile getCollidingTile()
         {
             Tile collidingTile = null;
 

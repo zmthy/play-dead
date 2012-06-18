@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <ProjectGuid>{932C3D56-99F8-4A20-AD55-D46BE7DA09C8}</ProjectGuid>
@@ -78,9 +78,12 @@
     <Compile Include="Camera\PanningDirector.cs" />
     <Compile Include="Camera\TrackingDirector.cs" />
     <Compile Include="Circle.cs" />
+    <Compile Include="InputManager.cs" />
     <Compile Include="Level\DynamicMap.cs" />
     <Compile Include="Level\LevelFactory.cs" />
     <Compile Include="Sprite.cs" />
+    <Compile Include="Tiles\DoorTile.cs" />
+    <Compile Include="Tiles\SlidingTile.cs" />
     <Compile Include="Tiles\Spawner.cs" />
     <Compile Include="Tiles\MoveableTile.cs" />
     <Compile Include="RectangleF.cs" />

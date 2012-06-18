@@ -4,3 +4,6 @@ obj
 
 # mstest test results
 TestResults
+
+# User-specific Visual Studio configuration files
+*.suo

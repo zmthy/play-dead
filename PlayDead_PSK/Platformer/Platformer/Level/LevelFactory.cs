@@ -405,7 +405,7 @@ namespace Platformer.Levels
             sprite.Position = new Vector2(x, y);
             float angle = (isHorizontal) ? 0.0f : (float)(Math.PI / 2.0);
 
-            return new MoveableTile(sprite, collision, new Vector2(angle, 100));
+            return new SlidingTile(sprite, collision, new Vector2(angle, 100));
         }
         #endregion
 
