@@ -53,7 +53,6 @@ namespace Platformer.Tiles
                 foreach (IActivatable responder in list)
                 {
                     responder.ChangeState();
-                    Console.WriteLine(responder.IsActive());
                 }
             }
         }
