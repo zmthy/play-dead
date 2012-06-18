@@ -141,7 +141,8 @@ namespace Platformer.Levels
         /// <param name="active">The activatable instance.</param>
         public void addActivatable(string tileID, IActivatable active)
         {
-            activatables.Add(tileID, active);
+            if(!activatables.ContainsKey(tileID))
+                activatables.Add(tileID, active);
         }
 
         /// <summary>

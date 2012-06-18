@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text;
 
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Input;
 
 using Platformer.Levels;
 
@@ -71,17 +70,12 @@ namespace Platformer.Tiles
 
         public override void Update(GameTime gameTime)
         {
-            KeyboardState keyboard = Keyboard.GetState();
-
-            if (keyboard.IsKeyDown(Keys.E))
-                Open = true;
-            else if (keyboard.IsKeyDown(Keys.R))
-                Closed = true;
-
             // Get the elapse time since the last frame
             float elapsedS = (float)gameTime.ElapsedGameTime.TotalSeconds;
 
             DoorTile leader = getLeader();
+            this.moving = leader.Moving;
+            Open = leader.Open;
             
             if (Leader != this && moving) // If we are not the leader and we are moving
             {

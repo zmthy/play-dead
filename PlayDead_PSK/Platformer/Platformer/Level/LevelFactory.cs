@@ -171,7 +171,11 @@ namespace Platformer.Levels
                         //Create Moving Platform
                         MoveableTile mTile = CreateMoveable(tileType, xDrawPostion, yDrawPostion);
                         if (mTile != null)
+                        {
                             level.addMoveable(tileID, mTile);
+                            if (mTile is IActivatable)
+                                level.addActivatable(tileID, (IActivatable)mTile);
+                        }
 
                     }
                     else //Just add empty tiles to make up the length
