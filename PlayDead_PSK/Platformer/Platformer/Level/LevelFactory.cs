@@ -388,18 +388,30 @@ namespace Platformer.Levels
             {
                 // Moveable block, horizontal
                 case 'H':
-                    return CreateMoveableTile(x, y, true, TileCollision.Platform);
+                    return CreateSlidingTile(x, y, true, TileCollision.Platform);
 
                 // Moveable block, vertical
                 case 'V':
-                    return CreateMoveableTile(x, y, false, TileCollision.Platform);
+                    return CreateSlidingTile(x, y, false, TileCollision.Platform);
+
+                // Moveable block, vertical
+                case 'D':
+                    return CreateDoorTile(x, y, false, TileCollision.Impassable);
 
                 default:
                     return null;
             }
         }
 
-        private MoveableTile CreateMoveableTile(int x, int y, bool isHorizontal, TileCollision collision)
+        private MoveableTile CreateDoorTile(int x, int y, bool p, TileCollision tileCollision)
+        {
+            Sprite sprite = new Sprite(themedContent.Load<Texture2D>("Tiles/Platform"), Tile.Width, Tile.Height);
+            sprite.Position = new Vector2(x, y);
+
+            return new DoorTile(sprite, tileCollision, 100);
+        }
+
+        private MoveableTile CreateSlidingTile(int x, int y, bool isHorizontal, TileCollision collision)
         {
             Sprite sprite = new Sprite(themedContent.Load<Texture2D>("Tiles/Platform"), Tile.Width, Tile.Height);
             sprite.Position = new Vector2(x, y);
