@@ -155,7 +155,7 @@ namespace Platformer.Levels
                             level.addActivator(tileID, actor);
 
                         //Create Activatable
-                        Activatable active = CreateActivatable(tileType, xDrawPostion, yDrawPostion);
+                        IActivatable active = CreateActivatable(tileType, xDrawPostion, yDrawPostion);
                         if (active != null)
                         {
                             level.addActivatable(tileID, active);
@@ -341,7 +341,7 @@ namespace Platformer.Levels
         /// <param name="x"></param>
         /// <param name="y"></param>
         /// <returns></returns>
-        private Platformer.Tiles.Activatable CreateActivatable(char tileType, int x, int y)
+        private Platformer.Tiles.IActivatable CreateActivatable(char tileType, int x, int y)
         {
             switch (tileType)
             {
@@ -361,13 +361,13 @@ namespace Platformer.Levels
         /// <summary>
         /// Instantiates a player, puts him in the level, and remembers where to put him when he is resurrected.
         /// </summary>
-        private Activatable CreateSpawner(int x, int y)
+        private IActivatable CreateSpawner(int x, int y)
         {
             Vector2 tileCenter = new Vector2(x + Tile.Width / 2, y + Tile.Height / 2);
             return new Spawner(tileCenter, themedContent);
         }
 
-        private Activatable CreateLight(int x, int y)
+        private IActivatable CreateLight(int x, int y)
         {
             Vector2 tileCenter = new Vector2(x + Tile.Width / 2, y + Tile.Height / 2);
             return new Light(tileCenter, themedContent);

@@ -13,12 +13,23 @@ using Platformer;
 
 namespace Platformer.Tiles
 {
-    class Light : Activatable
+    class Light : IActivatable
     {
+        private Texture2D activated;
+        private Texture2D deactivated;
+        private Vector2 origin;
 
-        public Light(Vector2 location, ContentManager content)
-            : base(location)
+        private bool isActive;
+
+        public Vector2 Position
         {
+            get { return position; }
+        }
+        private Vector2 position;
+
+        public Light(Vector2 position, ContentManager content)
+        {
+            this.position = position;
             this.initialise(content);
         }
 
@@ -32,6 +43,30 @@ namespace Platformer.Tiles
             origin = new Vector2(activated.Width / 2.0f, activated.Height / 2.0f);
         }
 
+        public bool IsActive()
+        {
+            return isActive;
+        }
+
+        public void SetState(bool active)
+        {
+            this.isActive = active;
+        }
+
+        public void ChangeState()
+        {
+            SetState(!isActive);
+        }
+
+        public void Draw(GameTime gameTime, SpriteBatch spriteBatch)
+        {
+            if (isActive)
+                spriteBatch.Draw(activated, position, null, Color.White, 0.0f, origin, 1.0f, SpriteEffects.None, 0.0f);
+            else
+                spriteBatch.Draw(deactivated, position, null, Color.White, 0.0f, origin, 1.0f, SpriteEffects.None, 0.0f);
+        }
+
+        public void Update(GameTime gameTime) { }
 
     }
 }

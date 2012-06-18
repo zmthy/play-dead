@@ -13,12 +13,12 @@ namespace Platformer.Tiles
 {
     class Switch : Activator
     {
-        public Switch(ArrayList list, Vector2 location, ContentManager content)
+        /*public Switch(A list, Vector2 location, ContentManager content)
             : base(location)
         {
             this.list = list;
             this.initialise(content);
-        }
+        }*/
 
         public Switch(Vector2 location, ContentManager content)
             : base(location)
@@ -26,12 +26,12 @@ namespace Platformer.Tiles
             this.initialise(content);
         }
 
-        public Switch(Activatable responder, Vector2 location, ContentManager content)
+        /*public Switch(IActivatable responder, Vector2 location, ContentManager content)
             : base(location)
         {
             this.add(responder);
             this.initialise(content);
-        }
+        }*/
 
         private void initialise(ContentManager content)
         {
@@ -50,9 +50,9 @@ namespace Platformer.Tiles
             if (inputManager.IsNewPress(Keys.K) && touching)
             {
                 on = !on;
-                foreach (Activatable responder in list)
+                foreach (IActivatable responder in list)
                 {
-                    responder.changeState();
+                    responder.ChangeState();
                 }
             }
         }

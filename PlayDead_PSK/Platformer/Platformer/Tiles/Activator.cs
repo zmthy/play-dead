@@ -1,12 +1,16 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Input;
+
 using Platformer;
+
 
 namespace Platformer.Tiles
 {
@@ -14,8 +18,7 @@ namespace Platformer.Tiles
     {
 
         protected Boolean on = false;
-
-        protected ArrayList list { get; set; }
+        protected List<IActivatable> list { get; set; }
         protected Vector2 position;
 
         protected Texture2D activated;
@@ -36,10 +39,10 @@ namespace Platformer.Tiles
         public Activator(Vector2 location)
         {
             this.position = location;
-            this.list = new ArrayList();
+            this.list = new List<IActivatable>();
         }
 
-        public void remove(Activatable responder)
+        public void remove(IActivatable responder)
         {
             list.Remove(responder);
         }
@@ -47,7 +50,7 @@ namespace Platformer.Tiles
         /**
          * Add a new Activatable to this Activator
          **/
-        public void add(Activatable responder)
+        public void add(IActivatable responder)
         {
             list.Add(responder);
         }

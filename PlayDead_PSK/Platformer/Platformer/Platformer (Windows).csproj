@@ -83,12 +83,12 @@
     <Compile Include="Level\LevelFactory.cs" />
     <Compile Include="Sprite.cs" />
     <Compile Include="Tiles\DoorTile.cs" />
+    <Compile Include="Tiles\IActivatable.cs" />
     <Compile Include="Tiles\SlidingTile.cs" />
     <Compile Include="Tiles\Spawner.cs" />
     <Compile Include="Tiles\MoveableTile.cs" />
     <Compile Include="RectangleF.cs" />
     <Compile Include="Tiles\Tile.cs" />
-    <Compile Include="Tiles\Activatable.cs" />
     <Compile Include="Tiles\Activator.cs" />
     <Compile Include="Level\Level.cs" />
     <Compile Include="PlatformerGame.cs" />

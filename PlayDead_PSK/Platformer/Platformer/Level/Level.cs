@@ -35,7 +35,7 @@ namespace Platformer.Levels
         #region Properties
         //Level Structure
         private Tile[,] tiles;
-        private Dictionary<String, Platformer.Tiles.Activatable> activatables;
+        private Dictionary<String, Platformer.Tiles.IActivatable> activatables;
         private Dictionary<String, Platformer.Tiles.Activator> activators;
 
         public List<MoveableTile> MoveableTiles
@@ -92,7 +92,7 @@ namespace Platformer.Levels
             this.content = content;
 
             tiles = new Tile[width, height];
-            activatables = new Dictionary<string, Activatable>();
+            activatables = new Dictionary<string, IActivatable>();
             activators = new Dictionary<string, Tiles.Activator>();
             moveableTiles = new Dictionary<string, List<MoveableTile>>();
         }
@@ -139,7 +139,7 @@ namespace Platformer.Levels
         /// </summary>
         /// <param name="tileID">The ID of the tile.</param>
         /// <param name="active">The activatable instance.</param>
-        public void addActivatable(string tileID, Activatable active)
+        public void addActivatable(string tileID, IActivatable active)
         {
             activatables.Add(tileID, active);
         }
@@ -317,7 +317,7 @@ namespace Platformer.Levels
                 tile.draw(spriteBatch);
 
             //Draw Activatables
-            foreach (Activatable active in activatables.Values)
+            foreach (IActivatable active in activatables.Values)
                 active.Draw(gameTime, spriteBatch);
 
             //Draw Activators

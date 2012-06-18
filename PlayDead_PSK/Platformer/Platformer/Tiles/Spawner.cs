@@ -14,21 +14,28 @@ using Platformer.Levels;
 
 namespace Platformer.Tiles
 {
-    class Spawner : Activatable
+    class Spawner : IActivatable
     {
         /// <summary>
         /// The level which the spawner is tied too.
         /// </summary>
         private Level level;
 
+        private Texture2D activated;
+        private Texture2D deactivated;
+        private Vector2 origin;
+
+        private bool isActive;
+
         public Vector2 Position
         {
             get { return position; }
         }
+        private Vector2 position;
 
-        public Spawner(Vector2 location, ContentManager content)
-            : base(location)
+        public Spawner(Vector2 position, ContentManager content)
         {
+            this.position = position;
             this.initialise(content);
         }
 
@@ -58,16 +65,26 @@ namespace Platformer.Tiles
         /// When the spawner is swicthed on it will notify the Level to update it's spawn.
         /// </summary>
         /// <param name="isActive"></param>
-        public override void SetState(Boolean isActive)
+        public void SetState(Boolean active)
         {
-            if (!on) //Activators can only turn a spawn point on, not off as we don't know the previous spawn point
+            if (!isActive) //Activators can only turn a spawn point on, not off as we don't know the previous spawn point
             {
-                if (isActive && level != null)
+                if (active && level != null)
                 {
                     level.UpdateSpawn(this);
                 }
-                this.on = isActive;
+                this.isActive = active;
             }
+        }
+
+        public bool IsActive()
+        {
+            return isActive;
+        }
+
+        public void ChangeState()
+        {
+            SetState(!isActive);
         }
 
         /// <summary>
@@ -76,7 +93,17 @@ namespace Platformer.Tiles
         /// <param name="isActive"></param>
         public void SetSpawnState(Boolean isActive)
         {
-            this.on = isActive;
+            this.isActive = isActive;
         }
+
+        public void Draw(GameTime gameTime, SpriteBatch spriteBatch)
+        {
+            if (isActive)
+                spriteBatch.Draw(activated, position, null, Color.White, 0.0f, origin, 1.0f, SpriteEffects.None, 0.0f);
+            else
+                spriteBatch.Draw(deactivated, position, null, Color.White, 0.0f, origin, 1.0f, SpriteEffects.None, 0.0f);
+        }
+
+        public void Update(GameTime gameTime) { }
     }
 }
