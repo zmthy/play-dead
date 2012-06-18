@@ -239,13 +239,17 @@ namespace Platformer.Levels
         public Tile getTile(int x, int y)
         {
             Tile tile = null;
-            if (x >= 0 && x < Width)
-            {
-                if (y >= 0 && y < Height)
-                {
-                    tile = tiles[x, y];
-                }
-            }
+
+            // Prevent escaping past the level ends.
+            if (x < 0 || x >= Width)
+                tile = new Tile(new Sprite(null, Tile.Width, Tile.Height), TileCollision.Impassable);
+
+            // Allow jumping past the level top and falling through the bottom.
+            if(y < 0 || y >= Height)
+                tile = new Tile(new Sprite(null, Tile.Width, Tile.Height), TileCollision.Passable);
+
+            if (tile == null)
+                tile = tiles[x, y];
 
             return tile;
         }

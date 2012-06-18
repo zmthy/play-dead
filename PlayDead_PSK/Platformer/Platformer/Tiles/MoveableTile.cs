@@ -70,69 +70,6 @@ namespace Platformer.Tiles
             this.level = level;
         }
 
-        /*public override void Update(GameTime gameTime);
-        {
-            // Get the elapse time since the last frame
-            float elapsedS = (float)gameTime.ElapsedGameTime.TotalSeconds;
-
-            if (Leader != this && Leader.WaitTimeS <= 0) // If we are folloing the leader
-            {
-                velocity = Leader.Velocity;
-                frameVelocity = Leader.FrameVelocity;
-                Sprite.Position = Sprite.Position + FrameVelocity;
-
-                Tile collidingTile = getCollidingTile();
-                if (collidingTile is MoveableTile)
-                {
-                    // We have collided, notify the leader
-                    Leader.reverseDirection();
-                }
-                else if (collidingTile is Tile)
-                {
-                    // We have collided, notify the leader
-                    Leader.reverseDirection(MAX_WAIT_TIME_S);
-                }
-            }
-            else if(Leader == this) // If we are the leader
-            {
-                if (WaitTimeS > 0)
-                {
-                    // Wait for some amount of time.
-                    WaitTimeS = Math.Max(0.0f, WaitTimeS - elapsedS);
-                }
-
-                if (WaitTimeS <= 0)
-                {
-                    Tile collidingTile = getCollidingTile();
-
-                    if (collidingTile is MoveableTile)
-                    {
-                        // We have collided, notify the leader
-                        reverseDirection();
-                    }
-                    else if (collidingTile is Tile)
-                    {
-                        // We have collided, notify the leader
-                        reverseDirection(MAX_WAIT_TIME_S);
-                    }
-                    else
-                    {
-                        // Move in the current direction.
-                        frameVelocity = new Vector2((float)(Math.Cos(velocity.X) * velocity.Y * elapsedS),
-                                                    (float)(Math.Sin(velocity.X) * velocity.Y * elapsedS));
-                        Sprite.Position = Sprite.Position + frameVelocity;
-                    }
-                }
-            }
-        }*/
-
-        public void reverseDirection(float waitTimeS = 0)
-        {
-            WaitTimeS = waitTimeS;
-            velocity.X -= (float)Math.PI;
-            frameVelocity.X = 0;
-        }
-
         protected Tile getCollidingTile()
         {
             Tile collidingTile = null;

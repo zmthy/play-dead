@@ -35,8 +35,6 @@ namespace Platformer.Tiles
             if (Leader != this && leader.WaitTimeS <= 0) // If we are folloing the leader
             {
                 Velocity = Leader.Velocity;
-                FrameVelocity = Leader.FrameVelocity;
-                Sprite.Position = Sprite.Position + FrameVelocity;
 
                 Tile collidingTile = getCollidingTile();
                 if (collidingTile is MoveableTile)
@@ -49,6 +47,9 @@ namespace Platformer.Tiles
                     // We have collided, notify the leader
                     leader.reverseDirection(MAX_WAIT_TIME_S);
                 }
+
+                FrameVelocity = Leader.FrameVelocity;
+                Sprite.Position = Sprite.Position + FrameVelocity;
             }
             else if (Leader == this) // If we are the leader
             {
@@ -83,7 +84,7 @@ namespace Platformer.Tiles
             }
         }
 
-        public void reverseDirection(float waitTimeS = 0)
+        private void reverseDirection(float waitTimeS = 0)
         {
             WaitTimeS = waitTimeS;
             Velocity = new Vector2(Velocity.X + (float)Math.PI, Velocity.Y);
