@@ -16,7 +16,7 @@ namespace Platformer.Tiles
 
         void ChangeState();
 
-        void Draw(GameTime gameTime, SpriteBatch spriteBatch);
+        void Draw(SpriteBatch spriteBatch);
 
         void Update(GameTime gameTime);
     }

@@ -64,9 +64,9 @@ namespace Platformer.Tiles
             Collision = collision;
         }
 
-        public virtual void update(GameTime gameTime) { }
+        public virtual void Update(GameTime gameTime) { }
 
-        public void draw(SpriteBatch spriteBatch)
+        public void Draw(SpriteBatch spriteBatch)
         {
             if (Sprite != null)
                 Sprite.draw(spriteBatch);

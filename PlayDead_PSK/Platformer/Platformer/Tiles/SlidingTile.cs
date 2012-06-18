@@ -26,7 +26,7 @@ namespace Platformer.Tiles
         public SlidingTile(Sprite sprite, TileCollision collision, Vector2 velocity)
             : base(sprite, collision, velocity) { }
 
-        public override void update(GameTime gameTime)
+        public override void Update(GameTime gameTime)
         {
             // Get the elapse time since the last frame
             float elapsedS = (float)gameTime.ElapsedGameTime.TotalSeconds;

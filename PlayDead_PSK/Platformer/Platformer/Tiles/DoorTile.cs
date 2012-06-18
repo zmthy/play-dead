@@ -10,7 +10,7 @@ using Platformer.Levels;
 
 namespace Platformer.Tiles
 {
-    class DoorTile : MoveableTile
+    class DoorTile : MoveableTile, IActivatable
     {
         public const float CLAMP_DISTANCE = 2;
 
@@ -54,7 +54,22 @@ namespace Platformer.Tiles
             closedPosition = sprite.Position;
         }
 
-        public override void update(GameTime gameTime)
+        public bool IsActive()
+        {
+            return Open;
+        }
+
+        public void SetState(bool active)
+        {
+            Open = active;
+        }
+
+        public void ChangeState()
+        {
+            Open = !Open;
+        }
+
+        public override void Update(GameTime gameTime)
         {
             KeyboardState keyboard = Keyboard.GetState();
 

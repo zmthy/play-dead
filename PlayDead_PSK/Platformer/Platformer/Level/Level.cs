@@ -273,11 +273,11 @@ namespace Platformer.Levels
 
             //Update each tile
             foreach (Tile tile in tiles)
-                tile.update(gameTime);
+                tile.Update(gameTime);
 
             // Update non-atomic tiles
             foreach(MoveableTile mTile in MoveableTiles)
-                mTile.update(gameTime);
+                mTile.Update(gameTime);
 
             // Falling off the bottom of the level kills the player.
             if (player.BoundingRectangle.Top >= Height * Tile.Height)
@@ -310,15 +310,15 @@ namespace Platformer.Levels
         {
             // Draw Tiles
             foreach (Tile tile in tiles)
-                tile.draw(spriteBatch);
+                tile.Draw(spriteBatch);
 
             // Draw non-atomic tiles
             foreach (MoveableTile tile in MoveableTiles)
-                tile.draw(spriteBatch);
+                tile.Draw(spriteBatch);
 
             //Draw Activatables
             foreach (IActivatable active in activatables.Values)
-                active.Draw(gameTime, spriteBatch);
+                active.Draw(spriteBatch);
 
             //Draw Activators
             foreach (Platformer.Tiles.Activator actor in activators.Values)

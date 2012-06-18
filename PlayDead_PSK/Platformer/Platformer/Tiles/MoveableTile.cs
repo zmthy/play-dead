@@ -70,7 +70,7 @@ namespace Platformer.Tiles
             this.level = level;
         }
 
-        public override void update(GameTime gameTime)
+        /*public override void Update(GameTime gameTime);
         {
             // Get the elapse time since the last frame
             float elapsedS = (float)gameTime.ElapsedGameTime.TotalSeconds;
@@ -124,7 +124,7 @@ namespace Platformer.Tiles
                     }
                 }
             }
-        }
+        }*/
 
         public void reverseDirection(float waitTimeS = 0)
         {
