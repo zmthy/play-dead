@@ -7,3 +7,4 @@ TestResults
 
 # User-specific Visual Studio configuration files
 *.suo
+*.cachefile
