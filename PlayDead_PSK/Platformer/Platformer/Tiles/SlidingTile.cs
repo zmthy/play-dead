@@ -32,7 +32,7 @@ namespace Platformer.Tiles
             float elapsedS = (float)gameTime.ElapsedGameTime.TotalSeconds;
 
             SlidingTile leader = getLeader();
-            if (Leader != this && leader.WaitTimeS <= 0) // If we are folloing the leader
+            if (Leader != this && leader.WaitTimeS <= 0) // If we are following the leader
             {
                 Velocity = Leader.Velocity;
 

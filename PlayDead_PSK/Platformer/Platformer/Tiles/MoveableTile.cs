@@ -54,9 +54,23 @@ namespace Platformer.Tiles
         /// </summary>
         private Level level;
 
+        /// <summary>
+        /// Amount of time remaining to wait upon collision with a tile.
+        /// Waiting allows the player to more easily jump on the platform.
+        /// </summary>
         protected float WaitTimeS { get; set; }
+
+        /// <summary>
+        /// TIme to wait upon collision with a tile.
+        /// </summary>
         private const float MAX_WAIT_TIME_S = 0.2f;
 
+        /// <summary>
+        /// Creates a new Moveable tile.
+        /// </summary>
+        /// <param name="sprite">Sprite representing texture, size, and position of the tile. </param>
+        /// <param name="collision">Type of collision for the tile.</param>
+        /// <param name="velocity">Tile velocity: .X is the movement angle in radians and .Y is the speed in pixels per second.</param>
         public MoveableTile(Sprite sprite, TileCollision collision, Vector2 velocity)
             : base(sprite, collision)
         {
