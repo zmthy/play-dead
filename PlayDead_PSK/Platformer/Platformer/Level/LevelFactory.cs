@@ -258,6 +258,10 @@ namespace Platformer.Levels
                 case '#':
                     return CreateVarietyTile("BlockA", 7, TileCollision.Impassable);
 
+                // Spike block
+                case '^':
+                    return CreateTile("Spikes", TileCollision.Death);
+
                 // Unknown tile type character
                 default:
                     return new Tile(null, TileCollision.Passable);

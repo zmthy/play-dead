@@ -38,6 +38,8 @@ namespace Platformer.Tiles
         Platform = 2,
 
         Ladder = 3,
+
+        Death = 4,
     }
 
     /// <summary>

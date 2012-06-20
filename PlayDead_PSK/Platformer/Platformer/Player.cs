@@ -582,7 +582,7 @@ namespace Platformer
                         float absDepthY = Math.Abs(depth.Y);
 
                         // Resolve the collision along the shallow axis.
-                        if (absDepthY < absDepthX || collision == TileCollision.Platform)
+                        if (collision!=TileCollision.Death && (absDepthY < absDepthX || collision == TileCollision.Platform))
                         {
                             // If we crossed the top of a tile, we are on the ground.
                             // This needs to change for ladder mechanic
@@ -645,8 +645,14 @@ namespace Platformer
                             // Future collisions with the new bounds
                             bounds = BoundingRectangle;
                         }
+                        else if (collision == TileCollision.Death) // Something that kills you!
+                        {
+                            if(absDepthY > tile.Sprite.Height/2)
+                                OnKilled("You touched something stupid!");
+                            
+                        }
                     }
-                }                
+                }         
             }
 
             // Save the new bounds bottom.
