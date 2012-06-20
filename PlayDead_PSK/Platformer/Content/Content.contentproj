@@ -106,56 +106,6 @@
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
-    <Compile Include="Tiles\BlockA0.png">
-      <Name>BlockA0</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
-    <Compile Include="Tiles\BlockA1.png">
-      <Name>BlockA1</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
-    <Compile Include="Tiles\BlockA2.png">
-      <Name>BlockA2</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
-    <Compile Include="Tiles\BlockA3.png">
-      <Name>BlockA3</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
-    <Compile Include="Tiles\BlockA4.png">
-      <Name>BlockA4</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
-    <Compile Include="Tiles\BlockA5.png">
-      <Name>BlockA5</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
-    <Compile Include="Tiles\BlockA6.png">
-      <Name>BlockA6</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
-    <Compile Include="Tiles\BlockB0.png">
-      <Name>BlockB0</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
-    <Compile Include="Tiles\BlockB1.png">
-      <Name>BlockB1</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
-    <Compile Include="Tiles\Platform.png">
-      <Name>Platform</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Fonts\Hud.spritefont">
@@ -210,14 +160,6 @@
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
-    <None Include="Levels\0.txt">
-      <Name>0</Name>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Levels\2.txt">
-      <Name>2</Name>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
     <Compile Include="Overlays\you_died.png">
       <Name>you_died</Name>
       <Importer>TextureImporter</Importer>
@@ -249,19 +191,6 @@
       <Name>test_1</Name>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Levels\1.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <Name>1</Name>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="Tiles\Exit.png">
-      <Name>Exit</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Sounds\ExitReached.wma">
@@ -317,51 +246,6 @@
       <Name>Powerup</Name>
       <Importer>WmaImporter</Importer>
       <Processor>SoundEffectProcessor</Processor>
-    </Compile>
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="Tiles\Spawner.png">
-      <Name>Spawner</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="Activatable\light_off.png">
-      <Name>light_off</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
-    <Compile Include="Activatable\light_on.png">
-      <Name>light_on</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="Activator\switch_off.png">
-      <Name>switch_off</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
-    <Compile Include="Activator\switch_on.png">
-      <Name>switch_on</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Levels\0.csv">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <Name>0</Name>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="Activatable\spawner_off.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <Name>spawner_off</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
     </Compile>
   </ItemGroup>
   <ItemGroup>
@@ -489,14 +373,6 @@
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Compile>
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="Activatable\spawner_on.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <Name>spawner_on</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
     </Compile>
   </ItemGroup>
   <ItemGroup>
