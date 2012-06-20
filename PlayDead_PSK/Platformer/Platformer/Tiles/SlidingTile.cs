@@ -32,28 +32,31 @@ namespace Platformer.Tiles
             float elapsedS = (float)gameTime.ElapsedGameTime.TotalSeconds;
 
             SlidingTile leader = getLeader();
-            if (Leader != this && leader.WaitTimeS <= 0) // If we are following the leader
+            if (Leader != this) // If we are following the leader
             {
                 Velocity = Leader.Velocity;
                 FrameVelocity = Leader.FrameVelocity;
-
-                Tile collidingTile = getCollidingTile();
-                if (collidingTile is MoveableTile)
-                {
-                    // We have collided, notify the leader
-                    leader.reverseDirection();
-                }
-                else if (collidingTile is Tile)
-                {
-                    // We have collided, notify the leader
-                    leader.reverseDirection(MAX_WAIT_TIME_S);
-                }
-
-                
                 Sprite.Position = Sprite.Position + FrameVelocity;
+
+                if (leader.WaitTimeS <= 0)
+                {
+                    Tile collidingTile = getCollidingTile();
+                    if (collidingTile is MoveableTile)
+                    {
+                        // We have collided, notify the leader
+                        leader.reverseDirection();
+                    }
+                    else if (collidingTile is Tile)
+                    {
+                        // We have collided, notify the leader
+                        leader.reverseDirection(MAX_WAIT_TIME_S);
+                    }
+                }
             }
             else if (Leader == this) // If we are the leader
             {
+                FrameVelocity = Vector2.Zero;
+
                 if (WaitTimeS > 0)
                 {
                     // Wait for some amount of time.
@@ -74,13 +77,11 @@ namespace Platformer.Tiles
                         // We have collided, notify the leader
                         reverseDirection(MAX_WAIT_TIME_S);
                     }
-                    else
-                    {
-                        // Move in the current direction.
-                        FrameVelocity = new Vector2((float)(Math.Cos(Velocity.X) * Velocity.Y * elapsedS),
-                                                    (float)(Math.Sin(Velocity.X) * Velocity.Y * elapsedS));
-                        Sprite.Position = Sprite.Position + FrameVelocity;
-                    }
+
+                    // Move in the current direction.
+                    FrameVelocity = new Vector2((float)(Math.Cos(Velocity.X) * Velocity.Y * elapsedS),
+                                                (float)(Math.Sin(Velocity.X) * Velocity.Y * elapsedS));
+                    Sprite.Position = Sprite.Position + FrameVelocity;
                 }
             }
         }
@@ -89,7 +90,6 @@ namespace Platformer.Tiles
         {
             WaitTimeS = waitTimeS;
             Velocity = new Vector2(Velocity.X + (float)Math.PI, Velocity.Y);
-            FrameVelocity = new Vector2(0, FrameVelocity.Y);
         }
 
         private SlidingTile getLeader()
