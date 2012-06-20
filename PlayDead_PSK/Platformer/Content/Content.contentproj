@@ -496,13 +496,6 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Tiles\Spikes.png">
-      <Name>Spikes</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
-  </ItemGroup>
-  <ItemGroup>
     <Compile Include="Theme\default\Tiles\Spikes.png">
       <Name>Spikes</Name>
       <Importer>TextureImporter</Importer>
