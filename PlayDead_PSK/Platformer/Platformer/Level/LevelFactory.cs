@@ -243,7 +243,7 @@ namespace Platformer.Levels
             {
                 // Blank space
                 case '.':
-                    return new Tile(null, TileCollision.Passable);
+                    return new Tile(new Sprite(null, Tile.Width, Tile.Height), TileCollision.Passable);
 
                 // Ladder
                 case 'L':

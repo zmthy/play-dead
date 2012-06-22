@@ -236,6 +236,16 @@ namespace Platformer.Levels
             return tiles[x, y].Collision;
         }
 
+        public bool isTileInBounds(int x, int y)
+        {
+            bool inBounds = true;
+
+            if(x < 0 || x >= Width || y < 0 || y >= Height)
+                inBounds = false;
+
+            return inBounds;
+        }
+
         public Tile getTile(int x, int y)
         {
             Tile tile = null;

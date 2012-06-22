@@ -50,13 +50,13 @@ namespace Platformer.Tiles
             int currentRow = (int)gridPos.Y;
 
             // Fill the world upwards, row by row, with water.
-            for (int row = 0; row < waterLevel + 1; row++)
+            for (int row = 0; row < waterLevel; row++)
             {
                 // Fill left
-                fillRow(currentCol - 1, currentRow + row, true);
+                fillRow(currentCol    , currentRow - row, true);
 
                 // Fill right
-                fillRow(currentCol + 1, currentRow + row, false);
+                fillRow(currentCol + 1, currentRow - row, false);
             }
         }
 
@@ -66,8 +66,6 @@ namespace Platformer.Tiles
 
             while (tile.Collision == TileCollision.Passable)
             {
-                Console.WriteLine("Looking " + ((lookLeft) ? "left" : "right") + " at " + tile.Collision.ToString());
-                Console.WriteLine(tile.Sprite.Texture);
                 tile.Collision = TileCollision.Water;
                 tile.Sprite.Texture = fullSprite.Texture;
 
@@ -76,7 +74,14 @@ namespace Platformer.Tiles
                 else
                     col++;
 
-                tile = level.getTile(col, row);
+                if (level.isTileInBounds(col, row))
+                {
+                    tile = level.getTile(col, row);
+                }
+                else
+                {
+                    break;
+                }
             }
         }
     }
