@@ -600,7 +600,7 @@ namespace Platformer
 
                 // If this tile is collidable,
                 TileCollision collision = tile.Collision;
-                if (collision != TileCollision.Passable)
+                if (collision != TileCollision.Passable && collision != TileCollision.Water)
                 {
                     // Determine collision depth (with direction) and magnitude.
                     RectangleF tileBounds = tile.Sprite.Bounds;
