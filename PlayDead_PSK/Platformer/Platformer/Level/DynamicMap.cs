@@ -47,6 +47,8 @@ namespace Platformer.Levels
         }
         private CameraDirector camera;
 
+        private Boolean deathPan = false;
+
         #endregion
 
         public DynamicMap(IServiceProvider serviceProvider, Camera2D camera)
@@ -110,13 +112,16 @@ namespace Platformer.Levels
         {
 
             //Update the Player
-            if (!Player.IsAlive)
+            if (!Player.IsAlive && !deathPan)
             {
                 // Still want to perform physics on the player.
                 Player.ApplyPhysics(gameTime);
 
-                if(keyboardState.IsKeyDown(Keys.R))
-                    Player.Reset(activeLevel.ActiveSpawn.Position);
+                //TODO: Pan the camera to the active spawn
+                //if(keyboardState.IsKeyDown(Keys.R))
+                //Player.Reset(activeLevel.ActiveSpawn.Position);
+                camera = new PanningDirector(camera.Camera, activeLevel.ActiveSpawn, 0.75f);
+                deathPan = true;
             }
             else
             {
@@ -128,7 +133,15 @@ namespace Platformer.Levels
             {
                 PanningDirector panningDirector = (PanningDirector)camera;
                 if (panningDirector.Completed)
+                {
                     camera = new TrackingDirector(panningDirector.Camera, player);
+                }
+                else if(deathPan && panningDirector.Returning)
+                    {
+                        Player.Reset(activeLevel.ActiveSpawn.Position);
+                        camera = new TrackingDirector(panningDirector.Camera, player);
+                        deathPan = false;
+                    }
             }
             camera.update(gameTime);
 

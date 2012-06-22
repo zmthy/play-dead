@@ -245,7 +245,7 @@ namespace Platformer
             else */
             if (!map.Player.IsAlive)
             {
-                status = diedOverlay;
+                //status = diedOverlay;
             }
 
             if (status != null)

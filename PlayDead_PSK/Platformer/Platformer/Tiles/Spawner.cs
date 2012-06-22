@@ -11,10 +11,11 @@ using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media;
 using Platformer;
 using Platformer.Levels;
+using Platformer.Camera;
 
 namespace Platformer.Tiles
 {
-    class Spawner : IActivatable
+    class Spawner : IActivatable, ICameraTrackable
     {
         /// <summary>
         /// The level which the spawner is tied too.
@@ -105,5 +106,10 @@ namespace Platformer.Tiles
         }
 
         public void Update(GameTime gameTime) { }
+
+        public Vector2 getPosition()
+        {
+            return Position;
+        }
     }
 }

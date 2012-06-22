@@ -39,6 +39,9 @@ namespace Platformer
         private SpriteEffects flip = SpriteEffects.None;
         private AnimationPlayer sprite;
 
+        //Flag to make sure it only plays the death sound once
+        private bool deathPlayed = false;
+
         // Sounds
         private SoundEffect killedSound;
         private SoundEffect jumpSound;
@@ -207,6 +210,7 @@ namespace Platformer
             Position = position;
             Velocity = Vector2.Zero;
             isAlive = true;
+            deathPlayed = false;
             sprite.PlayAnimation(idleAnimation);
         }
 
@@ -589,7 +593,7 @@ namespace Platformer
                             if (previousBottom <= tileBounds.Top)
                             {
                                 // If the collision is with a ladder tile, we are not back on the ground
-                                if (collision == TileCollision.Ladder)
+                                if (isAlive && collision == TileCollision.Ladder)
                                 {
                                     if (!isClimbing && !isJumping)
                                     {
@@ -635,7 +639,7 @@ namespace Platformer
                             // Perform further collisions with the new bounds.
                             bounds = BoundingRectangle;
                         }
-                        else if (collision == TileCollision.Ladder && !isClimbing)
+                        else if (isAlive && collision == TileCollision.Ladder && !isClimbing)
                         {
                             //when we are walking in front of a ladder, or falling past a ladder
                                 
@@ -645,7 +649,7 @@ namespace Platformer
                             // Future collisions with the new bounds
                             bounds = BoundingRectangle;
                         }
-                        else if (collision == TileCollision.Death) // Something that kills you!
+                        else if (isAlive && collision == TileCollision.Death) // Something that kills you!
                         {
                             if(absDepthY > tile.Sprite.Height/2)
                                 OnKilled("You touched something stupid!");
@@ -670,12 +674,19 @@ namespace Platformer
         {
             isAlive = false;
 
-            if (killedBy.Length != 0)
+            if (!deathPlayed && killedBy.Length != 0)
+            {
                 killedSound.Play();
-            else
+                deathPlayed = true;
+            }
+            else if (!deathPlayed)
+            {
                 fallSound.Play();
-
+                deathPlayed = true;
+            }
             sprite.PlayAnimation(dieAnimation);
+            //TODO: pan the camera
+            
         }
 
         /// <summary>
