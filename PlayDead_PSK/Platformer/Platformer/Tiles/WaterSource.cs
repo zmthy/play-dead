@@ -12,18 +12,8 @@ namespace Platformer.Tiles
 {
     class WaterSource : Tile, IActivatable
     {
-        /*public int WaterLevel
-        {
-            get { return waterLevel; }
-            set
-            {
-                if (value > 0)
-                    waterLevel = value;
-                else
-                    waterLevel = 0;
-            }
-        }*/
-        private int waterLevel = 1;
+        private int initialWaterLevel;
+        private bool fill;
 
         private Sprite emptySprite;
         private Sprite fullSprite;
@@ -34,11 +24,14 @@ namespace Platformer.Tiles
         {
             this.emptySprite = emptySprite;
             this.fullSprite = fullSprite;
+
+            initialWaterLevel = 3;
+            fill = true;
         }
 
         public void increaseWaterLevel()
         {
-            waterLevel++;
+            fill = true;
         }
 
         public void bindToLevel(Level level)
@@ -50,18 +43,43 @@ namespace Platformer.Tiles
         {
             base.Update(gameTime);
 
+            if (!fill)
+                return;
+
+            fill = false;
+
             Vector2 gridPos = level.getGridPosition(Sprite.X, Sprite.Y);
             int currentCol = (int)gridPos.X;
             int currentRow = (int)gridPos.Y;
 
-            // Fill the world upwards, row by row, with water.
-            for (int row = 0; row < waterLevel; row++)
+            if (initialWaterLevel >= 0)
             {
+                // Fill the world upwards, row by row, with water.
+                for (int row = 0; row < initialWaterLevel; row++)
+                {
+                    // Fill left
+                    fillRow(currentCol, currentRow - row, true);
+
+                    // Fill right
+                    fillRow(currentCol + 1, currentRow - row, false);
+                }
+
+                initialWaterLevel = -1;
+            }
+            else
+            {
+                // Only fill the top row
+                int surfaceRow = currentRow;
+                do
+                {
+                    surfaceRow--;
+                } while (level.GetCollision(currentCol, surfaceRow) == TileCollision.Water);
+
                 // Fill left
-                fillRow(currentCol    , currentRow - row, true);
+                fillRow(currentCol    , surfaceRow, true);
 
                 // Fill right
-                fillRow(currentCol + 1, currentRow - row, false);
+                fillRow(currentCol + 1, surfaceRow, false);
             }
         }
 

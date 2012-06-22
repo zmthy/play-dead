@@ -46,11 +46,12 @@ namespace Platformer.Tiles
                     surfaceRow--;
                 } while (level.GetCollision(currentCol, surfaceRow) == TileCollision.Water);
 
-                Console.WriteLine(surfaceRow);
+                surfaceRow++;
+;
                 // Drain left
-                drainRow(currentCol, surfaceRow, true);
+                drainRow(currentCol    , surfaceRow, true);
 
-                // Drainright
+                // Drain right
                 drainRow(currentCol + 1, surfaceRow, false);
 
                 drain = false;
@@ -63,9 +64,12 @@ namespace Platformer.Tiles
 
             while (tile.Collision == TileCollision.Water)
             {
-                tile.Collision = TileCollision.Passable;
-                tile.Sprite.Texture = null;
-                Console.WriteLine(tile.Collision);
+                // Avoid important tiles
+                if (!(tile is WaterSource) && !(tile is WaterDrain))
+                {
+                    tile.Collision = TileCollision.Passable;
+                    tile.Sprite.Texture = null;
+                }
 
                 if (lookLeft)
                     col--;
