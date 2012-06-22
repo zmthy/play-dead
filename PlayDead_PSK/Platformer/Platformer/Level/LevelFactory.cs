@@ -140,14 +140,25 @@ namespace Platformer.Levels
                     if (x < lineTiles.Length)
                     {
                         string tileID = lineTiles[x].Trim();
-                        char tileType = tileID[0]; //The type is always the first part of the string
+                            char tileType = tileID[0]; //The type is always the first part of the string
 
                         //Create level tiles;
                         Tile newTile = CreateTile(tileType, x, y);
                         level.addTile(x, y, newTile);
 
                         if (newTile is WaterSource)
-                            ((WaterSource)newTile).bindToLevel(level);
+                        {
+                            WaterSource waterSource = (WaterSource)newTile;
+                            waterSource.bindToLevel(level);
+                            level.addActivatable(tileID, waterSource);
+                        }
+
+                        if (newTile is WaterDrain)
+                        {
+                            WaterDrain waterDrain = (WaterDrain)newTile;
+                            waterDrain.bindToLevel(level);
+                            level.addActivatable(tileID, waterDrain);
+                        }
 
                         int xDrawPostion = x * Tile.Width;
                         int yDrawPostion = y * Tile.Height;
@@ -265,9 +276,13 @@ namespace Platformer.Levels
                 case '^':
                     return CreateTile("Spikes", TileCollision.Death);
 
-                // Tile block
+                // Water source block
                 case 'W':
                     return CreateWaterSource("Water");
+
+                // Water drain block
+                case 'E':
+                    return CreateWaterDrain("Water");
 
                 // Unknown tile type character
                 default:
@@ -297,8 +312,13 @@ namespace Platformer.Levels
         {
             Sprite emptySprite = new Sprite(null, Tile.Width, Tile.Height);
             Sprite fullSprite = new Sprite(themedContent.Load<Texture2D>("Tiles/" + name), Tile.Width, Tile.Height);
-
             return new WaterSource(emptySprite, fullSprite);
+        }
+
+        public WaterDrain CreateWaterDrain(string name)
+        {
+            Sprite sprite = new Sprite(themedContent.Load<Texture2D>("Tiles/" + name), Tile.Width, Tile.Height);
+            return new WaterDrain(sprite);
         }
 
         /// <summary>

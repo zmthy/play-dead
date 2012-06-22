@@ -10,9 +10,9 @@ using Platformer.Levels;
 
 namespace Platformer.Tiles
 {
-    class WaterSource : Tile
+    class WaterSource : Tile, IActivatable
     {
-        public int WaterLevel
+        /*public int WaterLevel
         {
             get { return waterLevel; }
             set
@@ -22,7 +22,7 @@ namespace Platformer.Tiles
                 else
                     waterLevel = 0;
             }
-        }
+        }*/
         private int waterLevel = 1;
 
         private Sprite emptySprite;
@@ -34,6 +34,11 @@ namespace Platformer.Tiles
         {
             this.emptySprite = emptySprite;
             this.fullSprite = fullSprite;
+        }
+
+        public void increaseWaterLevel()
+        {
+            waterLevel++;
         }
 
         public void bindToLevel(Level level)
@@ -83,6 +88,22 @@ namespace Platformer.Tiles
                     break;
                 }
             }
+        }
+
+        public bool IsActive()
+        {
+            // Nothing to do here
+            return true;
+        }
+
+        public void SetState(bool active)
+        {
+            increaseWaterLevel();
+        }
+
+        public void ChangeState()
+        {
+            increaseWaterLevel();
         }
     }
 }

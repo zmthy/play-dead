@@ -98,7 +98,7 @@
     <Compile Include="RectangleExtensions.cs" />
     <Compile Include="Tiles\Light.cs" />
     <Compile Include="Tiles\Switch.cs" />
-    <Compile Include="Tiles\Water.cs" />
+    <Compile Include="Tiles\WaterDrain.cs" />
     <Compile Include="Tiles\WaterSource.cs" />
     <Compile Include="TouchCollectionExtensions.cs" />
   </ItemGroup>
