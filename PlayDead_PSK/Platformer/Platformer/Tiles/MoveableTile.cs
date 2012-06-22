@@ -89,7 +89,7 @@ namespace Platformer.Tiles
             Tile collidingTile = null;
 
             // Get adjacent tiles infront
-            Vector2 currentCell = getGridPosition(Sprite.Center.X, Sprite.Center.Y);
+            Vector2 currentCell = level.getGridPosition(Sprite.Center.X, Sprite.Center.Y);
             Vector2 nextLeft = getAdjacentCellAtAngle(currentCell, velocity.X - (float)(Math.PI / 4));
             Vector2 nextMiddle = getAdjacentCellAtAngle(currentCell, velocity.X);
             Vector2 nextRight = getAdjacentCellAtAngle(currentCell, velocity.X + (float)(Math.PI / 4));
@@ -128,13 +128,6 @@ namespace Platformer.Tiles
             }
 
             return collidingTile;
-        }
-
-        private Vector2 getGridPosition(float x, float y)
-        {
-            Vector2 gridPos = new Vector2((int)Math.Floor(x / Tile.Width),
-                                          (int)Math.Floor(y / Tile.Height));
-            return gridPos;
         }
 
         private Vector2 getAdjacentCellAtAngle(Vector2 currentCell, float angleRadians)

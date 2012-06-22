@@ -146,6 +146,9 @@ namespace Platformer.Levels
                         Tile newTile = CreateTile(tileType, x, y);
                         level.addTile(x, y, newTile);
 
+                        if (newTile is WaterSource)
+                            ((WaterSource)newTile).bindToLevel(level);
+
                         int xDrawPostion = x * Tile.Width;
                         int yDrawPostion = y * Tile.Height;
 
@@ -262,6 +265,10 @@ namespace Platformer.Levels
                 case '^':
                     return CreateTile("Spikes", TileCollision.Death);
 
+                // Tile block
+                case 'W':
+                    return CreateWaterSource("Water");
+
                 // Unknown tile type character
                 default:
                     return new Tile(null, TileCollision.Passable);
@@ -284,6 +291,14 @@ namespace Platformer.Levels
         {
             Sprite sprite = new Sprite(themedContent.Load<Texture2D>("Tiles/" + name), Tile.Width, Tile.Height);
             return new Tile(sprite, collision);
+        }
+
+        private WaterSource CreateWaterSource(string name)
+        {
+            Sprite emptySprite = new Sprite(null, Tile.Width, Tile.Height);
+            Sprite fullSprite = new Sprite(themedContent.Load<Texture2D>("Tiles/" + name), Tile.Width, Tile.Height);
+
+            return new WaterSource(emptySprite, fullSprite);
         }
 
         /// <summary>

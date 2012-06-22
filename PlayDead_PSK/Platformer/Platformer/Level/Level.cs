@@ -254,6 +254,13 @@ namespace Platformer.Levels
             return tile;
         }
 
+        public Vector2 getGridPosition(float x, float y)
+        {
+            Vector2 gridPos = new Vector2((int)Math.Floor(x / Tile.Width),
+                                          (int)Math.Floor(y / Tile.Height));
+            return gridPos;
+        }
+
         /// <summary>
         /// Gets the bounding rectangle of a tile in world space.
         /// </summary>        
