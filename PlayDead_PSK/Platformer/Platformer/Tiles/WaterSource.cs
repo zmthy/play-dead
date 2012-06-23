@@ -55,14 +55,20 @@ namespace Platformer.Tiles
             if (initialWaterLevel >= 0)
             {
                 // Fill the world upwards, row by row, with water.
+                List<Vector2> newWaterTiles = new List<Vector2>();
+                List<Vector2> waterTiles;
                 for (int row = 0; row < initialWaterLevel; row++)
                 {
                     // Fill left
-                    fillRow(currentCol, currentRow - row, true);
+                    waterTiles = fillRow(currentCol, currentRow - row, true);
+                    newWaterTiles.AddRange(waterTiles);
 
                     // Fill right
-                    fillRow(currentCol + 1, currentRow - row, false);
+                    waterTiles = fillRow(currentCol + 1, currentRow - row, false);
+                    newWaterTiles.AddRange(waterTiles);
                 }
+
+                propogate(newWaterTiles);
 
                 initialWaterLevel = -1;
             }
@@ -75,37 +81,84 @@ namespace Platformer.Tiles
                     surfaceRow--;
                 } while (level.GetCollision(currentCol, surfaceRow) == TileCollision.Water);
 
+                List<Vector2> newWaterTiles = new List<Vector2>();
+                List<Vector2> waterTiles;
+
                 // Fill left
-                fillRow(currentCol    , surfaceRow, true);
+                waterTiles = fillRow(currentCol, surfaceRow, true);
+                newWaterTiles.AddRange(waterTiles);
 
                 // Fill right
-                fillRow(currentCol + 1, surfaceRow, false);
+                waterTiles = fillRow(currentCol + 1, surfaceRow, false);
+                newWaterTiles.AddRange(waterTiles);
+
+                propogate(newWaterTiles);
             }
         }
 
-        private void fillRow(int col, int row, bool lookLeft)
+        private List<Vector2> fillRow(int col, int row, bool lookLeft)
         {
-            Tile tile = level.getTile(col, row);
+            List<Vector2> newWaterTiles = new List<Vector2>();
 
+            Tile tile = level.getTile(col, row);
             while (tile.Collision == TileCollision.Passable)
             {
-                tile.Collision = TileCollision.Water;
-                tile.Sprite.Texture = fullSprite.Texture;
-
-                if (lookLeft)
-                    col--;
-                else
-                    col++;
-
                 if (level.isTileInBounds(col, row))
                 {
+                    tile.Collision = TileCollision.Water;
+                    tile.Sprite.Texture = fullSprite.Texture;
+                    newWaterTiles.Add(new Vector2(col, row));
+
+                    if (lookLeft)
+                        col--;
+                    else
+                        col++;
+
                     tile = level.getTile(col, row);
                 }
                 else
                 {
+                    // We have left the level bounds
                     break;
                 }
             }
+
+            return newWaterTiles;
+        }
+
+        private void propogate(List<Vector2> waterTiles)
+        {
+            List<Vector2> newWaterTiles = new List<Vector2>();
+            Queue<Vector2> remainingWater = new Queue<Vector2>(waterTiles);
+
+            while (remainingWater.Count > 0)
+            {
+                Vector2 tilePos = remainingWater.Dequeue();
+                int tileX = (int)tilePos.X;
+                int tileY = (int)tilePos.Y;
+
+                // Check beneath tile
+                if(level.GetCollision(tileX, tileY + 1) == TileCollision.Passable)
+                {
+                    // Make the tile a water tile
+                    Tile tile = level.getTile(tileX, tileY + 1);
+                    tile.Collision = TileCollision.Water;
+                    tile.Sprite.Texture = fullSprite.Texture;
+
+                    // Remember to propogate the new water tile later.
+                    newWaterTiles.Add(new Vector2(tileX, tileY + 1));
+                }
+
+                // Fill to the left of the tile
+                newWaterTiles.AddRange(fillRow(tileX - 1, tileY, true));
+
+                // Fill to the right of the tile
+                newWaterTiles.AddRange(fillRow(tileX + 1, tileY, true));
+            }
+
+            // Propogate any new water tiles that were created
+            if(waterTiles.Count > 0)
+                propogate(newWaterTiles);
         }
 
         public bool IsActive()
