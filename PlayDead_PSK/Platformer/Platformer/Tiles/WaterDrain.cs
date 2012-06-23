@@ -10,21 +10,43 @@ using Platformer.Levels;
 
 namespace Platformer.Tiles
 {
+    /// <summary>
+    /// A water drain is a sink that pulls water from an area.
+    /// Any change of state invoked by the IActivatable interface will
+    /// always lower the water level.
+    /// </summary>
     class WaterDrain : Tile, IActivatable
     {
+        /// <summary>
+        /// Whether or not the water level should be decremented by
+        /// one (tile) on the next update.
+        /// </summary>
         private bool drain;
+
+        /// <summary>
+        /// The level the water drain belongs to.
+        /// </summary>
         private Level level;
 
+        /// <summary>
+        /// Creates a new water drain.
+        /// </summary>
+        /// <param name="sprite">The look and position of the water drain.</param>
         public WaterDrain(Sprite sprite)
-            : base(sprite, TileCollision.Passable)
-        {
-        }
+            : base(sprite, TileCollision.Passable) { }
 
+        /// <summary>
+        /// Decrease the water level by one (tile).
+        /// </summary>
         public void decreaseWaterLevel()
         {
             drain = true;
         }
 
+        /// <summary>
+        /// Assigns the level the water drain belongs to.
+        /// </summary>
+        /// <param name="level">Housing level.</param>
         public void bindToLevel(Level level)
         {
             this.level = level;
@@ -34,33 +56,43 @@ namespace Platformer.Tiles
         {
             base.Update(gameTime);
 
+            // Check if the water level should be raised.
             if (drain)
             {
                 // Find the surface of the water.
                 Vector2 gridPos = level.getGridPosition(Sprite.X, Sprite.Y);
-                int currentCol = (int)gridPos.X;
-                int currentRow = (int)gridPos.Y;
-                int surfaceRow = currentRow;
+                int currentX = (int)gridPos.X;
+                int currentY = (int)gridPos.Y;
+                int surfaceY = currentY;
                 do
                 {
-                    surfaceRow--;
-                } while (level.GetCollision(currentCol, surfaceRow) == TileCollision.Water);
+                    surfaceY--;
+                } while (level.GetCollision(currentX, surfaceY) == TileCollision.Water);
 
-                surfaceRow++;
-;
+                surfaceY++;
+
                 // Drain left
-                drainRow(currentCol    , surfaceRow, true);
+                drainRow(currentX    , surfaceY, true);
 
                 // Drain right
-                drainRow(currentCol + 1, surfaceRow, false);
+                drainRow(currentX + 1, surfaceY, false);
 
-                drain = false;
+                drain = false; // Don't drain on the next frame.
             }
         }
 
-        private void drainRow(int col, int row, bool lookLeft)
+        /// <summary>
+        /// Drains a row of tiles, turing all Water tiles into Passable tiles.
+        /// 
+        /// The process stops when the first non-Water tile is found.
+        /// </summary>
+        /// <param name="x">The column to start draining from.</param>
+        /// <param name="y">The row to drain.</param>
+        /// <param name="lookLeft">True to drain left. False to drain right.</param>
+        /// <returns></returns>
+        private void drainRow(int x, int y, bool lookLeft)
         {
-            Tile tile = level.getTile(col, row);
+            Tile tile = level.getTile(x, y);
 
             while (tile.Collision == TileCollision.Water)
             {
@@ -72,13 +104,13 @@ namespace Platformer.Tiles
                 }
 
                 if (lookLeft)
-                    col--;
+                    x--;
                 else
-                    col++;
+                    x++;
 
-                if (level.isTileInBounds(col, row))
+                if (level.isTileInBounds(x, y))
                 {
-                    tile = level.getTile(col, row);
+                    tile = level.getTile(x, y);
                 }
                 else
                 {
