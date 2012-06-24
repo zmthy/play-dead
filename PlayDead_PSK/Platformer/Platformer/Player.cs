@@ -106,6 +106,10 @@ namespace Platformer
         private const float AccelerometerScale = 1.5f;
         private const Buttons JumpButton = Buttons.A;
 
+        // Variables to judge fall distance for fall damage
+        public const int MAX_SAFE_FALL_DISTANCE = 140;
+        private Vector2 lastGroundPos;
+
         /// <summary>
         /// Gets whether or not the player's feet are on the ground.
         /// </summary>
@@ -218,6 +222,7 @@ namespace Platformer
         public void Reset(Vector2 position)
         {
             Position = position;
+            lastGroundPos = position;
             Velocity = Vector2.Zero;
             isAlive = true;
             deathPlayed = false;
@@ -251,7 +256,6 @@ namespace Platformer
             inputManager.Update();
 
             GetInput(keyboardState, gamePadState, touchState, accelState, orientation, inputManager);
-
 
             ApplyPhysics(gameTime);
 
@@ -291,6 +295,9 @@ namespace Platformer
                     }
                 }
             }
+
+            // Check for fall damage
+            checkFallDamage();
 
             // Clear input.
             movement = Vector2.Zero;
@@ -406,6 +413,24 @@ namespace Platformer
                 inputManager.IsNewPress(Keys.W);
         }
 
+        /// <summary>
+        /// Checks how far (if at all) the player has fallen.
+        /// If the player has fallen to far, the player is killed, otherwise the player survives
+        /// </summary>
+        private void checkFallDamage()
+        {
+            // We are falling if we are not on the ground or climbing
+            if (isAlive && (isOnGround || isClimbing))
+            {
+                if (Vector2.Distance(lastGroundPos, position) > MAX_SAFE_FALL_DISTANCE)
+                {
+                    // We have fallen too far to survive
+                    OnKilled();
+                }
+
+                lastGroundPos = position;
+            }
+        }
 
         /// <summary>
         /// Makes sure that the player is aligned to the center of a ladder piece
