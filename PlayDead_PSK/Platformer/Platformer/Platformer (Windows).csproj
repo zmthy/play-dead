@@ -82,6 +82,7 @@
     <Compile Include="Level\DynamicMap.cs" />
     <Compile Include="Level\LevelFactory.cs" />
     <Compile Include="Sprite.cs" />
+    <Compile Include="Tiles\LadderTile.cs" />
     <Compile Include="Tiles\DoorTile.cs" />
     <Compile Include="Tiles\IActivatable.cs" />
     <Compile Include="Tiles\SlidingTile.cs" />
