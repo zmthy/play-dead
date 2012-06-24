@@ -54,8 +54,8 @@ namespace Platformer.Levels
         public DynamicMap(IServiceProvider serviceProvider, Camera2D camera)
         {
             this.content = new ContentManager(serviceProvider, "Content");
-            this.levelFactory = new LevelFactory(serviceProvider);
-            this.player = new Player(Content, new Vector2());
+            this.levelFactory = new LevelFactory(serviceProvider, this);
+            this.player = new Player(Content, new Vector2(), this);
             this.camera = new TrackingDirector(camera, Player);
             this.existingLevels = new Dictionary<string, Level>();
         }
@@ -80,7 +80,7 @@ namespace Platformer.Levels
                     string newLine = reader.ReadLine();
                     string[] tuple = newLine.Split(','); //Should be level name, filepath, theme
 
-                    Level newLevel = levelFactory.CreateLevel("Content/" + tuple[1].Trim(), tuple[2].Trim());
+                    Level newLevel = levelFactory.CreateLevel(tuple[0].Trim(), "Content/" + tuple[1].Trim(), tuple[2].Trim());
                     existingLevels.Add(tuple[0].Trim(), newLevel);
 
                     if (activeLevel == null)
@@ -91,6 +91,21 @@ namespace Platformer.Levels
 
             //Vector2 SpawnPoint = activeLevel.ActiveSpawn.Position;
             player.EnterLevel(activeLevel);
+        }
+
+        public void NextLevel(String levelName){
+            if (existingLevels.ContainsKey(levelName))
+            {
+                activeLevel = existingLevels[levelName];
+                player.EnterLevel(activeLevel);
+            }
+        }
+
+        public void GotoLevel(int levelIndex)
+        {
+            List<String> keys = existingLevels.Keys.ToList();
+            if (levelIndex < keys.Count && levelIndex >= 0)
+                NextLevel(keys[levelIndex]);
         }
 
         /// <summary>

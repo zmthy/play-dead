@@ -10,6 +10,8 @@ using Microsoft.Xna.Framework.Graphics;
 
 using Platformer.Camera;
 using Platformer.Tiles;
+using System.Text.RegularExpressions;
+using System.Globalization;
 
 namespace Platformer.Levels
 {
@@ -19,14 +21,16 @@ namespace Platformer.Levels
 
         private IServiceProvider services;
         private ContentManager themedContent;
+        private DynamicMap dynamicMap;
 
         private Random random;
 
         #endregion
 
-        public LevelFactory(IServiceProvider services)
+        public LevelFactory(IServiceProvider services, DynamicMap dynamicMap)
         {
             this.services = services;
+            this.dynamicMap = dynamicMap;
         }
 
         /// <summary>
@@ -36,7 +40,7 @@ namespace Platformer.Levels
         /// <param name="filepath"></param>
         /// <param name="theme"></param>
         /// <returns>The newly created level.</returns>
-        public Level CreateLevel(String filepath, String theme)
+        public Level CreateLevel(String name, String filepath, String theme)
         {
             if (!File.Exists(filepath))
                 throw new FileNotFoundException("The level could not be loaded", filepath);
@@ -67,7 +71,7 @@ namespace Platformer.Levels
                 width = levelRows[0].Split(',').Length;
 
             int height = levelRows.Count;
-            Level level = new Level("Bob", width, height, themedContent);
+            Level level = new Level(name, width, height, themedContent);
 
             BuildLevel(levelRows, level);
 
@@ -140,7 +144,10 @@ namespace Platformer.Levels
                     if (x < lineTiles.Length)
                     {
                         string tileID = lineTiles[x].Trim();
-                        char tileType = tileID[0]; //The type is always the first part of the string
+                        char tileType = '.';
+
+                        if (tileID.Length > 0)
+                             tileType = tileID[0]; //The type is always the first part of the string
 
                         //Create level tiles;
                         Tile newTile = CreateTile(tileType, x, y);
@@ -152,7 +159,17 @@ namespace Platformer.Levels
                         //Create Activator
                         Platformer.Tiles.Activator actor = CreateActivator(tileType, xDrawPostion, yDrawPostion);
                         if (actor != null)
+                        {
                             level.addActivator(tileID, actor);
+
+                            //Special case to link exits
+                            if (actor is Exit)
+                            {
+                                int uid = int.Parse(Regex.Match(tileID, @"\d+").Value, NumberFormatInfo.InvariantInfo);
+                                Exit exit = (Exit)actor;
+                                exit.LevelIndex = uid;
+                            }
+                        }
 
                         //Create Activatable
                         IActivatable active = CreateActivatable(tileType, xDrawPostion, yDrawPostion);
@@ -160,7 +177,7 @@ namespace Platformer.Levels
                         {
                             level.addActivatable(tileID, active);
 
-                            //Special case to link spawn points into the levels, could do this indie 
+                            //Special case to link spawn points into the levels, could do this inside level itself
                             if (active is Spawner)
                             {
                                 Spawner sp = (Spawner)active;
@@ -322,6 +339,9 @@ namespace Platformer.Levels
                 case 'B':
                     return CreateSwitch(x, y);
 
+                case 'X':
+                    return CreateExit(x, y);
+
                 default:
                     return null;
             }
@@ -332,6 +352,13 @@ namespace Platformer.Levels
             Vector2 tileCenter = new Vector2(x + Tile.Width / 2, y + Tile.Height / 2);
             Switch sw = new Switch(tileCenter, themedContent); 
             return sw;
+        }
+
+        private Platformer.Tiles.Activator CreateExit(int x, int y)
+        {
+            Vector2 tileCenter = new Vector2(x + Tile.Width / 2, y + Tile.Height / 2);
+            Exit exit = new Exit(tileCenter, themedContent);
+            return exit;
         }
 
         private Platformer.Tiles.Activator CreateButton(int x, int y)

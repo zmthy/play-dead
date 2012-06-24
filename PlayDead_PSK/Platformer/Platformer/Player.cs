@@ -42,6 +42,8 @@ namespace Platformer
         //Flag to make sure it only plays the death sound once
         private bool deathPlayed = false;
 
+        private DynamicMap dynamicMap;
+
         // Sounds
         private SoundEffect killedSound;
         private SoundEffect jumpSound;
@@ -158,17 +160,25 @@ namespace Platformer
         /// <summary>
         /// Constructors a new player.
         /// </summary>
-        public Player(ContentManager content, Vector2 position)
+        public Player(ContentManager content, Vector2 position, DynamicMap dynamicMap)
         {
             LoadContent(content);
 
             Reset(position);
+
+            this.dynamicMap = dynamicMap;
+        }
+
+        public void GotoLevel(int levelIndex)
+        {
+            dynamicMap.GotoLevel(levelIndex);
         }
 
         public void EnterLevel(Level level)
         {
             this.level = level;
-            Reset(level.ActiveSpawn.Position);
+            Position = level.ActiveSpawn.Position;
+            Velocity = Vector2.Zero;
         }
 
 

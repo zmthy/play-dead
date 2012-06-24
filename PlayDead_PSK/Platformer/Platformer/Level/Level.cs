@@ -272,6 +272,10 @@ namespace Platformer.Levels
         /// </summary>
         public void Update(Player player, GameTime gameTime, KeyboardState keyboardState, InputManager inputManager)
         {
+            // Falling off the bottom of the level kills the player.
+            if (player.BoundingRectangle.Top >= Height * Tile.Height)
+                player.OnKilled();
+
             //Check activatables
             foreach (Platformer.Tiles.Activator a in activators.Values)
                 a.ChangeState(player, keyboardState, inputManager);
@@ -283,10 +287,6 @@ namespace Platformer.Levels
             // Update non-atomic tiles
             foreach(MoveableTile mTile in MoveableTiles)
                 mTile.Update(gameTime);
-
-            // Falling off the bottom of the level kills the player.
-            if (player.BoundingRectangle.Top >= Height * Tile.Height)
-                player.OnKilled();
         }
 
         /// <summary>
