@@ -191,6 +191,10 @@
       <Name>test_1</Name>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="Story\test_level.csv">
+      <Name>test_level</Name>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Sounds\ExitReached.wma">
