@@ -68,6 +68,10 @@ namespace Platformer.Levels
         }
         private Spawner activeSpawn;
 
+        //Background Textures
+        Texture2D skirtingTile;
+        List<Texture2D> wallTiles;
+
         /// <summary>
         /// Width of level measured in tiles.
         /// </summary>
@@ -95,6 +99,19 @@ namespace Platformer.Levels
             activatables = new Dictionary<string, IActivatable>();
             activators = new Dictionary<string, Tiles.Activator>();
             moveableTiles = new Dictionary<string, List<MoveableTile>>();
+
+            LoadContent();
+        }
+
+        public void LoadContent()
+        {
+            wallTiles = new List<Texture2D>();
+
+            skirtingTile = content.Load<Texture2D>("Background/skirting");
+            wallTiles.Add(content.Load<Texture2D>("Background/wallMain"));
+            wallTiles.Add(content.Load<Texture2D>("Background/wallAlt1"));
+            wallTiles.Add(content.Load<Texture2D>("Background/wallAlt2"));
+            wallTiles.Add(content.Load<Texture2D>("Background/wallAlt3"));
         }
 
         public void Dispose()
@@ -289,6 +306,10 @@ namespace Platformer.Levels
         /// </summary>
         public void Update(Player player, GameTime gameTime, KeyboardState keyboardState, InputManager inputManager)
         {
+            // Falling off the bottom of the level kills the player.
+            if (player.BoundingRectangle.Top >= Height * Tile.Height)
+                player.OnKilled();
+
             //Check activatables
             foreach (Platformer.Tiles.Activator a in activators.Values)
                 a.ChangeState(player, keyboardState, inputManager);
@@ -300,10 +321,6 @@ namespace Platformer.Levels
             // Update non-atomic tiles
             foreach(MoveableTile mTile in MoveableTiles)
                 mTile.Update(gameTime);
-
-            // Falling off the bottom of the level kills the player.
-            if (player.BoundingRectangle.Top >= Height * Tile.Height)
-                player.OnKilled();
         }
 
         /// <summary>
@@ -327,9 +344,62 @@ namespace Platformer.Levels
 
         /// <summary>
         /// Draw everything in the level from background to foreground.
-        /// </summary>
+        /// </summary>wall
         public void Draw(GameTime gameTime, SpriteBatch spriteBatch)
         {
+            Random rand = new Random(354668); // Arbitrary, but constant seed for each draw
+
+            //Basic background loop
+            for (int y = 1; y < Height; y++)
+            {
+                for (int x = 0; x < Width; x++)
+                {
+                    //Draws 9 tiles to a cell
+
+                    if (tiles[x, y].Collision == TileCollision.Passable || tiles[x, y].Collision == TileCollision.Ladder || tiles[x, y].Collision == TileCollision.Death)
+                    {
+                        for (int x1 = 0; x1 < 3; x1++)
+                            for (int y1 = 0; y1 < 4; y1++)
+                            {
+                                int wall = rand.Next(10);
+                                if (wall > 3)
+                                    wall = 0;
+
+                                spriteBatch.Draw(wallTiles[wall], new Rectangle((int)tiles[x, y].Sprite.Position.X + (x1 * 16), (int)tiles[x, y].Sprite.Position.Y + (y1 * 8), wallTiles[0].Width, wallTiles[0].Height), null, Color.White);
+                            }
+                    }
+                    else
+                    {
+                        spriteBatch.Draw(skirtingTile, new Rectangle((int)tiles[x, y].Sprite.Position.X, (int)tiles[x, y].Sprite.Position.Y - skirtingTile.Height, skirtingTile.Width, skirtingTile.Height), null, Color.White);
+                        spriteBatch.Draw(skirtingTile, new Rectangle((int)tiles[x, y].Sprite.Position.X + skirtingTile.Width, (int)tiles[x, y].Sprite.Position.Y - skirtingTile.Height, skirtingTile.Width, skirtingTile.Height), null, Color.White);
+                    }
+                     
+                    /*
+                    //Draws 2 tiles to a cell
+                    if (tiles[x, y].Collision == TileCollision.Passable || tiles[x, y].Collision == TileCollision.Ladder || tiles[x, y].Collision == TileCollision.Death)
+                    {
+                        for (int x1 = 0; x1 < 1; x1++)
+                            for (int y1 = 0; y1 < 2; y1++)
+                            {
+                                int wall = rand.Next(10);
+                                if (wall > 3)
+                                    wall = 0;
+
+                                spriteBatch.Draw(wallTiles[wall], new Rectangle((int)tiles[x, y].Sprite.Position.X + (x1 * 48), (int)tiles[x, y].Sprite.Position.Y + (y1 * 16), wallTiles[0].Width * 3, wallTiles[0].Height * 2), null, Color.White);
+                            }
+                    }
+                    else
+                    {
+                        if (y - 1 > 0)
+                        {
+                            if (tiles[x, y - 1].Collision == TileCollision.Passable || tiles[x, y - 1].Collision == TileCollision.Ladder || tiles[x, y - 1].Collision == TileCollision.Death)
+                                spriteBatch.Draw(skirtingTile, new Rectangle((int)tiles[x, y].Sprite.Position.X, (int)tiles[x, y].Sprite.Position.Y - (skirtingTile.Height * 2), skirtingTile.Width * 2, skirtingTile.Height * 2), null, Color.White);
+                        }
+                    }
+                     */
+                }
+            }
+
             // Draw Tiles
             foreach (Tile tile in tiles)
                 tile.Draw(spriteBatch);

@@ -11,11 +11,10 @@ namespace Platformer.Tiles
 {    
     class LadderTile : Tile, IActivatable
     {
-
         private bool isActive;
 
-        private Sprite activated;
-        private Sprite deactivated;
+        private Texture2D activated;
+        private Texture2D deactivated;
 
 
         /// <summary>
@@ -26,13 +25,12 @@ namespace Platformer.Tiles
         public LadderTile(Sprite sprite, TileCollision collision)
             : base(sprite, collision)
         {
-            activated = sprite;
+            activated = sprite.Texture;
             deactivated = null;
 
             isActive = false;
-            sprite = deactivated;
+            this.Sprite = sprite;
         }
-        
 
 
         /// <summary>
@@ -45,16 +43,17 @@ namespace Platformer.Tiles
 
             if (isActive)
             {
-                Sprite = activated;
+                Sprite.Texture = activated;
+                Collision = TileCollision.Ladder;
             }
             else
             {
-                Sprite = null;
+                Sprite.Texture = deactivated;
+                Collision = TileCollision.Passable;
             }
         }
 
         /// <summary>
-        /// IActivatable interface implementations
         /// </summary>
         /// <returns></returns>
         public bool IsActive()
@@ -78,6 +77,7 @@ namespace Platformer.Tiles
                        
             isActive = !isActive;
 
+            /*
             // show
             if (isActive)
             {
@@ -95,7 +95,8 @@ namespace Platformer.Tiles
 
                 // Remove sprite
                 Sprite = deactivated;
-            }            
+            } 
+             */
         }
     }
 }

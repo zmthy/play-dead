@@ -183,7 +183,7 @@ namespace Platformer
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Draw(GameTime gameTime)
         {
-            graphics.GraphicsDevice.Clear(Color.CornflowerBlue);
+            graphics.GraphicsDevice.Clear(Color.Black);
 
             //spriteBatch.Begin();
             spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, null, null, null, null, camera.getTransform(GraphicsDevice));

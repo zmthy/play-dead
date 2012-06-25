@@ -27,6 +27,7 @@
     </ApplicationIcon>
     <Thumbnail>
     </Thumbnail>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
     <PublishUrl>publish\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Disk</InstallFrom>
@@ -39,7 +40,6 @@
     <MapFileExtensions>true</MapFileExtensions>
     <ApplicationRevision>0</ApplicationRevision>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
-    <IsWebBootstrapper>false</IsWebBootstrapper>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
@@ -82,6 +82,7 @@
     <Compile Include="Level\DynamicMap.cs" />
     <Compile Include="Level\LevelFactory.cs" />
     <Compile Include="Sprite.cs" />
+    <Compile Include="Tiles\Exit.cs" />
     <Compile Include="Tiles\LadderTile.cs" />
     <Compile Include="Tiles\DoorTile.cs" />
     <Compile Include="Tiles\IActivatable.cs" />

@@ -36,51 +36,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Sprites\Gem.png">
-      <Name>Gem</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
-    <Compile Include="Sprites\MonsterA\Idle.png">
-      <Name>Idle</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
-    <Compile Include="Sprites\MonsterA\Run.png">
-      <Name>Run</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
-    <Compile Include="Sprites\MonsterB\Idle.png">
-      <Name>Idle</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
-    <Compile Include="Sprites\MonsterB\Run.png">
-      <Name>Run</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
-    <Compile Include="Sprites\MonsterC\Idle.png">
-      <Name>Idle</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
-    <Compile Include="Sprites\MonsterC\Run.png">
-      <Name>Run</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
-    <Compile Include="Sprites\MonsterD\Idle.png">
-      <Name>Idle</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
-    <Compile Include="Sprites\MonsterD\Run.png">
-      <Name>Run</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
     <Compile Include="Sprites\Player\Celebrate.png">
       <Name>Celebrate</Name>
       <Importer>TextureImporter</Importer>
@@ -115,51 +70,6 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Backgrounds\Layer0_0.png">
-      <Name>Layer0_0</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
-    <Compile Include="Backgrounds\Layer0_1.png">
-      <Name>Layer0_1</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
-    <Compile Include="Backgrounds\Layer0_2.png">
-      <Name>Layer0_2</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
-    <Compile Include="Backgrounds\Layer1_0.png">
-      <Name>Layer1_0</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
-    <Compile Include="Backgrounds\Layer1_1.png">
-      <Name>Layer1_1</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
-    <Compile Include="Backgrounds\Layer1_2.png">
-      <Name>Layer1_2</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
-    <Compile Include="Backgrounds\Layer2_0.png">
-      <Name>Layer2_0</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
-    <Compile Include="Backgrounds\Layer2_1.png">
-      <Name>Layer2_1</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
-    <Compile Include="Backgrounds\Layer2_2.png">
-      <Name>Layer2_2</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
     <Compile Include="Overlays\you_died.png">
       <Name>you_died</Name>
       <Importer>TextureImporter</Importer>
@@ -389,6 +299,35 @@
   <ItemGroup>
     <Compile Include="Theme\default\Tiles\Ladder.png">
       <Name>Ladder</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Theme\default\Background\skirting.png">
+      <Name>skirting</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Theme\default\Background\wallAlt1.png">
+      <Name>wallAlt1</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Theme\default\Background\wallAlt2.png">
+      <Name>wallAlt2</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Theme\default\Background\wallAlt3.png">
+      <Name>wallAlt3</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Theme\default\Background\wallMain.png">
+      <Name>wallMain</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
