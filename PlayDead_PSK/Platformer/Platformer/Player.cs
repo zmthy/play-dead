@@ -611,7 +611,7 @@ namespace Platformer
                         float absDepthY = Math.Abs(depth.Y);
 
                         // Resolve the collision along the shallow axis.
-                        if (collision!=TileCollision.Death && (absDepthY < absDepthX || collision == TileCollision.Platform))
+                        if (collision != TileCollision.Death && collision != TileCollision.Water && (absDepthY < absDepthX || collision == TileCollision.Platform))
                         {
                             // If we crossed the top of a tile, we are on the ground.
                             // This needs to change for ladder mechanic
@@ -678,7 +678,15 @@ namespace Platformer
                         {
                             if(absDepthY > tile.Sprite.Height/2)
                                 OnKilled("You touched something stupid!");
-                            
+                        }
+                        else if (isAlive && collision == TileCollision.Water)
+                        {
+                            RectangleF tileRect = tile.Sprite.Bounds;
+                            RectangleF headRect = BoundingRectangle;
+                            headRect.Height /= 8; // Take the bounds of the head only
+
+                            if (tileRect.Intersects(headRect))
+                                OnKilled("You drowned under water");
                         }
                     }
                 }         

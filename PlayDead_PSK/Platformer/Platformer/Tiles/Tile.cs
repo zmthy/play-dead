@@ -40,6 +40,8 @@ namespace Platformer.Tiles
         Ladder = 3,
 
         Death = 4,
+
+        Water = 5
     }
 
     /// <summary>
@@ -48,7 +50,7 @@ namespace Platformer.Tiles
     class Tile
     {
         public Sprite Sprite { get; protected set; }
-        public TileCollision Collision { get; protected set; }
+        public TileCollision Collision { get; set; }
 
         public const int Width = 40;
         public const int Height = 32;
