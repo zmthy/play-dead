@@ -191,6 +191,10 @@
       <Name>test_1</Name>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="Story\test_level.csv">
+      <Name>test_level</Name>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Sounds\ExitReached.wma">
@@ -385,6 +389,13 @@
   <ItemGroup>
     <Compile Include="Theme\default\Tiles\Ladder.png">
       <Name>Ladder</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Theme\default\Tiles\Water.png">
+      <Name>Water</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
