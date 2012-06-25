@@ -183,6 +183,12 @@ namespace Platformer.Levels
                                 Spawner sp = (Spawner)active;
                                 sp.bindToLevel(level);
                             }
+
+                            // Special case to create ladder tiles (which are both tiles and activatable)
+                            if (active is LadderTile)
+                            {
+                                level.addTile(x, y, (LadderTile) active);
+                            }
                         }
 
                         //Create Moving Platform
@@ -259,8 +265,9 @@ namespace Platformer.Levels
                 case '.':
                     return new Tile(null, TileCollision.Passable);
 
-                // Ladder
-                case 'L':
+                // Ladder - now with lowercase l for just standard ladders, Capital implies it is an activatible ladder that starts inactive by default
+                //          This ladder tile will start activated by default - should be that if there is no matching activatable switch then it is on by default
+                case 'l':
                     return CreateTile("Ladder", TileCollision.Ladder);
 
                 // Platform block
@@ -387,6 +394,9 @@ namespace Platformer.Levels
                 // A Light
                 case 'I':
                     return CreateLight(x, y);
+                    
+                case 'L':
+                    return CreateLadder(x, y);
 
                 default:
                     return null;
@@ -407,6 +417,14 @@ namespace Platformer.Levels
             Vector2 tileCenter = new Vector2(x + Tile.Width / 2, y + Tile.Height / 2);
             return new Light(tileCenter, themedContent);
         }
+
+        private IActivatable CreateLadder(int x, int y)
+        {
+            //ladder tile initialised to be inactive
+            Sprite ladderSprite = new Sprite(themedContent.Load<Texture2D>("Tiles/Ladder"), Tile.Width, Tile.Height);
+            return new LadderTile(ladderSprite, TileCollision.Passable);            
+        }
+
         #endregion
 
         #region Moveable Creation
