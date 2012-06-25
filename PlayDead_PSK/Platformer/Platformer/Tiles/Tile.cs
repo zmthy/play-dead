@@ -50,7 +50,7 @@ namespace Platformer.Tiles
         public Sprite Sprite { get; protected set; }
         public TileCollision Collision { get; protected set; }
 
-        public const int Width = 40;
+        public const int Width = 48;
         public const int Height = 32;
         public const int Center = Width / 2;
 

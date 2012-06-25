@@ -261,7 +261,7 @@ namespace Platformer.Levels
 
                 // Ladder
                 case 'L':
-                    return CreateTile("BlockB0", TileCollision.Ladder);
+                    return CreateTile("Ladder", TileCollision.Ladder);
 
                 // Platform block
                 case '~':
