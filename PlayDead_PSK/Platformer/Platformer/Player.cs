@@ -182,6 +182,7 @@ namespace Platformer
         {
             this.level = level;
             Position = level.ActiveSpawn.Position;
+            lastGroundPos = position;
             Velocity = Vector2.Zero;
         }
 

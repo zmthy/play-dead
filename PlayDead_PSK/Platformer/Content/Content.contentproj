@@ -299,7 +299,6 @@
       <Processor>TextureProcessor</Processor>
     </Compile>
   </ItemGroup>
-  <ItemGroup />
   <ItemGroup>
     <Compile Include="Theme\default\Background\skirting.png">
       <Name>skirting</Name>
@@ -325,13 +324,6 @@
     </Compile>
     <Compile Include="Theme\default\Background\wallMain.png">
       <Name>wallMain</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="Theme\default\Tiles\Ladder.png">
-      <Name>Ladder</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
