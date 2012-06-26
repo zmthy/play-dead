@@ -107,7 +107,7 @@ namespace Platformer
         private const Buttons JumpButton = Buttons.A;
 
         // Variables to judge fall distance for fall damage
-        public const int MAX_SAFE_FALL_DISTANCE = 140;
+        public const int MAX_SAFE_FALL_DISTANCE = Tile.Height * 6;
         private Vector2 lastGroundPos;
 
         /// <summary>
