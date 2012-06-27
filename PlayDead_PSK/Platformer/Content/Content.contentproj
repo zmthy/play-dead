@@ -89,8 +89,8 @@
       <Name>Basement_2</Name>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="Story\liam_level.csv">
-      <Name>liam_level</Name>
+    <None Include="Story\Basement_3.csv">
+      <Name>Basement_3</Name>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="Story\story.csv">
