@@ -24,6 +24,17 @@ using Microsoft.Xna.Framework.Content;
 namespace Platformer
 {
     /// <summary>
+    /// Different types of death cause for OnKilled() function
+    /// </summary>
+    enum DeathType
+    {
+        Default = 0,
+        Water = 1,
+        Spike = 2,
+        Fall = 3,
+    }
+
+    /// <summary>
     /// Our fearless adventurer!
     /// </summary>
     class Player : ICameraTrackable
@@ -48,6 +59,11 @@ namespace Platformer
         private SoundEffect killedSound;
         private SoundEffect jumpSound;
         private SoundEffect fallSound;
+
+        // New Sounds
+        private SoundEffect spikeImpaleSound;
+        private SoundEffect waterDrownSound;
+        private SoundEffect fallImpactSound;
 
         //Ladder
         private bool isClimbing;
@@ -107,7 +123,7 @@ namespace Platformer
         private const Buttons JumpButton = Buttons.A;
 
         // Variables to judge fall distance for fall damage
-        public const int MAX_SAFE_FALL_DISTANCE = 140;
+        public const int MAX_SAFE_FALL_DISTANCE = Tile.Height * 6;
         private Vector2 lastGroundPos;
 
         /// <summary>
@@ -214,6 +230,13 @@ namespace Platformer
             killedSound = content.Load<SoundEffect>("Sounds/PlayerKilled");
             jumpSound = content.Load<SoundEffect>("Sounds/PlayerJump");
             fallSound = content.Load<SoundEffect>("Sounds/PlayerFall");
+
+            spikeImpaleSound = content.Load<SoundEffect>("Sounds/PlayerKilledSpike");
+            //spikeImpaleSound = jumpSound;
+            waterDrownSound = content.Load<SoundEffect>("Sounds/PlayerKilledWater");            
+            fallImpactSound = content.Load<SoundEffect>("Sounds/PlayerKilledFall");
+            //fallImpactSound = jumpSound;
+            
         }
 
         /// <summary>
@@ -426,7 +449,7 @@ namespace Platformer
                 if (Vector2.Distance(lastGroundPos, position) > MAX_SAFE_FALL_DISTANCE)
                 {
                     // We have fallen too far to survive
-                    OnKilled();
+                    OnKilled("Can't survive that height", DeathType.Fall);
                 }
 
                 lastGroundPos = position;
@@ -622,11 +645,12 @@ namespace Platformer
                         float absDepthY = Math.Abs(depth.Y);
 
                         // Resolve the collision along the shallow axis.
-                        if (collision!=TileCollision.Death && (absDepthY < absDepthX || collision == TileCollision.Platform))
+                        if (collision != TileCollision.Death && collision != TileCollision.Water && (absDepthY < absDepthX || collision == TileCollision.Platform))
                         {
                             // If we crossed the top of a tile, we are on the ground.
                             // This needs to change for ladder mechanic
-                            if (previousBottom <= tileBounds.Top)
+                            //if (previousBottom <= tileBounds.Top)
+                            if(tileBounds.Top - previousBottom < 0.001f) // 0.001 is the delta for floating point comparisons
                             {
                                 // If the collision is with a ladder tile, we are not back on the ground
                                 if (isAlive && collision == TileCollision.Ladder)
@@ -688,8 +712,16 @@ namespace Platformer
                         else if (isAlive && collision == TileCollision.Death) // Something that kills you!
                         {
                             if(absDepthY > tile.Sprite.Height/2)
-                                OnKilled("You touched something stupid!");
-                            
+                                OnKilled("You touched something stupid!", DeathType.Spike);
+                        }
+                        else if (isAlive && collision == TileCollision.Water)
+                        {
+                            RectangleF tileRect = tile.Sprite.Bounds;
+                            RectangleF headRect = BoundingRectangle;
+                            headRect.Height /= 8; // Take the bounds of the head only
+
+                            if (tileRect.Intersects(headRect))
+                                OnKilled("You drowned under water", DeathType.Water);
                         }
                     }
                 }         
@@ -706,23 +738,41 @@ namespace Platformer
         /// The name of whatever killed the player.
         /// </param>
         public void OnKilled() { OnKilled(""); }
-        public void OnKilled(String killedBy)
+        public void OnKilled(String killedBy) { OnKilled(killedBy, DeathType.Default); }
+        public void OnKilled(String killedBy, DeathType killedType)
         {
-            isAlive = false;
 
-            if (!deathPlayed && killedBy.Length != 0)
+            isAlive = false;           
+
+
+            if (!deathPlayed)
             {
-                killedSound.Play();
+                switch (killedType)
+                {
+                    case DeathType.Default:
+                        killedSound.Play();
+                        break;
+                    case DeathType.Water:
+                        waterDrownSound.Play();
+                        break;
+                    case DeathType.Fall:
+                        fallImpactSound.Play();
+                        break;
+                    case DeathType.Spike:
+                        spikeImpaleSound.Play();
+                        break;
+                    default:
+                        killedSound.Play();
+                        break;
+                }
+
                 deathPlayed = true;
             }
-            else if (!deathPlayed)
-            {
-                fallSound.Play();
-                deathPlayed = true;
-            }
-            sprite.PlayAnimation(dieAnimation);
-            //TODO: pan the camera
             
+
+            sprite.PlayAnimation(dieAnimation);
+            //TODO: pan the camera + new death animations
+
         }
 
         /// <summary>

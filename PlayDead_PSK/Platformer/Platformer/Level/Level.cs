@@ -253,6 +253,16 @@ namespace Platformer.Levels
             return tiles[x, y].Collision;
         }
 
+        public bool isTileInBounds(int x, int y)
+        {
+            bool inBounds = true;
+
+            if(x < 0 || x >= Width || y < 0 || y >= Height)
+                inBounds = false;
+
+            return inBounds;
+        }
+
         public Tile getTile(int x, int y)
         {
             Tile tile = null;
@@ -269,6 +279,13 @@ namespace Platformer.Levels
                 tile = tiles[x, y];
 
             return tile;
+        }
+
+        public Vector2 getGridPosition(float x, float y)
+        {
+            Vector2 gridPos = new Vector2((int)Math.Floor(x / Tile.Width),
+                                          (int)Math.Floor(y / Tile.Height));
+            return gridPos;
         }
 
         /// <summary>

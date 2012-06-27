@@ -85,6 +85,10 @@
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
+    <None Include="Story\fahmi_level.csv">
+      <Name>fahmi_level</Name>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="Story\HUB_1.csv">
       <Name>HUB_1</Name>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -99,6 +103,10 @@
     </None>
     <None Include="Story\test_1.csv">
       <Name>test_1</Name>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Story\test_level.csv">
+      <Name>test_level</Name>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
@@ -326,6 +334,34 @@
       <Name>wallMain</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Theme\default\Tiles\Water.png">
+      <Name>Water</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Sounds\PlayerKilledWater.wma">
+      <Name>PlayerKilledWater</Name>
+      <Importer>WmaImporter</Importer>
+      <Processor>SoundEffectProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Sounds\PlayerKilledSpike.wma">
+      <Name>PlayerKilledSpike</Name>
+      <Importer>WmaImporter</Importer>
+      <Processor>SoundEffectProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Sounds\PlayerKilledFall.wma">
+      <Name>PlayerKilledFall</Name>
+      <Importer>WmaImporter</Importer>
+      <Processor>SoundEffectProcessor</Processor>
     </Compile>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\XNA Game Studio\$(XnaFrameworkVersion)\Microsoft.Xna.GameStudio.ContentPipeline.targets" />
