@@ -626,7 +626,8 @@ namespace Platformer
                         {
                             // If we crossed the top of a tile, we are on the ground.
                             // This needs to change for ladder mechanic
-                            if (previousBottom <= tileBounds.Top)
+                            //if (previousBottom <= tileBounds.Top)
+                            if(tileBounds.Top - previousBottom < 0.001f) // 0.001 is the delta for floating point comparisons
                             {
                                 // If the collision is with a ladder tile, we are not back on the ground
                                 if (isAlive && collision == TileCollision.Ladder)
