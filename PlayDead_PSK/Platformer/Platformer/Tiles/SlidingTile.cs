@@ -23,6 +23,8 @@ namespace Platformer.Tiles
         }
         private float waitTimeS;
 
+        private bool evenReverse;
+
         public SlidingTile(Sprite sprite, TileCollision collision, Vector2 velocity)
             : base(sprite, collision, velocity) { }
 
@@ -89,7 +91,11 @@ namespace Platformer.Tiles
         private void reverseDirection(float waitTimeS = 0)
         {
             WaitTimeS = waitTimeS;
-            Velocity = new Vector2(Velocity.X + (float)Math.PI, Velocity.Y);
+
+            float newAngle = Velocity.X + ((evenReverse) ? (float)Math.PI : -(float)Math.PI);
+            evenReverse = !evenReverse;
+
+            Velocity = new Vector2(newAngle, Velocity.Y);
         }
 
         private SlidingTile getLeader()

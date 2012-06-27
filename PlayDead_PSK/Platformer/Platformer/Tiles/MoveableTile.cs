@@ -90,9 +90,9 @@ namespace Platformer.Tiles
 
             // Get adjacent tiles infront
             Vector2 currentCell = level.getGridPosition(Sprite.Center.X, Sprite.Center.Y);
-            Vector2 nextLeft = getAdjacentCellAtAngle(currentCell, velocity.X - (float)(Math.PI / 3));
+            Vector2 nextLeft = getAdjacentCellAtAngle(currentCell, velocity.X - (float)(Math.PI / 4));
             Vector2 nextMiddle = getAdjacentCellAtAngle(currentCell, velocity.X);
-            Vector2 nextRight = getAdjacentCellAtAngle(currentCell, velocity.X + (float)(Math.PI / 3));
+            Vector2 nextRight = getAdjacentCellAtAngle(currentCell, velocity.X + (float)(Math.PI / 4));
             Vector2[] collidingCells = { nextLeft, nextMiddle, nextRight };
 
             // Check if we are colliding with a non-moving tile
