@@ -93,6 +93,10 @@
       <Name>HUB_1</Name>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="Story\liam_level.csv">
+      <Name>liam_level</Name>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="Story\story.csv">
       <Name>story</Name>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
