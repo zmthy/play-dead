@@ -85,21 +85,16 @@
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
-<<<<<<< HEAD
     <None Include="Story\laser.csv">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Name>laser</Name>
     </None>
-    <None Include="Story\HUB_1.csv">
-      <Name>HUB_1</Name>
-=======
     <None Include="Story\Basement_2.csv">
       <Name>Basement_2</Name>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="Story\Basement_3.csv">
       <Name>Basement_3</Name>
->>>>>>> 63bc3d2a4bd1114c51fb281aea1f8ab286a7adb2
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="Story\story.csv">
