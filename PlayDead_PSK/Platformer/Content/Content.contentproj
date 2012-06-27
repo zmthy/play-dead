@@ -85,12 +85,8 @@
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
-    <None Include="Story\fahmi_level.csv">
-      <Name>fahmi_level</Name>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Story\HUB_1.csv">
-      <Name>HUB_1</Name>
+    <None Include="Story\Basement_2.csv">
+      <Name>Basement_2</Name>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="Story\story.csv">
@@ -105,8 +101,16 @@
       <Name>test_1</Name>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="Story\test_level.csv">
-      <Name>test_level</Name>
+    <None Include="Story\Basement_1.csv">
+      <Name>Basement_1</Name>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Story\Tower_1.csv">
+      <Name>Tower_1</Name>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Story\Tower_2.csv">
+      <Name>Tower_2</Name>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
