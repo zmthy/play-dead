@@ -85,12 +85,21 @@
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
+<<<<<<< HEAD
     <None Include="Story\laser.csv">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Name>laser</Name>
     </None>
     <None Include="Story\HUB_1.csv">
       <Name>HUB_1</Name>
+=======
+    <None Include="Story\Basement_2.csv">
+      <Name>Basement_2</Name>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Story\Basement_3.csv">
+      <Name>Basement_3</Name>
+>>>>>>> 63bc3d2a4bd1114c51fb281aea1f8ab286a7adb2
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="Story\story.csv">
@@ -101,12 +110,16 @@
       <Name>HUB_0</Name>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="Story\test_1.csv">
-      <Name>test_1</Name>
+    <None Include="Story\Basement_1.csv">
+      <Name>Basement_1</Name>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="Story\test_level.csv">
-      <Name>test_level</Name>
+    <None Include="Story\Tower_1.csv">
+      <Name>Tower_1</Name>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Story\Tower_2.csv">
+      <Name>Tower_2</Name>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>

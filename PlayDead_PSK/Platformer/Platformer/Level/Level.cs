@@ -371,7 +371,7 @@ namespace Platformer.Levels
                 for (int x = 0; x < Width; x++)
                 {
                     //Draws 9 tiles to a cell
-
+                    /*
                     if (tiles[x, y].Collision == TileCollision.Passable || tiles[x, y].Collision == TileCollision.Ladder || tiles[x, y].Collision == TileCollision.Death)
                     {
                         for (int x1 = 0; x1 < 3; x1++)
@@ -389,10 +389,9 @@ namespace Platformer.Levels
                         spriteBatch.Draw(skirtingTile, new Rectangle((int)tiles[x, y].Sprite.Position.X, (int)tiles[x, y].Sprite.Position.Y - skirtingTile.Height, skirtingTile.Width, skirtingTile.Height), null, Color.White);
                         spriteBatch.Draw(skirtingTile, new Rectangle((int)tiles[x, y].Sprite.Position.X + skirtingTile.Width, (int)tiles[x, y].Sprite.Position.Y - skirtingTile.Height, skirtingTile.Width, skirtingTile.Height), null, Color.White);
                     }
-                     
-                    /*
+                     */
                     //Draws 2 tiles to a cell
-                    if (tiles[x, y].Collision == TileCollision.Passable || tiles[x, y].Collision == TileCollision.Ladder || tiles[x, y].Collision == TileCollision.Death)
+                    if (tiles[x, y].Collision == TileCollision.Passable || tiles[x, y].Collision == TileCollision.Ladder || tiles[x, y].Collision == TileCollision.Death || tiles[x, y].Collision == TileCollision.Water)
                     {
                         for (int x1 = 0; x1 < 1; x1++)
                             for (int y1 = 0; y1 < 2; y1++)
@@ -408,11 +407,10 @@ namespace Platformer.Levels
                     {
                         if (y - 1 > 0)
                         {
-                            if (tiles[x, y - 1].Collision == TileCollision.Passable || tiles[x, y - 1].Collision == TileCollision.Ladder || tiles[x, y - 1].Collision == TileCollision.Death)
+                            if (tiles[x, y - 1].Collision == TileCollision.Passable || tiles[x, y - 1].Collision == TileCollision.Ladder || tiles[x, y - 1].Collision == TileCollision.Death || tiles[x, y].Collision == TileCollision.Water)
                                 spriteBatch.Draw(skirtingTile, new Rectangle((int)tiles[x, y].Sprite.Position.X, (int)tiles[x, y].Sprite.Position.Y - (skirtingTile.Height * 2), skirtingTile.Width * 2, skirtingTile.Height * 2), null, Color.White);
                         }
                     }
-                     */
                 }
             }
 

@@ -123,7 +123,7 @@ namespace Platformer
         private const Buttons JumpButton = Buttons.A;
 
         // Variables to judge fall distance for fall damage
-        public const int MAX_SAFE_FALL_DISTANCE = 140;
+        public const int MAX_SAFE_FALL_DISTANCE = Tile.Height * 6;
         private Vector2 lastGroundPos;
 
         /// <summary>
@@ -645,30 +645,20 @@ namespace Platformer
                         float absDepthY = Math.Abs(depth.Y);
 
                         // Resolve the collision along the shallow axis.
-                        if (collision != TileCollision.Death && collision != TileCollision.Water && (absDepthY < absDepthX || collision == TileCollision.Platform))
+                        if (collision != TileCollision.Death && collision != TileCollision.Water && collision != TileCollision.Ladder && (absDepthY < absDepthX || collision == TileCollision.Platform))
                         {
                             // If we crossed the top of a tile, we are on the ground.
+                            
                             // This needs to change for ladder mechanic
-                            if (previousBottom <= tileBounds.Top)
+                            //if (previousBottom <= tileBounds.Top)
+                            if(tileBounds.Top - previousBottom < 0.001f) // 0.001 is the delta for floating point comparisons
                             {
-                                // If the collision is with a ladder tile, we are not back on the ground
-                                if (isAlive && collision == TileCollision.Ladder)
-                                {
-                                    if (!isClimbing && !isJumping)
-                                    {
-                                        // This implies we are just walking past a ladder
-                                        isOnGround = true;
-                                    }
-                                }
-                                else
-                                {
-
-                                    isOnGround = true;
-                                    isClimbing = false;
-                                    isJumping = false;
-                                }                              
+                                isOnGround = true;
+                                isClimbing = false;
+                                isJumping = false;                             
 
                             }
+                            
 
                             // Perform moving tile collition
                             if (tile is MoveableTile && !movedByTile)
@@ -701,7 +691,8 @@ namespace Platformer
                         else if (isAlive && collision == TileCollision.Ladder && !isClimbing)
                         {
                             //when we are walking in front of a ladder, or falling past a ladder
-                                
+                            isClimbing = true;
+
                             // Resolve the collision along the Y axis
                             Position = new Vector2(Position.X, Position.Y);
                                 
