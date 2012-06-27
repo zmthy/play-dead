@@ -51,10 +51,10 @@ namespace Platformer.Levels
 
         #endregion
 
-        public DynamicMap(IServiceProvider serviceProvider, Camera2D camera)
+        public DynamicMap(IServiceProvider serviceProvider, Camera2D camera, GraphicsDevice gd)
         {
             this.content = new ContentManager(serviceProvider, "Content");
-            this.levelFactory = new LevelFactory(serviceProvider, this);
+            this.levelFactory = new LevelFactory(serviceProvider, this,gd);
             this.player = new Player(Content, new Vector2(), this);
             this.camera = new TrackingDirector(camera, Player);
             this.existingLevels = new Dictionary<string, Level>();

@@ -192,6 +192,22 @@ namespace Platformer.Levels
             if (activatables.ContainsKey(activeName) && activators.ContainsKey(actorName))
             {
                 Tiles.Activator actor = activators[actorName];
+                if (actor is Laser.Emitter)
+                {
+                    Console.Out.WriteLine("LASER");
+                    Console.Out.WriteLine("activatables[activeName] = " + activatables[activeName]);
+                    ((Laser.Emitter)actor).setTarget((Laser.Mirror)(activatables[activeName]));
+                }
+                if (actor is Laser.Mirror)
+                {
+                    Console.Out.WriteLine("MIRROR!");
+                    Console.Out.WriteLine("activatables[activeName] = " + activatables[activeName]);
+                    if (activatables[activeName] is Laser.Mirror)
+                    {
+                        ((Laser.Mirror)actor).addTarget((Laser.Mirror)activatables[activeName]);
+                    }
+                }
+
                 actor.add(activatables[activeName]);
             }
         }
@@ -414,7 +430,16 @@ namespace Platformer.Levels
 
             //Draw Activators
             foreach (Platformer.Tiles.Activator actor in activators.Values)
-                actor.Draw(gameTime, spriteBatch);
+            {
+                if (actor is Laser.Emitter)
+                {
+                    ((Laser.Emitter)actor).Draw(gameTime, spriteBatch);
+                }
+                else
+                {
+                    actor.Draw(gameTime, spriteBatch);
+                }
+            }
         }
         #endregion
     }

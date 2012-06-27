@@ -91,7 +91,7 @@ namespace Platformer
             camera = new Camera2D();
 
             //Load the level map
-            map = new DynamicMap(Services, camera);
+            map = new DynamicMap(Services, camera,GraphicsDevice);
 
             // Load overlay textures
             winOverlay = Content.Load<Texture2D>("Overlays/you_win");
@@ -187,6 +187,8 @@ namespace Platformer
 
             //spriteBatch.Begin();
             spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, null, null, null, null, camera.getTransform(GraphicsDevice));
+
+            
 
             map.Draw(gameTime, spriteBatch);
 

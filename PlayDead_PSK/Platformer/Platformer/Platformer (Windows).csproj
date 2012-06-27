@@ -5,7 +5,7 @@
     <ProjectTypeGuids>{6D335F3A-9D43-41b4-9D22-F6F17C4BE596};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
-    <OutputType>WinExe</OutputType>
+    <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Platformer</RootNamespace>
     <AssemblyName>Platformer</AssemblyName>
@@ -68,6 +68,9 @@
     <PlatformTarget>x86</PlatformTarget>
     <XnaCompressContent>true</XnaCompressContent>
   </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject />
+  </PropertyGroup>
   <ItemGroup>
     <Compile Include="Accelerometer.cs" />
     <Compile Include="Animation.cs" />
@@ -79,8 +82,11 @@
     <Compile Include="Camera\TrackingDirector.cs" />
     <Compile Include="Circle.cs" />
     <Compile Include="InputManager.cs" />
+    <Compile Include="Laser\Emitter.cs" />
+    <Compile Include="Laser\Mirror.cs" />
     <Compile Include="Level\DynamicMap.cs" />
     <Compile Include="Level\LevelFactory.cs" />
+    <Compile Include="Laser\PrimitiveLine.cs" />
     <Compile Include="Sprite.cs" />
     <Compile Include="Tiles\Exit.cs" />
     <Compile Include="Tiles\LadderTile.cs" />

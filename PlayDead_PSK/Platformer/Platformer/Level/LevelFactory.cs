@@ -10,6 +10,7 @@ using Microsoft.Xna.Framework.Graphics;
 
 using Platformer.Camera;
 using Platformer.Tiles;
+using Platformer.Laser;
 using System.Text.RegularExpressions;
 using System.Globalization;
 
@@ -24,13 +25,15 @@ namespace Platformer.Levels
         private DynamicMap dynamicMap;
 
         private Random random;
+        private GraphicsDevice gd;
 
         #endregion
 
-        public LevelFactory(IServiceProvider services, DynamicMap dynamicMap)
+        public LevelFactory(IServiceProvider services, DynamicMap dynamicMap, GraphicsDevice gd)
         {
             this.services = services;
             this.dynamicMap = dynamicMap;
+            this.gd = gd;
         }
 
         /// <summary>
@@ -182,6 +185,10 @@ namespace Platformer.Levels
                                 int uid = int.Parse(Regex.Match(tileID, @"\d+").Value, NumberFormatInfo.InvariantInfo);
                                 Exit exit = (Exit)actor;
                                 exit.LevelIndex = uid;
+                            }
+                            if (actor is Mirror)
+                            {
+                                level.addActivatable(tileID, (Mirror)actor);
                             }
                         }
 
@@ -384,6 +391,12 @@ namespace Platformer.Levels
                 case 'X':
                     return CreateExit(x, y);
 
+                case 'M':
+                    return CreateMirror(x, y);
+
+                case 'Z':
+                    return CreateLaser(x, y);
+
                 default:
                     return null;
             }
@@ -407,6 +420,20 @@ namespace Platformer.Levels
         {
             //To be implemented
             return CreateSwitch(x, y);
+        }
+
+        private Platformer.Tiles.Activator CreateMirror(int x, int y)
+        {
+            Vector2 tileCenter = new Vector2(x + Tile.Width / 2, y + Tile.Height / 2);
+            Mirror m = new Mirror(tileCenter,themedContent);
+            return m;
+        }
+
+        private Platformer.Tiles.Activator CreateLaser(int x, int y)
+        {
+            Vector2 tileCenter = new Vector2(x + Tile.Width / 2, y + Tile.Height / 2);
+            Emitter l = new Emitter(tileCenter,gd,themedContent);
+            return l;
         }
         #endregion
 
@@ -433,6 +460,8 @@ namespace Platformer.Levels
                 case 'L':
                     return CreateLadder(x, y);
 
+                case 'M':
+                    //return CreateMirror(x, y);
                 default:
                     return null;
             }
@@ -452,6 +481,12 @@ namespace Platformer.Levels
             Vector2 tileCenter = new Vector2(x + Tile.Width / 2, y + Tile.Height / 2);
             return new Light(tileCenter, themedContent);
         }
+
+        //private IActivatable CreateMirror(int x, int y)
+        //{
+        //    Vector2 tileCenter = new Vector2(x + Tile.Width / 2, y + Tile.Height / 2);
+        //    return new Mirror(tileCenter, themedContent);
+        //}
 
         private IActivatable CreateLadder(int x, int y)
         {
