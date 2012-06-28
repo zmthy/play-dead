@@ -8,11 +8,17 @@ using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework;
 using Platformer;
 
+using Microsoft.Xna.Framework.Audio;
+
 
 namespace Platformer.Tiles
 {
     class Switch : Activator
     {
+
+        private SoundEffect buttonDown;
+        private SoundEffect buttonUp;
+
         /*public Switch(A list, Vector2 location, ContentManager content)
             : base(location)
         {
@@ -40,6 +46,9 @@ namespace Platformer.Tiles
             this.deactivated = content.Load<Texture2D>("Activator/switch_off");
             //initialise origin
             origin = new Vector2(activated.Width / 2.0f, activated.Height / 2.0f);
+
+            buttonDown = content.Load<SoundEffect>("Activator/ButtonPressDown");
+            buttonUp = content.Load<SoundEffect>("Activator/ButtonPressUp");
         }
 
         // Switch -  the player has to be near and respond to a key press
@@ -49,7 +58,18 @@ namespace Platformer.Tiles
             Boolean touching = other.Intersects(this.BoundingRectangle);
             if (inputManager.IsNewPress(Keys.K) && touching)
             {
+                               
                 on = !on;
+
+                if (on)
+                {
+                    buttonDown.Play();
+                }
+                else
+                {
+                    buttonUp.Play();
+                }
+
                 foreach (IActivatable responder in list)
                 {
                     responder.ChangeState();

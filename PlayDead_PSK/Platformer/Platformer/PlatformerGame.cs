@@ -105,7 +105,10 @@ namespace Platformer
             try
             {
                 MediaPlayer.IsRepeating = true;
-                MediaPlayer.Play(Content.Load<Song>("Sounds/Music"));
+                //Old song
+                //MediaPlayer.Play(Content.Load<Song>("Sounds/Music"));
+                // Fez song
+                MediaPlayer.Play(Content.Load<Song>("Sounds/06Flow_FezOST"));
             }
             catch { }
 
