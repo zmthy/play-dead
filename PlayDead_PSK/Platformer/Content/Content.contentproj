@@ -97,6 +97,10 @@
       <Name>Basement_3</Name>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="Story\Tower_3.csv">
+      <Name>Tower_3</Name>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="Story\story.csv">
       <Name>story</Name>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
