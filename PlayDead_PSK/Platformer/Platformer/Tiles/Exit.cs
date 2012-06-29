@@ -40,7 +40,7 @@ namespace Platformer.Tiles
         {
             RectangleF other = p.BoundingRectangle;
             Boolean touching = other.Intersects(this.BoundingRectangle);
-            if (inputManager.IsNewPress(Keys.K) && touching)
+            if (inputManager.IsNewPress(Keys.E) && touching)
                 p.GotoLevel(levelIndex);
         }
 

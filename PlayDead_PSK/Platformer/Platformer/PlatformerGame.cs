@@ -139,19 +139,6 @@ namespace Platformer
             touchState = TouchPanel.GetState();
             accelerometerState = Accelerometer.GetState();
 
-            // Control the camera
-            if (keyboardState.IsKeyDown(Keys.NumPad8))
-                camera.Zoom += 0.1f;
-
-            if (keyboardState.IsKeyDown(Keys.NumPad2))
-                camera.Zoom -= 0.1f;
-
-            if (keyboardState.IsKeyDown(Keys.NumPad4))
-                camera.Rotation -= 0.1f;
-
-            if (keyboardState.IsKeyDown(Keys.NumPad6))
-                camera.Rotation += 0.1f;
-
             // Exit the game when back is pressed.
             if (gamePadState.Buttons.Back == ButtonState.Pressed ||
                 keyboardState.IsKeyDown(Keys.Escape))
