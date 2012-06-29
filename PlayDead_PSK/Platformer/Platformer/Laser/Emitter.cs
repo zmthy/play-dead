@@ -31,8 +31,8 @@ namespace Platformer.Laser
     private void initialise(ContentManager content)
         {
             //load textures
-            this.activated = content.Load<Texture2D>("Activator/switch_on");
-            this.deactivated = content.Load<Texture2D>("Activator/switch_off");
+            this.activated = content.Load<Texture2D>("Activator/mirror_on");
+            this.deactivated = content.Load<Texture2D>("Activator/mirror_off");
             //initialise origin
             origin = new Vector2(activated.Width / 2.0f, activated.Height / 2.0f);
         }
