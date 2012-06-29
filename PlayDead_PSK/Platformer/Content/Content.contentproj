@@ -85,9 +85,9 @@
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
-    <None Include="Story\laser.csv">
+    <None Include="Story\Basement_4.csv">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <Name>laser</Name>
+      <Name>Basement_4</Name>
     </None>
     <None Include="Story\Basement_2.csv">
       <Name>Basement_2</Name>
