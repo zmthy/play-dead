@@ -154,7 +154,7 @@ namespace Platformer.Levels
         /// <summary>
         /// Adds and activatable item to the activatables list.
         /// </summary>
-        /// <param name="tileID">The ID of the tile.</param>
+        /// <param name="tileID">The ID of the tilwe.</param>
         /// <param name="active">The activatable instance.</param>
         public void addActivatable(string tileID, IActivatable active)
         {
