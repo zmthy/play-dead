@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Platformer (Windows)", "Platformer\Platformer\Platformer (Windows).csproj", "{932C3D56-99F8-4A20-AD55-D46BE7DA09C8}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Play Dead (Windows)", "Platformer\Platformer\Play Dead (Windows).csproj", "{932C3D56-99F8-4A20-AD55-D46BE7DA09C8}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Content", "Platformer\Content\Content.contentproj", "{2FDB7EF3-D3C4-47A3-8E75-C901A05B8574}"
 EndProject
@@ -15,7 +15,9 @@ Global
 		{932C3D56-99F8-4A20-AD55-D46BE7DA09C8}.Debug|x86.Build.0 = Debug|x86
 		{932C3D56-99F8-4A20-AD55-D46BE7DA09C8}.Release|x86.ActiveCfg = Release|x86
 		{932C3D56-99F8-4A20-AD55-D46BE7DA09C8}.Release|x86.Build.0 = Release|x86
-		EndGlobalSection
+		{2FDB7EF3-D3C4-47A3-8E75-C901A05B8574}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{2FDB7EF3-D3C4-47A3-8E75-C901A05B8574}.Release|x86.ActiveCfg = Debug|Any CPU
+	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection

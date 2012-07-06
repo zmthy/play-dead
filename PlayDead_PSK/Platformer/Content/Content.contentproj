@@ -377,25 +377,6 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Theme\default\Activator\ButtonPressDown.wav">
-      <Name>ButtonPressDown</Name>
-      <Importer>WavImporter</Importer>
-      <Processor>SoundEffectProcessor</Processor>
-    </Compile>
-    <Compile Include="Theme\default\Activator\ButtonPressUp.wav">
-      <Name>ButtonPressUp</Name>
-      <Importer>WavImporter</Importer>
-      <Processor>SoundEffectProcessor</Processor>
-    </Compile>
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="Sounds\06Flow_FezOST.mp3">
-      <Name>06Flow_FezOST</Name>
-      <Importer>Mp3Importer</Importer>
-      <Processor>SongProcessor</Processor>
-    </Compile>
-  </ItemGroup>
-  <ItemGroup>
     <Compile Include="Theme\default\Activator\mirror_off.png">
       <Name>mirror_off</Name>
       <Importer>TextureImporter</Importer>
