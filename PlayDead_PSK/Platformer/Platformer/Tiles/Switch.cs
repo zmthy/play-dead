@@ -60,8 +60,8 @@ namespace Platformer.Tiles
             //initialise origin
             origin = new Vector2(activated.Width / 2.0f, activated.Height / 2.0f);
 
-            buttonDown = content.Load<SoundEffect>("Activator/ButtonPressDown");
-            buttonUp = content.Load<SoundEffect>("Activator/ButtonPressUp");
+            buttonDown = content.Load<SoundEffect>("Activator/94121__bmaczero__mechanical2");
+            buttonUp = content.Load<SoundEffect>("Activator/94127__bmaczero__clank1");
         }
 
         // Switch -  the player has to be near and respond to a key press

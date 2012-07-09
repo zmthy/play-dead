@@ -108,7 +108,7 @@ namespace Platformer
                 //Old song
                 //MediaPlayer.Play(Content.Load<Song>("Sounds/Music"));
                 // Fez song
-                MediaPlayer.Play(Content.Load<Song>("Sounds/06Flow_FezOST"));
+                MediaPlayer.Play(Content.Load<Song>("Sounds/133659__klankbeeld__horror-ambience-12"));
             }
             catch { }
 
