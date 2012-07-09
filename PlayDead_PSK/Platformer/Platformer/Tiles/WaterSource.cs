@@ -54,6 +54,8 @@ namespace Platformer.Tiles
             this.emptySprite = emptySprite;
             this.fullSprite = fullSprite;
 
+            this.IsFlooded = true;
+
             initialWaterLevel = 3;
             fill = true;
         }
@@ -154,6 +156,7 @@ namespace Platformer.Tiles
                 {
                     tile.Collision = TileCollision.Water;
                     tile.Sprite.Texture = fullSprite.Texture;
+                    tile.IsFlooded = true;
                     newWaterTiles.Add(new Vector2(x, y));
 
                     if (lookLeft)
@@ -198,6 +201,7 @@ namespace Platformer.Tiles
                     Tile tile = level.getTile(tileX, tileY + 1);
                     tile.Collision = TileCollision.Water;
                     tile.Sprite.Texture = fullSprite.Texture;
+                    tile.IsFlooded = true;
 
                     // Remember to propogate the new water tile later.
                     newWaterTiles.Add(new Vector2(tileX, tileY + 1));

@@ -22,9 +22,10 @@ namespace Platformer.Tiles
         /// </summary>
         private Level level;
 
-        private Texture2D activated;
-        private Texture2D deactivated;
-        private Vector2 origin;
+        private Animation activated;
+        private Animation deactivated;
+        private Animation spawn;
+        private AnimationPlayer animation;
 
         private bool isActive;
 
@@ -36,7 +37,7 @@ namespace Platformer.Tiles
 
         public Spawner(Vector2 position, ContentManager content)
         {
-            this.position = position;
+            this.position = position + new Vector2(0, 24);
             this.initialise(content);
         }
 
@@ -56,10 +57,14 @@ namespace Platformer.Tiles
         private void initialise(ContentManager content)
         {
             //load textures
-            this.activated = content.Load<Texture2D>("Activatable/spawner_on");
-            this.deactivated = content.Load<Texture2D>("Activatable/spawner_off");
-            //initialise origin
-            origin = new Vector2(activated.Width / 2.0f, activated.Height / 2.0f);
+            this.activated = new Animation(content.Load<Texture2D>("Activatable/spawner_on"), 0.15f, true);
+            this.deactivated = new Animation(content.Load<Texture2D>("Activatable/spawner_off"), 0.15f, false);
+            this.spawn = new Animation(content.Load<Texture2D>("Activatable/spawner_spawn"), 0.12f, delegate
+            {
+                animation.PlayAnimation(activated);
+            });
+
+            SetSpawnState(isActive);
         }
 
         /// <summary>
@@ -74,7 +79,8 @@ namespace Platformer.Tiles
                 {
                     level.UpdateSpawn(this);
                 }
-                this.isActive = active;
+
+                SetSpawnState(isActive);
             }
         }
 
@@ -95,17 +101,21 @@ namespace Platformer.Tiles
         public void SetSpawnState(Boolean isActive)
         {
             this.isActive = isActive;
+            animation.PlayAnimation(isActive ? activated : deactivated);
         }
 
-        public void Draw(SpriteBatch spriteBatch)
+        public void Spawn()
         {
-            if (isActive)
-                spriteBatch.Draw(activated, position, null, Color.White, 0.0f, origin, 1.0f, SpriteEffects.None, 0.0f);
-            else
-                spriteBatch.Draw(deactivated, position, null, Color.White, 0.0f, origin, 1.0f, SpriteEffects.None, 0.0f);
+            animation.PlayAnimation(spawn);
         }
 
-        public void Update(GameTime gameTime) { }
+
+        public void Draw(GameTime gameTime, SpriteBatch spriteBatch)
+        {
+            animation.Draw(gameTime, spriteBatch, position, SpriteEffects.None);
+        }
+
+        public void Update(GameTime gameTime) {}
 
         public Vector2 getPosition()
         {

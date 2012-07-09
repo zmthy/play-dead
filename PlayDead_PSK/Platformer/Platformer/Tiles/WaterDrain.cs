@@ -33,7 +33,9 @@ namespace Platformer.Tiles
         /// </summary>
         /// <param name="sprite">The look and position of the water drain.</param>
         public WaterDrain(Sprite sprite)
-            : base(sprite, TileCollision.Passable) { }
+                : base(sprite, TileCollision.Passable) {
+            this.IsFlooded = true;
+        }
 
         /// <summary>
         /// Decrease the water level by one (tile).
@@ -101,6 +103,7 @@ namespace Platformer.Tiles
                 {
                     tile.Collision = TileCollision.Passable;
                     tile.Sprite.Texture = null;
+                    tile.IsFlooded = false;
                 }
 
                 if (lookLeft)

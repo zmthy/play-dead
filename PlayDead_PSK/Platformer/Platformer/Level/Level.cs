@@ -361,7 +361,7 @@ namespace Platformer.Levels
         /// <summary>
         /// Draw everything in the level from background to foreground.
         /// </summary>wall
-        public void Draw(GameTime gameTime, SpriteBatch spriteBatch)
+        public void DrawBehind(GameTime gameTime, SpriteBatch spriteBatch)
         {
             Random rand = new Random(354668); // Arbitrary, but constant seed for each draw
 
@@ -393,22 +393,26 @@ namespace Platformer.Levels
                     //Draws 2 tiles to a cell
                     if (tiles[x, y].Collision == TileCollision.Passable || tiles[x, y].Collision == TileCollision.Ladder || tiles[x, y].Collision == TileCollision.Death || tiles[x, y].Collision == TileCollision.Water)
                     {
-                        for (int x1 = 0; x1 < 1; x1++)
+                        for (int x1 = 0; x1 < 2; x1++)
+                        {
                             for (int y1 = 0; y1 < 2; y1++)
                             {
                                 int wall = rand.Next(10);
                                 if (wall > 3)
                                     wall = 0;
 
-                                spriteBatch.Draw(wallTiles[wall], new Rectangle((int)tiles[x, y].Sprite.Position.X + (x1 * 48), (int)tiles[x, y].Sprite.Position.Y + (y1 * 16), wallTiles[0].Width * 3, wallTiles[0].Height * 2), null, Color.White);
+                                float yPos = tiles[x, y].Sprite.Position.Y + y1 * 24;
+
+                                spriteBatch.Draw(wallTiles[wall], new Rectangle((int)tiles[x, y].Sprite.Position.X + (x1 * 24), (int)yPos, wallTiles[0].Width, wallTiles[0].Height), null, Color.White);
                             }
+                        }
                     }
                     else
                     {
                         if (y - 1 > 0)
                         {
                             if (tiles[x, y - 1].Collision == TileCollision.Passable || tiles[x, y - 1].Collision == TileCollision.Ladder || tiles[x, y - 1].Collision == TileCollision.Death || tiles[x, y].Collision == TileCollision.Water)
-                                spriteBatch.Draw(skirtingTile, new Rectangle((int)tiles[x, y].Sprite.Position.X, (int)tiles[x, y].Sprite.Position.Y - (skirtingTile.Height * 2), skirtingTile.Width * 2, skirtingTile.Height * 2), null, Color.White);
+                                spriteBatch.Draw(skirtingTile, new Rectangle((int)tiles[x, y].Sprite.Position.X, (int)tiles[x, y].Sprite.Position.Y - (skirtingTile.Height), skirtingTile.Width, skirtingTile.Height), null, Color.White);
                         }
                     }
                 }
@@ -416,15 +420,17 @@ namespace Platformer.Levels
 
             // Draw Tiles
             foreach (Tile tile in tiles)
-                tile.Draw(spriteBatch);
+                if (!tile.IsFlooded)
+                    tile.Draw(gameTime, spriteBatch);
 
             // Draw non-atomic tiles
             foreach (MoveableTile tile in MoveableTiles)
-                tile.Draw(spriteBatch);
+                tile.Draw(gameTime, spriteBatch);
 
             //Draw Activatables
             foreach (IActivatable active in activatables.Values)
-                active.Draw(spriteBatch);
+                if (!(active is WaterDrain || active is WaterSource))
+                    active.Draw(gameTime, spriteBatch);
 
             //Draw Activators
             foreach (Platformer.Tiles.Activator actor in activators.Values)
@@ -439,6 +445,18 @@ namespace Platformer.Levels
                 }
             }
         }
+
+        public void DrawInFront(GameTime gameTime, SpriteBatch spriteBatch)
+        {
+            foreach (Tile tile in tiles)
+            {
+                if (tile.IsFlooded)
+                {
+                    tile.Draw(gameTime, spriteBatch);
+                }
+            }
+        }
+
         #endregion
     }
 }

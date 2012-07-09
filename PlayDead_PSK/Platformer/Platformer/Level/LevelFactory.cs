@@ -74,7 +74,7 @@ namespace Platformer.Levels
                 width = levelRows[0].Split(',').Length;
 
             int height = levelRows.Count;
-            Level level = new Level(name, width, height, themedContent);
+            Level level = new Level(name, width * 2, height, themedContent);
 
             BuildLevel(levelRows, level);
 
@@ -280,6 +280,7 @@ namespace Platformer.Levels
         /// <returns>The loaded tile.</returns>
         private Tile CreateTile(char tileType, int x, int y)
         {
+            int which;
             switch (tileType)
             {
                 // Blank space
@@ -293,27 +294,29 @@ namespace Platformer.Levels
 
                 // Platform block
                 case '~':
-                    return CreateVarietyTile("BlockB", 2, TileCollision.Platform);
+                    return CreateVarietyTile("BlockA", 4, TileCollision.Platform);
 
                 // Passable block
                 case ':':
-                    return CreateVarietyTile("BlockB", 2, TileCollision.Passable);
+                    return CreateVarietyTile("BlockA", 4, TileCollision.Passable);
 
                 // Impassable block
                 case '#':
-                    return CreateVarietyTile("BlockA", 7, TileCollision.Impassable);
+                    return CreateVarietyTile("BlockA", 4, TileCollision.Impassable);
 
                 // Spike block
                 case '^':
-                    return CreateTile("Spikes", TileCollision.Death);
+                    return CreateVarietyTile("Spikes", 2, TileCollision.Death);
 
                 // Water source block
                 case 'W':
-                    return CreateWaterSource("Water");
+                    //which = random.Next(8);
+                    return CreateWaterSource("Water0");
 
                 // Water drain block
                 case 'E':
-                    return CreateWaterDrain("Water");
+                    //which = random.Next(8);
+                    return CreateWaterDrain("Water0");
 
                 // Unknown tile type character
                 default:
@@ -385,6 +388,9 @@ namespace Platformer.Levels
                 case 'S':
                     return CreateSwitch(x, y);
 
+                case 'T':
+                    return CreateWheel(x, y);
+
                 case 'B':
                     return CreateSwitch(x, y);
 
@@ -406,6 +412,13 @@ namespace Platformer.Levels
         {
             Vector2 tileCenter = new Vector2(x + Tile.Width / 2, y + Tile.Height / 2);
             Switch sw = new Switch(tileCenter, themedContent); 
+            return sw;
+        }
+
+        private Platformer.Tiles.Activator CreateWheel(int x, int y)
+        {
+            Vector2 tileCenter = new Vector2(x + Tile.Width / 2, y + Tile.Height / 2);
+            Switch sw = new Switch(tileCenter, themedContent, "Wheel1", "Wheel2");
             return sw;
         }
 
@@ -528,7 +541,7 @@ namespace Platformer.Levels
 
         private MoveableTile CreateDoorTile(int x, int y, bool p, TileCollision tileCollision)
         {
-            Sprite sprite = new Sprite(themedContent.Load<Texture2D>("Tiles/Platform"), Tile.Width, Tile.Height);
+            Sprite sprite = new Sprite(themedContent.Load<Texture2D>("Tiles/BlockA0"), Tile.Width, Tile.Height);
             sprite.Position = new Vector2(x, y);
 
             return new DoorTile(sprite, tileCollision, 100);
@@ -536,7 +549,7 @@ namespace Platformer.Levels
 
         private MoveableTile CreateSlidingTile(int x, int y, bool isHorizontal, TileCollision collision)
         {
-            Sprite sprite = new Sprite(themedContent.Load<Texture2D>("Tiles/Platform"), Tile.Width, Tile.Height);
+            Sprite sprite = new Sprite(themedContent.Load<Texture2D>("Tiles/BlockA0"), Tile.Width, Tile.Height);
             sprite.Position = new Vector2(x, y);
             float angle = (isHorizontal) ? 0.0f : (float)(Math.PI / 2.0);
 

@@ -53,8 +53,10 @@ namespace Platformer.Tiles
         public TileCollision Collision { get; set; }
 
         public const int Width = 48;
-        public const int Height = 32;
+        public const int Height = 48;
         public const int Center = Width / 2;
+
+        public bool IsFlooded = false;
 
         /// <summary>
         /// Constructs a new tile.
@@ -70,7 +72,7 @@ namespace Platformer.Tiles
 
         public virtual void Update(GameTime gameTime) { }
 
-        public void Draw(SpriteBatch spriteBatch)
+        public void Draw(GameTime gameTime, SpriteBatch spriteBatch)
         {
             if (Sprite != null)
                 Sprite.draw(spriteBatch);

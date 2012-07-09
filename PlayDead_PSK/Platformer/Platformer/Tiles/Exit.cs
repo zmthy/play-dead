@@ -21,7 +21,7 @@ namespace Platformer.Tiles
         int levelIndex; 
 
         public Exit(Vector2 location, ContentManager content)
-            : base(location)
+            : base(location - new Vector2(0, 12))
         {
             this.initialise(content);
         }

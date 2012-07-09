@@ -75,6 +75,9 @@ namespace Platformer
             get { return Texture.Height; }
         }
 
+        public delegate void OnDone();
+        private readonly OnDone onDone = null;
+
         /// <summary>
         /// Constructors a new animation.
         /// </summary>        
@@ -84,5 +87,20 @@ namespace Platformer
             this.frameTime = frameTime;
             this.isLooping = isLooping;
         }
+
+        public Animation(Texture2D texture, float frameTime, OnDone onDone)
+            : this(texture, frameTime, false)
+        {
+            this.onDone = onDone;
+        }
+
+        public void Done()
+        {
+            if (onDone != null)
+            {
+                onDone();
+            }
+        }
+
     }
 }

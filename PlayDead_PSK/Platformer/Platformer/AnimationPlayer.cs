@@ -49,11 +49,16 @@ namespace Platformer
             get { return new Vector2(Animation.FrameWidth / 2.0f, Animation.FrameHeight); }
         }
 
+        private bool done;
+        private bool paused;
+
         /// <summary>
         /// Begins or continues playback of an animation.
         /// </summary>
         public void PlayAnimation(Animation animation)
         {
+            paused = false;
+
             // If this animation is already running, do not restart it.
             if (Animation == animation)
                 return;
@@ -62,6 +67,12 @@ namespace Platformer
             this.animation = animation;
             this.frameIndex = 0;
             this.time = 0.0f;
+            this.done = false;
+        }
+
+        public void Pause()
+        {
+            paused = true;
         }
 
         /// <summary>
@@ -79,13 +90,22 @@ namespace Platformer
                 time -= Animation.FrameTime;
 
                 // Advance the frame index; looping or clamping as appropriate.
-                if (Animation.IsLooping)
+                if (!paused)
                 {
-                    frameIndex = (frameIndex + 1) % Animation.FrameCount;
-                }
-                else
-                {
-                    frameIndex = Math.Min(frameIndex + 1, Animation.FrameCount - 1);
+                    if (Animation.IsLooping)
+                    {
+                        frameIndex = (frameIndex + 1) % Animation.FrameCount;
+                    }
+                    else
+                    {
+                        frameIndex = Math.Min(frameIndex + 1, Animation.FrameCount - 1);
+
+                        if (!done && frameIndex == Animation.FrameCount - 1)
+                        {
+                            Animation.Done();
+                            done = true;
+                        }
+                    }
                 }
             }
 

@@ -141,6 +141,11 @@ namespace Platformer.Levels
             else
             {
                 Player.Update(gameTime, keyboardState, gamePadState, touchState, accelState, orientation, inputManager);
+
+                if (!Player.IsAlive)
+                {
+                    activeLevel.ActiveSpawn.Spawn();
+                }
             }
 
             // Update the camera
@@ -153,7 +158,7 @@ namespace Platformer.Levels
                 }
                 else if(deathPan && panningDirector.Returning)
                     {
-                        Player.Reset(activeLevel.ActiveSpawn.Position);
+                        Player.Reset(activeLevel.ActiveSpawn.Position - new Vector2(2, 0));
                         camera = new TrackingDirector(panningDirector.Camera, player);
                         deathPan = false;
                     }
@@ -171,8 +176,9 @@ namespace Platformer.Levels
         /// <param name="spriteBatch"></param>
         public void Draw(GameTime gameTime, SpriteBatch spriteBatch)
         {
-            activeLevel.Draw(gameTime, spriteBatch);
+            activeLevel.DrawBehind(gameTime, spriteBatch);
             Player.Draw(gameTime, spriteBatch);
+            activeLevel.DrawInFront(gameTime, spriteBatch);
         }
         
         /// <summary>

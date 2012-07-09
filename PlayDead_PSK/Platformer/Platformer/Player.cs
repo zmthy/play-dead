@@ -40,15 +40,23 @@ namespace Platformer
     class Player : ICameraTrackable
     {
         // Animations
-        private Animation idleAnimation;
-        private Animation runAnimation;
-        private Animation jumpAnimation;
-        private Animation celebrateAnimation;
-        private Animation dieAnimation;
+        private Animation idleRightAnimation;
+        private Animation idleLeftAnimation;
+        private Animation runRightAnimation;
+        private Animation runLeftAnimation;
+        private Animation jumpRightAnimation;
+        private Animation jumpLeftAnimation;
+        private Animation dieRightAnimation;
+        private Animation dieLeftAnimation;
+        private Animation drownRightAnimation;
+        private Animation drownLeftAnimation;
         private Animation ladderUpAnimation;
         private Animation ladderDownAnimation;
-        private SpriteEffects flip = SpriteEffects.None;
+        private Animation fallRightAnimation;
+        private Animation fallLeftAnimation;
         private AnimationPlayer sprite;
+
+        bool isRight = true;
 
         //Flag to make sure it only plays the death sound once
         private bool deathPlayed = false;
@@ -209,21 +217,33 @@ namespace Platformer
         public void LoadContent(ContentManager content)
         {
             // Load animated textures.
-            idleAnimation = new Animation(content.Load<Texture2D>("Sprites/Player/Idle"), 0.1f, true);
-            runAnimation = new Animation(content.Load<Texture2D>("Sprites/Player/Run"), 0.1f, true);
-            jumpAnimation = new Animation(content.Load<Texture2D>("Sprites/Player/Jump"), 0.1f, false);
-            celebrateAnimation = new Animation(content.Load<Texture2D>("Sprites/Player/Celebrate"), 0.1f, false);
-            dieAnimation = new Animation(content.Load<Texture2D>("Sprites/Player/Die"), 0.1f, false);
+            idleRightAnimation = new Animation(content.Load<Texture2D>("Sprites/Player/Idle-Right"), 0.1f, true);
+            idleLeftAnimation = new Animation(content.Load<Texture2D>("Sprites/Player/Idle-Left"), 0.1f, true);
+            runRightAnimation = new Animation(content.Load<Texture2D>("Sprites/Player/Walk-Right"), 0.1f, true);
+            runLeftAnimation = new Animation(content.Load<Texture2D>("Sprites/Player/Walk-Left"), 0.1f, true);
+            fallRightAnimation = new Animation(content.Load<Texture2D>("Sprites/Player/Fall-Right"), 0.15f, true);
+            fallLeftAnimation = new Animation(content.Load<Texture2D>("Sprites/Player/Fall-Left"), 0.15f, true);
+            jumpRightAnimation = new Animation(content.Load<Texture2D>("Sprites/Player/Jump-Right"), 0.05f, delegate
+            {
+                sprite.PlayAnimation(fallRightAnimation);
+            });
+            jumpLeftAnimation = new Animation(content.Load<Texture2D>("Sprites/Player/Jump-Left"), 0.05f, delegate
+            {
+                sprite.PlayAnimation(fallLeftAnimation);
+            });
+            dieRightAnimation = new Animation(content.Load<Texture2D>("Sprites/Player/Spiked-Right"), 0.05f, false);
+            dieLeftAnimation = new Animation(content.Load<Texture2D>("Sprites/Player/Spiked-Left"), 0.05f, false);
+            drownRightAnimation = new Animation(content.Load<Texture2D>("Sprites/Player/Drown-Right"), 0.1f, true);
+            drownLeftAnimation = new Animation(content.Load<Texture2D>("Sprites/Player/Drown-Left"), 0.1f, true);
 
-            //TODO: actually create and link the real ladder animation
-            ladderUpAnimation = new Animation(content.Load<Texture2D>("Sprites/Player/Celebrate"), 0.1f, false);
-            ladderDownAnimation = new Animation(content.Load<Texture2D>("Sprites/Player/Die"), 0.1f, false);
+            ladderUpAnimation = new Animation(content.Load<Texture2D>("Sprites/Player/Ladder"), 0.15f, true);
+            ladderDownAnimation = new Animation(content.Load<Texture2D>("Sprites/Player/Ladder"), 0.1f, true);
 
             // Calculate bounds within texture size.            
-            float width = idleAnimation.FrameWidth * 0.4f;
-            float left = (idleAnimation.FrameWidth - width) / 2;
-            float height = idleAnimation.FrameWidth * 0.8f;
-            float top = idleAnimation.FrameHeight - height;
+            float width = idleLeftAnimation.FrameWidth * 0.4f;
+            float left = (idleLeftAnimation.FrameWidth - width) / 2;
+            float height = idleLeftAnimation.FrameWidth * 0.8f;
+            float top = idleLeftAnimation.FrameHeight - height;
             localBounds = new RectangleF(left, top, width, height);
 
             // Load sounds.            
@@ -250,12 +270,25 @@ namespace Platformer
             Velocity = Vector2.Zero;
             isAlive = true;
             deathPlayed = false;
-            sprite.PlayAnimation(idleAnimation);
+            isRight = true;
+            sprite.PlayAnimation(idleRightAnimation);
         }
 
         public Vector2 getPosition()
         {
             return position;
+        }
+
+        private void idle()
+        {
+            if (isRight)
+            {
+                sprite.PlayAnimation(idleRightAnimation);
+            }
+            else
+            {
+                sprite.PlayAnimation(idleLeftAnimation);
+            }
         }
 
         /// <summary>
@@ -279,43 +312,64 @@ namespace Platformer
             // Hook for InputManager
             inputManager.Update();
 
-            GetInput(keyboardState, gamePadState, touchState, accelState, orientation, inputManager);
+            if (IsAlive)
+            {
+                GetInput(keyboardState, gamePadState, touchState, accelState, orientation, inputManager);
+            }
 
             ApplyPhysics(gameTime);
 
-            if (IsAlive && IsOnGround)
+            if (IsAlive)
             {
                 if (isOnGround)
                 {
                     if (Math.Abs(Velocity.X) - 0.02f > 0)
                     {
-                        sprite.PlayAnimation(runAnimation);
+                        if (Velocity.X > 0)
+                        {
+                            sprite.PlayAnimation(runRightAnimation);
+                            isRight = true;
+                        }
+                        else
+                        {
+                            sprite.PlayAnimation(runLeftAnimation);
+                            isRight = false;
+                        }
                     }
                     else
                     {
-                        sprite.PlayAnimation(idleAnimation);
+                        idle();
                     }
                 }
                 else if (isClimbing)
                 {
-                    //If he's moving down play ladderDownAnimation 
-                    if (Velocity.Y - 0.02f > 0)
+                    if (Velocity.Y > 0.02f)
                     {
-                        //need ladder animation
-                        //sprite.PlayAnimation(ladderDownAnimation);
-                        sprite.PlayAnimation(idleAnimation);
+                        sprite.PlayAnimation(ladderDownAnimation);
                     }
-                    //If he's moving up play ladderUpAnimation 
-                    else if (Velocity.Y - 0.02f < 0)
+                    else if (Velocity.Y < 0.02f)
                     {
-                        //need ladder animation
-                        //sprite.PlayAnimation(ladderUpAnimation);
-                        sprite.PlayAnimation(idleAnimation);
+                        sprite.PlayAnimation(ladderUpAnimation);
                     }
-                    //Otherwise, just stand on the ladder
+                    
+                    if (Math.Abs(Velocity.Y) <= 0.02f)
+                    {
+                        sprite.Pause();
+                    }
+                }
+                else if (!isJumping)
+                {
+                    if (Velocity.X > 0)
+                    {
+                        sprite.PlayAnimation(fallRightAnimation);
+                    }
+                    else if (Velocity.X < 0)
+                    {
+                        sprite.PlayAnimation(fallLeftAnimation);
+                    }
                     else
                     {
-                        sprite.PlayAnimation(idleAnimation);
+                        sprite.PlayAnimation(isRight ? fallRightAnimation : fallLeftAnimation);
                     }
                 }
             }
@@ -570,7 +624,14 @@ namespace Platformer
                         jumpSound.Play();
 
                     jumpTime += (float)gameTime.ElapsedGameTime.TotalSeconds;
-                    sprite.PlayAnimation(jumpAnimation);
+                    if (isRight || velocity.X > 0)
+                    {
+                        sprite.PlayAnimation(jumpRightAnimation);
+                    }
+                    else
+                    {
+                        sprite.PlayAnimation(jumpLeftAnimation);
+                    }
                 }
 
                 // If we are in the ascent of the jump
@@ -734,7 +795,6 @@ namespace Platformer
 
             isAlive = false;           
 
-
             if (!deathPlayed)
             {
                 switch (killedType)
@@ -758,9 +818,29 @@ namespace Platformer
 
                 deathPlayed = true;
             }
-            
 
-            sprite.PlayAnimation(dieAnimation);
+            if (isRight || velocity.X > 0)
+            {
+                if (killedType == DeathType.Water)
+                {
+                    sprite.PlayAnimation(drownRightAnimation);
+                }
+                else
+                {
+                    sprite.PlayAnimation(dieRightAnimation);
+                }
+            }
+            else
+            {
+                if (killedType == DeathType.Water)
+                {
+                    sprite.PlayAnimation(drownLeftAnimation);
+                }
+                else
+                {
+                    sprite.PlayAnimation(dieLeftAnimation);
+                }
+            }
             //TODO: pan the camera + new death animations
 
         }
@@ -768,24 +848,15 @@ namespace Platformer
         /// <summary>
         /// Called when this player reaches the level's exit.
         /// </summary>
-        public void OnReachedExit()
-        {
-            sprite.PlayAnimation(celebrateAnimation);
-        }
+        public void OnReachedExit() {}
 
         /// <summary>
         /// Draws the animated player.
         /// </summary>
         public void Draw(GameTime gameTime, SpriteBatch spriteBatch)
         {
-            // Flip the sprite to face the way we are moving.
-            if (Velocity.X > 0)
-                flip = SpriteEffects.FlipHorizontally;
-            else if (Velocity.X < 0)
-                flip = SpriteEffects.None;
-
             // Draw that sprite.
-            sprite.Draw(gameTime, spriteBatch, Position, flip);
+            sprite.Draw(gameTime, spriteBatch, Position, SpriteEffects.None);
         }
     }
 }

@@ -16,6 +16,9 @@ namespace Platformer.Tiles
     class Switch : Activator
     {
 
+        private readonly string onName;
+        private readonly string offName;
+
         private SoundEffect buttonDown;
         private SoundEffect buttonUp;
 
@@ -27,8 +30,18 @@ namespace Platformer.Tiles
         }*/
 
         public Switch(Vector2 location, ContentManager content)
-            : base(location)
+            : base(location + new Vector2(0, 4))
         {
+            this.onName = "Switch_On";
+            this.offName = "Switch_Off";
+            this.initialise(content);
+        }
+
+        public Switch(Vector2 location, ContentManager content, string onName, string offName)
+            : base(location + new Vector2(0, 4))
+        {
+            this.onName = onName;
+            this.offName = offName;
             this.initialise(content);
         }
 
@@ -42,8 +55,8 @@ namespace Platformer.Tiles
         private void initialise(ContentManager content)
         {
             //load textures
-            this.activated = content.Load<Texture2D>("Activator/switch_on");
-            this.deactivated = content.Load<Texture2D>("Activator/switch_off");
+            this.activated = content.Load<Texture2D>("Activator/" + onName);
+            this.deactivated = content.Load<Texture2D>("Activator/" + offName);
             //initialise origin
             origin = new Vector2(activated.Width / 2.0f, activated.Height / 2.0f);
 
